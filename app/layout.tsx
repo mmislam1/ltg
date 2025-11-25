@@ -1,5 +1,6 @@
+
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter,Overlock,Advent_Pro } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import ReduxProvider from "./providers/ReduxProvider";
@@ -8,9 +9,16 @@ import { SocketProvider } from "./socket-client";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
+const overlock = Overlock({
+  subsets: ['latin'],
+  weight: ['400', '700', '900'], // Specify the weights you need
+  display: 'swap', // Ensures text is visible while loading
+  variable: '--font-overlock', // Define a CSS variable name
+});
+
 export const metadata: Metadata = {
-  title: "JVAI",
-  description: "A Delivery App.",
+  title: "Lose To Gain",
+  description: "Diet chart app.",
   viewport: "width=device-width, initial-scale=1.0",
 };
 
@@ -20,22 +28,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <ReduxProvider>
-        <SocketProvider serverUrl="">
-          <body
-            className={`${inter.variable} min-h-screen antialiased flex flex-col items-center w-full max-w-full  bg-gray-200`}
-          >
+    <html lang="en" className={overlock.variable}>
+      <body
+        className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full  bg-gray-200`}
+      >
+        <ReduxProvider>
+          <SocketProvider serverUrl="">
             <header className="sticky top-0 z-50 w-full">
               <Navbar></Navbar>
             </header>
-            {children}
+            <main className="w-full max-w-7xl border overflow-hidden">{children}</main>
+
             <footer className="mt-auto w-full row-start-3 flex flex-wrap items-center justify-center">
               <Footer />
             </footer>
-          </body>
-        </SocketProvider>
-      </ReduxProvider>
+          </SocketProvider>
+        </ReduxProvider>
+      </body>
     </html>
   );
 }
