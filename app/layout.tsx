@@ -18,6 +18,9 @@ const overlock = Overlock({
 
 export const metadata: Metadata = {
   title: "Lose To Gain",
+  icons:{
+    icon:'/logo.png',
+  },
   description: "Diet chart app.",
   viewport: "width=device-width, initial-scale=1.0",
 };
@@ -30,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={overlock.variable}>
       <body
-        className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full  bg-gray-200`}
+        className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full`}
       >
         <ReduxProvider>
           <SocketProvider serverUrl="">

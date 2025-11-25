@@ -14,30 +14,22 @@ const Logo: React.FC<LogoProps> = ({ color = "#EFB639", size = 65 }) => {
       <div
         className="flex flex-col items-center justify-center"
         style={{
-          width: `44px`,
-          height: `44px`,
+          width: `124px`,
+          height: `54px`,
         }}
       >
         <Image
-          src="/logoGold.svg"
-          alt="Ridero Logo"
-          height='44'
-          width= '44'
+          src="/logo.png"
+          alt="lose to gain Logo"
+          height='54'
+          width= '124'
           style={{
             objectFit: "contain",
             
           }}
+          className="flex flex-col items-center justify-center "
         />
       </div>
-
-      <span
-        className=" font-semibold text-center"
-        style={{
-          fontSize: 16,
-        }}
-      >
-        RIDERO
-      </span>
     </div>
   );
 };
