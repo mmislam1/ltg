@@ -1,5 +1,5 @@
 
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter,Overlock,Advent_Pro } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
@@ -19,11 +19,16 @@ const overlock = Overlock({
 export const metadata: Metadata = {
   title: "Lose To Gain",
   icons:{
-    icon:'/logo.png',
+    icon:'/logo1.png',
   },
   description: "Diet chart app.",
-  viewport: "width=device-width, initial-scale=1.0",
 };
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+};
+
 
 export default function RootLayout({
   children,
@@ -36,7 +41,7 @@ export default function RootLayout({
         className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full`}
       >
         <ReduxProvider>
-          <SocketProvider serverUrl="">
+          <SocketProvider serverUrl="http://localhost:5000">
             <header className="sticky top-0 z-50 w-full">
               <Navbar></Navbar>
             </header>
