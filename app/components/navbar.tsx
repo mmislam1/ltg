@@ -22,7 +22,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="w-full flex flex-row justify-center items-center px-5 md:px-40 py-4 bg-white shadow-lg">
+    <nav className="w-full flex flex-row justify-center items-center px-5 md:px-40 py-4 bg-white border-b-2 border-gray-300">
       <div className="flex flex-row justify-between items-center w-full max-w-7xl">
 
       

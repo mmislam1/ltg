@@ -1,9 +1,11 @@
 import React from 'react'
 
-const listElement = () => {
+const ListElement = () => {
   return (
-    <div>listElement</div>
+    <div className='min-h-20 p-2 m-1 flex flex-row items-center justify-center bg-white rounded-lg border-2 border-gray-300 shadow-sm'>
+
+    </div>
   )
 }
 
-export default listElement
+export default ListElement
