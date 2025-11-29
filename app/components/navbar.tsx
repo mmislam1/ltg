@@ -3,16 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React from "react";
+import React,{ReactNode} from "react";
 import Logo from "../../components/logo";
 import { useDeviceType } from "../hooks/useDeviceType";
 import { useAppSelector } from "../store/hooks";
 import UserTab from './userTab'
+import DropdownMenu from "./dropdownMenu";
+import { Plus } from "lucide-react";
 const Navbar = () => {
 
   const user = useAppSelector((store)=>store.auth.user)
   const pathname = usePathname();
   const isMobile=useDeviceType()
+  
   const navLinks = [
     { name: "Home", href: "/", disabled:false },
     { name: "How it works", href: "/how-it-works", disabled:false },
@@ -47,6 +50,7 @@ const Navbar = () => {
       </div>)}
 
       <UserTab></UserTab>
+      <DropdownMenu />
       </div>
     </nav>
   );
