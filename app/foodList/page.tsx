@@ -1,10 +1,13 @@
 import React from 'react'
 import ListElement from './listElement'
+import Meals from './meals'
 
 const List = () => {
 
   return (
-      <div><ListElement /><ListElement /><ListElement /><ListElement /><ListElement /><ListElement /></div>
+      <div><ListElement />
+      <Meals/>
+      </div>
   )
 }
 
