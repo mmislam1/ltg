@@ -28,7 +28,7 @@ export default function Home() {
   return (
     <div className="w-full font-sans flex flex-col p-8 bg-green-500">
       
-      <h1 className="font-semibold text-8xl">Wasdjfhsikdf</h1>
+      
     </div>
   );
 }

@@ -49,7 +49,6 @@ const Navbar = () => {
         ))}
       </div>)}
 
-      <UserTab></UserTab>
       <DropdownMenu />
       </div>
     </nav>

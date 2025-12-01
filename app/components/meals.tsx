@@ -53,7 +53,7 @@ const Meals = () => {
 
                         </div>
                         <button onClick={()=>addMeal(meal.title)} className="flex">
-                            <div className="h-10 w-10 flex flex-row items-center justify-center bg-gray-100 hover:bg-green-200 focus:bg-green-200 flex flex-row items-center justify-center rounded-full">
+                            <div className="h-10 w-10 flex flex-row items-center justify-center bg-gray-100 hover:bg-green-200 focus:bg-green-200 active:bg-green-200 flex flex-row items-center justify-center rounded-full">
                                 <PlusIcon />
                             </div>
                         </button>
