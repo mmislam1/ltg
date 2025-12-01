@@ -26,7 +26,7 @@ export interface Chart{
 export interface ActivityState {
     charts:Chart[],
     water: number,
-    burned: number,
+    burnt: number,
     macros:Macros,
     total:number,
 
@@ -34,13 +34,13 @@ export interface ActivityState {
 
 export const initialState: ActivityState = {
     charts:[],
-    macros:{protein:0,
-        carb:0,
-        fat:0,
+    macros:{protein:10,
+        carb:20,
+        fat:30,
     },
     water: 0,
-    burned: 0,
-    total:0,
+    burnt: 60,
+    total:200,
 }
 
 export const activitySlice = createSlice({
