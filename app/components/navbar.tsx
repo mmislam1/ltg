@@ -10,6 +10,8 @@ import { useAppSelector } from "../store/hooks";
 import UserTab from './userTab'
 import DropdownMenu from "./dropdownMenu";
 import { Plus } from "lucide-react";
+import DatePickerCalendar from "./calender";
+import DatePicker from "./calender";
 const Navbar = () => {
 
   const user = useAppSelector((store)=>store.auth.user)
@@ -48,7 +50,7 @@ const Navbar = () => {
           </Link>
         ))}
       </div>)}
-
+      <DatePicker/>
       <DropdownMenu />
       </div>
     </nav>

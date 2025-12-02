@@ -29,6 +29,7 @@ export interface ActivityState {
     burnt: number,
     macros:Macros,
     total:number,
+    selectedDate: string,
 
 }
 
@@ -41,6 +42,7 @@ export const initialState: ActivityState = {
     water: 0,
     burnt: 60,
     total:200,
+    selectedDate: new Date().toDateString()
 }
 
 export const activitySlice = createSlice({
@@ -80,11 +82,16 @@ export const activitySlice = createSlice({
 
         },
 
+        setSelectedDate:(state,action:PayloadAction<string>)=>{
+            state.selectedDate=action.payload
+        }
+
     },
 });
 
 export const {
     addMeal,
+    setSelectedDate,
     
 } = activitySlice.actions;
 export default activitySlice.reducer;

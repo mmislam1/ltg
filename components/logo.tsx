@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
+import { useDeviceType } from "@/app/hooks/useDeviceType";
 
 interface LogoProps {
   color?: string; 
@@ -9,20 +10,21 @@ interface LogoProps {
 }
 
 const Logo: React.FC<LogoProps> = ({ color = "#EFB639", size = 65 }) => {
+  const device=useDeviceType()
   return (
     <div className="flex flex-col items-center justify-center" style={{color}}>
       <div
         className="flex flex-col items-center justify-center"
         style={{
-          width: `124px`,
-          height: `54px`,
+          width: device==='d'?'124px': '62px',
+          height: device === 'd' ? '54px' : '27px',
         }}
       >
         <Image
           src="/logo.png"
           alt="lose to gain Logo"
-          height='54'
-          width= '124'
+          height={device === 'd' ? 54 : 27}
+          width={device === 'd' ? 124 : 62}
           style={{
             objectFit: "contain",
             
