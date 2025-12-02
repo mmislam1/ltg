@@ -31,7 +31,7 @@ export default function RingChart() {
     ];
     const data3 = [
         { name: 'Total', value: total, fill: '#cacacaff' },
-        { name: 'Remaining', value: total-burnt, fill: '#202020ff' },
+        { name: 'Remaining', value: total-burnt, fill: '#383838ff' },
 
     ];
 
@@ -44,8 +44,16 @@ export default function RingChart() {
     
 
     return (
-        <div className="w-full md:w-lg h-50 flex flex-row items-center justify-around">
-            <ResponsiveContainer width="100%" height="100%">
+        <div className="w-full md:w-lg h-50 flex flex-row items-center justify-around p-4">
+            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center ml-2">
+                <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
+                    {data.map((it,n) => {return <div key={n+'a'} className="flex flex-row items-center justify-left gap-2">
+                        <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
+                        <h3 className="text-md text-gray-400 font-semibold" style={{ color: it.fill }}>{it.name}</h3>
+                    </div>})}
+                </div>
+                <ResponsiveContainer width="100%" height="100%">
+                
                 <PieChart>
                     <Pie
                         data={data}
@@ -75,7 +83,19 @@ export default function RingChart() {
                 
                 
             </ResponsiveContainer>
+            </div>
+
+            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center"> 
+                <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
+                    {data2.map((it, n) => {
+                        return <div key={n + 'a'} className="flex flex-row items-center justify-left gap-2">
+                            <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
+                            <h3 className="text-md text-gray-400 font-semibold" style={{ color: it.fill }}>{it.name}</h3>
+                        </div>
+                    })}
+                </div>
             <ResponsiveContainer width="100%" height="100%">
+               
                 <PieChart>
                     <Pie
                         data={data2}
@@ -105,7 +125,19 @@ export default function RingChart() {
 
 
             </ResponsiveContainer>
+            </div>
+
+            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center">
+                <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
+                    {data3.map((it, n) => {
+                        return <div key={n + 'a'} className="flex flex-row items-center justify-left gap-2">
+                            <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
+                            <h3 className="text-md text-gray-400 font-semibold" style={{ color: it.fill }}>{it.name}</h3>
+                        </div>
+                    })}
+                </div>
             <ResponsiveContainer width="100%" height="100%">
+                
                 <PieChart>
                     <Pie
                         data={data3}
@@ -135,7 +167,7 @@ export default function RingChart() {
 
 
             </ResponsiveContainer>
-            
+            </div>
         </div>
     );
 }
