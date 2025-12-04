@@ -16,15 +16,15 @@ const Logo: React.FC<LogoProps> = ({ color = "#EFB639", size = 65 }) => {
       <div
         className="flex flex-col items-center justify-center"
         style={{
-          width: device==='d'?'124px': '62px',
-          height: device === 'd' ? '54px' : '27px',
+          width: device==='d'?'124px': '83px',
+          height: device === 'd' ? '54px' : '36px',
         }}
       >
         <Image
           src="/logo.png"
           alt="lose to gain Logo"
-          height={device === 'd' ? 54 : 27}
-          width={device === 'd' ? 124 : 62}
+          height={device === 'd' ? 54 : 36}
+          width={device === 'd' ? 124 : 83}
           style={{
             objectFit: "contain",
             

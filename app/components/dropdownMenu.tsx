@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical, Edit, Trash2, Share2, Copy, Plus, CheckIcon, List, PlusCircleIcon, CopyIcon, MenuIcon, Send, DockIcon, File } from 'lucide-react';
 import { FaCopy } from 'react-icons/fa';

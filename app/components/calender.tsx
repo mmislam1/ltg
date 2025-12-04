@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function DatePicker() {
     const dispatch = useAppDispatch();
-    const selectedDate = useAppSelector((state) => state.activity.selectedDate);
+    const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarDate, setCalendarDate] = useState(new Date());
 
@@ -29,6 +29,7 @@ export default function DatePicker() {
     const handlePrevDay = () => {
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() - 1);
+        console.log(newDate.toISOString())
         dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
     };
 
