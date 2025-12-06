@@ -3,14 +3,13 @@ import ListElement from './listElement'
 import Meals from '../components/meals'
 import RingChart from '../components/ringChart'
 
-const List = () => {
+const FoodList = () => {
 
   return (
       <div><ListElement />
-      <RingChart/>
-      <Meals/>
+      
       </div>
   )
 }
 
-export default List
+export default FoodList

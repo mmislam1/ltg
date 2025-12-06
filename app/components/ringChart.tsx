@@ -44,8 +44,12 @@ export default function RingChart() {
     
 
     return (
-        <div className="w-full md:w-lg h-50 flex flex-row items-center justify-around p-4">
-            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center ml-2">
+
+        <div className="w-full md:w-lg flex flex-col items-center p-2 justify-center">
+            
+        
+        <div className="w-full md:w-lg h-50 flex flex-row items-center justify-between">
+            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center ">
                 <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
                     {data.map((it,n) => {return <div key={n+'a'} className="flex flex-row items-center justify-left gap-2">
                         <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
@@ -167,7 +171,20 @@ export default function RingChart() {
 
 
             </ResponsiveContainer>
+            
+            </div>
+            
+        </div>
+            <div className="w-[100%] flex flex-col items-start justify-center mt-4 mx-6">
+                <p className="text-md font-semibold">Remaining</p>
+            </div>
+            <div className="w-full h-2 bg-gray-300 rounded-lg overflow-hidden mx-6 mb-8">
+                <div
+                    className="h-full bg-orange-400 transition-all duration-500 ease-in-out"
+                    style={{ width: `${Math.min(100, Math.max(0, ((total - burnt) / total) * 100))}%` }}
+                />
             </div>
         </div>
+
     );
 }

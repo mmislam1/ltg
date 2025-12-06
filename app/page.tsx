@@ -10,6 +10,9 @@ import Link from "next/link";
 import { FaStar, FaRegStar } from "react-icons/fa"
 import Icon from "@/components/icon";
 import { useDeviceType } from "./hooks/useDeviceType";
+import RingChart from "./components/ringChart";
+import Meals from "./components/meals";
+import FoodList from "./foodList/page";
 
 export default function Home() {
 
@@ -26,9 +29,10 @@ export default function Home() {
   
 
   return (
-    <div className="w-full font-sans flex flex-col p-8 bg-green-500">
-      
-      
+    <div className="w-full font-sans flex flex-col">
+      <FoodList></FoodList>
+      <RingChart></RingChart>
+      <Meals></Meals>
     </div>
   );
 }
