@@ -1,7 +1,10 @@
 'use client'
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
-import { Document, Page, Text, View, StyleSheet, PDFDownloadLink, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'; 
+import dynamic from "next/dynamic";
+
+
 
 // Types matching your Redux slice
 interface Macros {
@@ -322,6 +325,10 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
 
 const NutritionChart: React.FC = () => {
     const [data] = useState(sampleData);
+    const PDFDownloadLink = dynamic(
+        () => import("@react-pdf/renderer").then(mod => mod.PDFDownloadLink),
+        { ssr: false }
+    );
 
     // Calculate totals
     const calculateTotals = () => {
