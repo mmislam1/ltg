@@ -1,4 +1,5 @@
 'use client'
+
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
 
@@ -180,7 +181,14 @@ const NutritionChart: React.FC = () => {
       <head>
         <title>Nutrition Chart - ${data.name}</title>
         <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
+          * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            color-adjust: exact;
+          }
           body { 
             font-family: Arial, sans-serif; 
             padding: 20px;
@@ -200,7 +208,7 @@ const NutritionChart: React.FC = () => {
           }
           .header-left p { 
             font-size: 12px; 
-            color: #666;
+            color: #4d4d4dff;
             margin: 2px 0;
           }
           .header-right { 
@@ -220,7 +228,7 @@ const NutritionChart: React.FC = () => {
             display: block;
           }
           .goal-label { 
-            color: #666;
+            color: #474747ff;
             font-size: 10px;
           }
           table { 
@@ -230,24 +238,27 @@ const NutritionChart: React.FC = () => {
             font-size: 11px;
           }
           th { 
-            background: #f5f5f5; 
+            background: #ffffffff !important; 
             padding: 8px; 
             text-align: left;
             font-weight: 600;
-            border: 1px solid #ddd;
+            border: 1px solid #616161ff;
+            -webkit-print-color-adjust: exact;
           }
           td { 
             padding: 8px; 
             border: 1px solid #ddd;
           }
           .meal-header { 
-            background: #e8e8e8; 
+            background: #b6b6b6ff !important; 
             font-weight: bold;
             text-transform: capitalize;
+            -webkit-print-color-adjust: exact;
           }
           .total-row { 
-            background: #f9f9f9; 
+            background: #ffffffff !important; 
             font-weight: bold;
+            -webkit-print-color-adjust: exact;
           }
           .text-right { text-align: right; }
         </style>
@@ -342,21 +353,21 @@ const NutritionChart: React.FC = () => {
                     <p className="text-sm text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
                 </div>
                 <div className="flex gap-6">
-                    <div className="text-center">
+                    <div className="text-center text-red-500">
                         <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
-                        <div className="text-xs text-gray-600">Cal</div>
+                        <div className="text-lg font-semibold">Cal</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center text-red-900">
                         <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
-                        <div className="text-xs text-gray-600">Protein</div>
+                        <div className="text-lg font-semibold">Protein</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center text-orange-600">
                         <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
-                        <div className="text-xs text-gray-600">Carbs</div>
+                        <div className="text-lg font-semibold">Carbs</div>
                     </div>
-                    <div className="text-center">
+                    <div className="text-center text-yellow-400">
                         <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
-                        <div className="text-xs text-gray-600">Fats</div>
+                        <div className="text-lg font-semibold">Fats</div>
                     </div>
                 </div>
             </div>
