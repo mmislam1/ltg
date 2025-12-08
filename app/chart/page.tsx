@@ -362,26 +362,26 @@ const NutritionChart: React.FC = () => {
             <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-800">
                 <div>
                     <h1 className="text-2xl font-bold mb-2">{data.name}</h1>
-                    <p className="text-sm text-gray-600"><span className="font-semibold">Weight:</span> {data.weight}</p>
-                    <p className="text-sm text-gray-600"><span className="font-semibold">Height:</span> {data.height}</p>
-                    <p className="text-sm text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
+                    <p className="text-md text-gray-600"><span className="font-semibold">Weight:</span> {data.weight}</p>
+                    <p className="text-md text-gray-600"><span className="font-semibold">Height:</span> {data.height}</p>
+                    <p className="text-md text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
                 </div>
                 <div className="flex gap-6">
                     <div className="text-center text-red-600">
                         <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
-                        <div className="text-xs">Cal</div>
+                        <div className="text-lg font-bold">Cal</div>
                     </div>
                     <div className="text-center text-red-900">
                         <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
-                        <div className="text-xs">Protein</div>
+                        <div className="text-lg font-bold">Protein</div>
                     </div>
                     <div className="text-center text-orange-600">
                         <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
-                        <div className="text-xs">Carbs</div>
+                        <div className="text-lg font-bold">Carbs</div>
                     </div>
                     <div className="text-center text-yellow-600">
                         <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
-                        <div className="text-xs">Fats</div>
+                        <div className="text-lg font-bold">Fats</div>
                     </div>
                 </div>
             </div>
@@ -404,15 +404,15 @@ const NutritionChart: React.FC = () => {
 
             {/* Nutrition Table */}
             <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-sm">
+                <table className="w-full border-collapse text-md">
                     <thead>
                         <tr className="bg-gray-100">
-                            <th className="border border-gray-300 px-4 py-2 text-left font-semibold">Food</th>
-                            <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Quantity</th>
-                            <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Calories</th>
-                            <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Protein</th>
-                            <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Carbs</th>
-                            <th className="border border-gray-300 px-4 py-2 text-right font-semibold">Fats</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Food</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Quantity</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Calories</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Protein</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Carbs</th>
+                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Fats</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -426,11 +426,11 @@ const NutritionChart: React.FC = () => {
                                 {meal.list.map((food, foodIndex) => (
                                     <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
                                         <td className="border border-gray-300 px-4 py-2">{food.name}</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-right">{food.quantity}</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-right">{food.calories.toFixed(1)} kcl</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-right">{food.nutrition.protein.toFixed(1)} g</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-right">{food.nutrition.carb.toFixed(1)} g</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-right">{food.nutrition.fat.toFixed(1)} g</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.quantity}</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.calories.toFixed(1)} kcl</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.nutrition.protein.toFixed(1)} g</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.nutrition.carb.toFixed(1)} g</td>
+                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.nutrition.fat.toFixed(1)} g</td>
                                     </tr>
                                 ))}
                             </React.Fragment>
@@ -438,10 +438,10 @@ const NutritionChart: React.FC = () => {
                         <tr className="bg-gray-100 font-bold">
                             <td className="border border-gray-300 px-4 py-2">Total</td>
                             <td className="border border-gray-300 px-4 py-2"></td>
-                            <td className="border border-gray-300 px-4 py-2 text-right">{totals.calories} kcl</td>
-                            <td className="border border-gray-300 px-4 py-2 text-right">{totals.protein} g</td>
-                            <td className="border border-gray-300 px-4 py-2 text-right">{totals.carbs} g</td>
-                            <td className="border border-gray-300 px-4 py-2 text-right">{totals.fats} g</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.calories} kcl</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.protein} g</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.carbs} g</td>
+                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.fats} g</td>
                         </tr>
                     </tbody>
                 </table>
