@@ -6,6 +6,15 @@ export interface User {
   email: string;
   image?: string;
   phone?: string;
+  weight: number;
+  height: number;
+  age: number;
+  dailyGoals: {
+    calories: number;
+    protein: number;
+    carb: number;
+    fat: number;
+  };
 }
 export interface AuthState {
   user: User | null;
@@ -15,7 +24,16 @@ export interface AuthState {
   error: string | null;
 }
 const initialState: AuthState = {
-  user: {id:'1',name:'mm',email:'mmislam272@gmail.com',image:''},
+  user: { id: "1", name: "mm", email: "mmislam272@gmail.com", image: "", weight: 99,
+  height: 188,
+  age: 29,
+  dailyGoals: {
+    calories: 1600,
+    protein: 200,
+    carb: 34,
+    fat: 256,
+  }
+ },
   accessToken: "dfgdfgd",
   refreshToken: "dfgdfgd",
   loading: false,
@@ -32,7 +50,20 @@ export const loginUser = createAsyncThunk(
     });
     if (!res.ok) throw new Error("Login failed");
     return (await res.json()) as { user: User; accessToken: string; refreshToken: string };*/
-    return {user:{id:'1',name:'mm',email:'mmislam272@gmail.com',image:''},accessToken: "dfgdfgd", refreshToken: ''}
+    return {
+      user: { id: "1", name: "mm", email: "mmislam272@gmail.com", image: "", weight: 99,
+  height: 188,
+  age: 29,
+  dailyGoals: {
+    calories: 1600,
+    protein: 200,
+    carb: 34,
+    fat: 256,
+  }
+ },
+      accessToken: "dfgdfgd",
+      refreshToken: "",
+    };
   }
 );
 
@@ -52,7 +83,20 @@ export const registerUser = createAsyncThunk(
     });
     if (!res.ok) throw new Error("Register failed");
     return (await res.json()) as { user: User; accessToken: string; refreshToken: string };*/
-    return {user:{id:'1',name:'mm',email:'mmislam272@gmail.com',image:''},accessToken: "", refreshToken: ''}
+    return {
+      user: { id: "1", name: "mm", email: "mmislam272@gmail.com", image: "", weight: 99,
+  height: 188,
+  age: 29,
+  dailyGoals: {
+    calories: 1600,
+    protein: 200,
+    carb: 34,
+    fat: 256,
+  }
+ },
+      accessToken: "",
+      refreshToken: "",
+    };
   }
 );
 
@@ -65,21 +109,30 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.refreshToken = null;
     },
-    setTokens(state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) {
+    setTokens(
+      state,
+      action: PayloadAction<{ accessToken: string; refreshToken: string }>
+    ) {
       state.accessToken = action.payload.accessToken;
       state.refreshToken = action.payload.refreshToken;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (s) => { s.loading = true; s.error = null; })
+      .addCase(loginUser.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
       .addCase(loginUser.fulfilled, (s, a) => {
         s.loading = false;
         s.user = a.payload.user;
         s.accessToken = a.payload.accessToken;
         s.refreshToken = a.payload.refreshToken;
       })
-      .addCase(loginUser.rejected, (s, a) => { s.loading = false; s.error = a.error.message || "Login error"; })
+      .addCase(loginUser.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.error.message || "Login error";
+      })
       .addCase(registerUser.fulfilled, (s, a) => {
         s.loading = false;
         s.user = a.payload.user;

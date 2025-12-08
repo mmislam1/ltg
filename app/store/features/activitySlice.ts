@@ -9,11 +9,15 @@ export interface Macros {
   carb: number;
   fat: number;
 }
-
-export interface Chart {
-  id: string;
+export interface Meal{
   mealType: "breakfast" | "lunch" | "dinner" | "snack";
   list: Food[];
+  
+  
+}
+export interface Chart {
+  id: string;
+  meals:Meal;
   lastModified: string;
   macros: Macros;
   total: number;
@@ -55,7 +59,7 @@ export const activitySlice = createSlice({
       const chartData = action.payload;
 
       // Calculate total calories from the food list
-      const totalCalories = chartData.list.reduce(
+      const totalCalories = chartData.meals.list.reduce(
         (sum, food) =>
           sum +
           (food.nutrition.protein + food.nutrition.carb + food.nutrition.fat ||
