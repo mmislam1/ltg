@@ -4,6 +4,11 @@ import { Search } from "lucide-react";
 import { del } from "../data";
 import { Food } from "./foodSlice";
 
+export interface ListItems{
+  foodItem:Food,
+  quantity:number,
+}
+
 export interface Macros {
   protein: number;
   carb: number;
@@ -11,7 +16,7 @@ export interface Macros {
 }
 export interface Meal{
   mealType: "breakfast" | "lunch" | "dinner" | "snack";
-  list: Food[];
+  list: ListItems[];
   
   
 }
@@ -62,7 +67,7 @@ export const activitySlice = createSlice({
       const totalCalories = chartData.meals.list.reduce(
         (sum, food) =>
           sum +
-          (food.nutrition.protein + food.nutrition.carb + food.nutrition.fat ||
+          (food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat ||
             0),
         0
       );

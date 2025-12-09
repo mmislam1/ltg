@@ -14,7 +14,7 @@ export interface Food {
     name: string,
     addedBy: string,
     selectedBy: number,
-    favouritesBy: number,
+    unit: string,
     nutrition: Nutrition,
 }
 export interface Foods {

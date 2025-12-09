@@ -1,33 +1,11 @@
 'use client'
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer'; 
+import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import dynamic from "next/dynamic";
+import { Macros, Meal, Chart } from '../store/features/activitySlice';
+import { Food } from '../store/features/foodSlice'
 
-
-
-// Types matching your Redux slice
-interface Macros {
-    protein: number;
-    carb: number;
-    fat: number;
-}
-
-interface Food {
-    name: string;
-    quantity: string;
-    calories: number;
-    nutrition: {
-        protein: number;
-        carb: number;
-        fat: number;
-    };
-}
-
-interface Meal {
-    mealType: "breakfast" | "lunch" | "dinner" | "snack";
-    list: Food[];
-}
 
 interface UserProfile {
     name: string;
@@ -58,89 +36,150 @@ const sampleData: UserProfile & { meals: Meal[] } = {
         {
             mealType: "breakfast",
             list: [
-                {
-                    name: "Apple Regular",
-                    quantity: "1 piece",
-                    calories: 100.0,
-                    nutrition: { protein: 0.0, carb: 25.0, fat: 0.0 }
+                
+                {   
+                    foodItem: {
+                        id: '1',
+                        name: 'Apple Regular',
+                        addedBy: 'string',
+                        selectedBy: 99,
+                        unit: 'piece',
+                        nutrition: { protein: 0.0, carb: 25.0, fat: 0.0 },
+                    },
+                    quantity: 1
                 },
                 {
-                    name: "yogurt (desi natural) low fat",
-                    quantity: "100 gm",
-                    calories: 66.76,
-                    nutrition: { protein: 4.12, carb: 10.59, fat: 0.88 }
+                    foodItem: {
+                        id: '2',
+                        name: "yogurt (desi natural) low fat",
+                        addedBy: 'string',
+                        selectedBy: 99,
+                        unit: 'gm',
+                        nutrition: { protein: 4.12, carb: 10.59, fat: 0.88 },
+                    },
+                    quantity: 100
                 },
                 {
-                    name: "Dymatize iso 100 hydrolyzed whey protein isolate gourmet vanilla, nutres",
-                    quantity: "15 gm",
-                    calories: 52.0,
-                    nutrition: { protein: 12.5, carb: 0.5, fat: 0.0 }
-                }
+                    foodItem: {
+                        id: '3',
+                        name: "Dymatize iso 100 hydrolyzed whey protein isolate gourmet vanilla, nutres",
+                        addedBy: 'string',
+                        selectedBy: 99,
+                        unit: 'gm',
+                        nutrition: { protein: 12.5, carb: 0.5, fat: 0.0 },
+                    },
+                    quantity: 15
+                },
+
+
             ]
         },
-        {
-            mealType: "lunch",
-            list: [
-                {
+{
+    mealType: "lunch",
+        list: [
+            {
+                foodItem: {
+                    id: '4',
                     name: "Chicken Breast",
-                    quantity: "100 gm",
-                    calories: 127.0,
-                    nutrition: { protein: 25.9, carb: 0.0, fat: 3.0 }
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'gm',
+                    nutrition: { protein: 25.9, carb: 0.0, fat: 3.0 },
                 },
-                {
+                quantity: 100
+            },
+            {
+                foodItem: {
+                    id: '5',
                     name: "Brown Rice",
-                    quantity: "100 gm",
-                    calories: 143.0,
-                    nutrition: { protein: 3.0, carb: 28.0, fat: 0.0 }
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'gm',
+                    nutrition: { protein: 3.0, carb: 28.0, fat: 0.0 },
                 },
-                {
+                quantity: 100
+            },
+            {
+                foodItem: {
+                    id: '6',
                     name: "Mixed Vegetables",
-                    quantity: "1 cup",
-                    calories: 52.0,
-                    nutrition: { protein: 2.0, carb: 11.0, fat: 0.0 }
-                }
-            ]
-        },
-        {
-            mealType: "snack",
-            list: [
-                {
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'cup',
+                    nutrition: { protein: 2.0, carb: 11.0, fat: 0.0 },
+                },
+                quantity: 1
+            },
+
+        ]
+},
+{
+    mealType: "snack",
+        list: [
+            {
+                foodItem: {
+                    id: '7',
                     name: "Cashew/Walnut / peanut / almonds / pista",
-                    quantity: "10 gm",
-                    calories: 68.4,
-                    nutrition: { protein: 1.6, carb: 1.1, fat: 6.4 }
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'gm',
+                    nutrition: { protein: 1.6, carb: 1.1, fat: 6.4 },
                 },
-                {
+                quantity: 10
+            },
+            {
+                foodItem: {
+                    id: '8',
                     name: "Kiwi Fruit /Chinese Gooseberry Frsh Raw",
-                    quantity: "100 gm",
-                    calories: 56.0,
-                    nutrition: { protein: 0.0, carb: 14.0, fat: 0.0 }
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'gm',
+                    nutrition: { protein: 0.0, carb: 14.0, fat: 0.0 },
                 },
-                {
+                quantity: 100
+            },
+            {
+                foodItem: {
+                    id: '9',
                     name: "Apple Regular",
-                    quantity: "1 piece",
-                    calories: 100.0,
-                    nutrition: { protein: 0.0, carb: 25.0, fat: 0.0 }
-                }
-            ]
-        },
-        {
-            mealType: "dinner",
-            list: [
-                {
-                    name: "yogurt",
-                    quantity: "200 gm",
-                    calories: 147.14,
-                    nutrition: { protein: 10.57, carb: 12.33, fat: 6.17 }
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'piece',
+                    nutrition: { protein: 0.0, carb: 25.0, fat: 0.0 },
                 },
-                {
+                quantity: 1
+            },
+        
+        ]
+},
+{
+    mealType: "dinner",
+        list: [
+            {
+                foodItem: {
+                    id: '10',
+                    name: "yogurt",
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'gm',
+                    nutrition: { protein: 10.57, carb: 12.33, fat: 6.17 },
+                },
+                quantity: 200
+            },
+            {
+                foodItem: {
+                    id: '11',
                     name: "Dymatize iso 100 hydrolyzed whey protein isolate gourmet vanilla, nutres",
-                    quantity: "30 gm",
-                    calories: 110.0,
-                    nutrition: { protein: 25.0, carb: 1.0, fat: 0.0 }
-                }
-            ]
-        }
+                    addedBy: 'string',
+                    selectedBy: 99,
+                    unit: 'gm',
+                    nutrition: { protein: 25.0, carb: 1.0, fat: 0.0 },
+                },
+                quantity: 30
+            },
+            
+        ]
+}
     ]
 };
 
@@ -201,7 +240,7 @@ const pdfStyles = StyleSheet.create({
     },
     tableRow: {
         flexDirection: 'row',
-        paddingLeft:5 ,
+        paddingLeft: 5,
         borderTopWidth: 1,
         borderColor: '#bbb',
     },
@@ -209,7 +248,7 @@ const pdfStyles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#dfdfdfff',
         borderColor: '#888',
-        
+
     },
     totalRow: {
         flexDirection: 'row',
@@ -217,14 +256,14 @@ const pdfStyles = StyleSheet.create({
         borderTopWidth: 0,
         borderColor: '#dbdbdbff',
         fontWeight: 'bold',
-        
+
     },
     cell: {
         padding: 6,
         fontSize: 9,
     },
-    protein:{
-        color:'#ff0037ff',
+    protein: {
+        color: '#ff0037ff',
     },
     total: {
         color: '#ff008cff',
@@ -312,12 +351,12 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         {/* Food Items */}
                         {meal.list.map((food, foodIndex) => (
                             <View key={foodIndex} style={pdfStyles.tableRow}>
-                                <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.name}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.calories.toFixed(1)} kcl</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.nutrition.protein.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.nutrition.carb.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.nutrition.fat.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem.name}</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem.unit}</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat).toFixed(1)} kcl</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem.nutrition.protein.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem.nutrition.carb.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem.nutrition.fat.toFixed(1)} g</Text>
                             </View>
                         ))}
                     </View>
@@ -353,10 +392,10 @@ const NutritionChart: React.FC = () => {
 
         data.meals.forEach(meal => {
             meal.list.forEach(food => {
-                totalCalories += food.calories;
-                totalProtein += food.nutrition.protein;
-                totalCarbs += food.nutrition.carb;
-                totalFats += food.nutrition.fat;
+                totalCalories += food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat;
+                totalProtein += food.foodItem.nutrition.protein;
+                totalCarbs += food.foodItem.nutrition.carb;
+                totalFats += food.foodItem.nutrition.fat;
             });
         });
 
@@ -374,37 +413,37 @@ const NutritionChart: React.FC = () => {
         <div className="max-w-6xl mx-auto p-6 bg-white">
             {/* Header Section */}
             <div className="overflow-x-auto">
-            <div className=" flex justify-between items-start mb-6 pb-3 border-b-2 border-gray-800">
-                <div>
-                    <h1 className="text-2xl font-bold mb-2">{data.name}</h1>
-                    <p className="text-md text-gray-600"><span className="font-semibold">Weight:</span> {data.weight}</p>
-                    <p className="text-md text-gray-600"><span className="font-semibold">Height:</span> {data.height}</p>
-                    <p className="text-md text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
+                <div className=" flex justify-between items-start mb-6 pb-3 border-b-2 border-gray-800">
+                    <div>
+                        <h1 className="text-2xl font-bold mb-2">{data.name}</h1>
+                        <p className="text-md text-gray-600"><span className="font-semibold">Weight:</span> {data.weight}</p>
+                        <p className="text-md text-gray-600"><span className="font-semibold">Height:</span> {data.height}</p>
+                        <p className="text-md text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
+                    </div>
+                    <div className="flex gap-6">
+                        <div className="text-center ">
+                            <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
+                            <div className="text-lg font-bold">Cal</div>
+                        </div>
+                        <div className="text-center ">
+                            <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">Protein</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">Carbs</div>
+                        </div>
+                        <div className="text-center ">
+                            <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">Fats</div>
+                        </div>
+                    </div>
                 </div>
-                <div className="flex gap-6">
-                    <div className="text-center ">
-                        <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
-                        <div className="text-lg font-bold">Cal</div>
-                    </div>
-                    <div className="text-center ">
-                        <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
-                        <div className="text-lg font-bold">Protein</div>
-                    </div>
-                    <div className="text-center">
-                        <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
-                        <div className="text-lg font-bold">Carbs</div>
-                    </div>
-                    <div className="text-center ">
-                        <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
-                        <div className="text-lg font-bold">Fats</div>
-                    </div>
-                </div>
-            </div>
 
-            
 
-            {/* Nutrition Table */}
-            
+
+                {/* Nutrition Table */}
+
                 <table className="w-full border-collapse text-md">
                     <thead>
                         <tr className="bg-gray-100">
@@ -426,12 +465,12 @@ const NutritionChart: React.FC = () => {
                                 </tr>
                                 {meal.list.map((food, foodIndex) => (
                                     <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
-                                        <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.name}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.calories.toFixed(1)} kcl</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.nutrition.protein.toFixed(1)} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.nutrition.carb.toFixed(1)} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.nutrition.fat.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.foodItem.name}</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity+' '+food.foodItem.unit}</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat).toFixed(1)} kcl</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.protein.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.carb.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.fat.toFixed(1)} g</td>
                                     </tr>
                                 ))}
                             </React.Fragment>
