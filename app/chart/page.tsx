@@ -184,7 +184,8 @@ const pdfStyles = StyleSheet.create({
         fontWeight: 'bold',
     },
     goalLabel: {
-        fontSize: 8,
+        fontSize: 10,
+        fontWeight: 'bold',
         color: '#666',
     },
     table: {
@@ -192,27 +193,26 @@ const pdfStyles = StyleSheet.create({
     },
     tableHeader: {
         flexDirection: 'row',
-        backgroundColor: '#f5f5f5',
+        backgroundColor: '#8f8f8fff',
         borderWidth: 1,
         borderColor: '#ddd',
     },
     tableRow: {
         flexDirection: 'row',
-        borderWidth: 1,
-        borderTopWidth: 0,
-        borderColor: '#ddd',
+
+        borderTopWidth: 1,
+        borderColor: '#bbb',
     },
     mealHeaderRow: {
         flexDirection: 'row',
-        backgroundColor: '#e8e8e8',
+        backgroundColor: '#b8b8b8ff',
         borderWidth: 1,
         borderTopWidth: 0,
         borderColor: '#ddd',
     },
     totalRow: {
         flexDirection: 'row',
-        backgroundColor: '#f9f9f9',
-        borderWidth: 1,
+        backgroundColor: '#b6b6b6ff',
         borderTopWidth: 0,
         borderColor: '#ddd',
         fontWeight: 'bold',
@@ -220,6 +220,18 @@ const pdfStyles = StyleSheet.create({
     cell: {
         padding: 6,
         fontSize: 9,
+    },
+    protein:{
+        color:'#ff0037ff',
+    },
+    total: {
+        color: '#ff008cff',
+    },
+    carbs: {
+        color: '#ff7b00ff',
+    },
+    fats: {
+        color: '#9e7900ff',
     },
     cellBold: {
         padding: 6,
@@ -255,20 +267,20 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                 </View>
                 <View style={pdfStyles.headerRight}>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={pdfStyles.goalValue}>{data.dailyGoals.calories.toFixed(1)}kcl</Text>
-                        <Text style={pdfStyles.goalLabel}>Cal</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.calories.toFixed(1)}kcl</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.total]}>Cal</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={pdfStyles.goalValue}>{data.dailyGoals.protein.toFixed(2)}g</Text>
-                        <Text style={pdfStyles.goalLabel}>Protein</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.protein.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.protein]}>Protein</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={pdfStyles.goalValue}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
-                        <Text style={pdfStyles.goalLabel}>Carbs</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.carbs]}>Carbs</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={pdfStyles.goalValue}>{data.dailyGoals.fats.toFixed(2)}g</Text>
-                        <Text style={pdfStyles.goalLabel}>Fats</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.fats]}>Fats</Text>
                     </View>
                 </View>
             </View>
@@ -359,7 +371,8 @@ const NutritionChart: React.FC = () => {
     return (
         <div className="max-w-6xl mx-auto p-6 bg-white">
             {/* Header Section */}
-            <div className="flex justify-between items-start mb-6 pb-4 border-b-2 border-gray-800">
+            <div className="overflow-x-auto">
+            <div className=" flex justify-between items-start mb-6 pb-3 border-b-2 border-gray-800">
                 <div>
                     <h1 className="text-2xl font-bold mb-2">{data.name}</h1>
                     <p className="text-md text-gray-600"><span className="font-semibold">Weight:</span> {data.weight}</p>
@@ -367,31 +380,77 @@ const NutritionChart: React.FC = () => {
                     <p className="text-md text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
                 </div>
                 <div className="flex gap-6">
-                    <div className="text-center text-red-600">
+                    <div className="text-center ">
                         <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
                         <div className="text-lg font-bold">Cal</div>
                     </div>
-                    <div className="text-center text-red-900">
+                    <div className="text-center ">
                         <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
                         <div className="text-lg font-bold">Protein</div>
                     </div>
-                    <div className="text-center text-orange-600">
+                    <div className="text-center">
                         <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
                         <div className="text-lg font-bold">Carbs</div>
                     </div>
-                    <div className="text-center text-yellow-600">
+                    <div className="text-center ">
                         <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
                         <div className="text-lg font-bold">Fats</div>
                     </div>
                 </div>
             </div>
 
+            
+
+            {/* Nutrition Table */}
+            
+                <table className="w-full border-collapse text-md">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Food</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Quantity</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Calories</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Protein</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Carbs</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Fats</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {data.meals.map((meal, mealIndex) => (
+                            <React.Fragment key={mealIndex}>
+                                <tr className="bg-gray-200">
+                                    <td colSpan={6} className="border-b border-gray-300 px-3 py-2 font-bold capitalize text-lg">
+                                        {meal.mealType}
+                                    </td>
+                                </tr>
+                                {meal.list.map((food, foodIndex) => (
+                                    <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
+                                        <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.name}</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity}</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.calories.toFixed(1)} kcl</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.nutrition.protein.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.nutrition.carb.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.nutrition.fat.toFixed(1)} g</td>
+                                    </tr>
+                                ))}
+                            </React.Fragment>
+                        ))}
+                        <tr className="bg-gray-200 font-bold">
+                            <td className="  px-3 py-2">Total</td>
+                            <td className=" border-gray-300 px-3 py-2 font-semibold"></td>
+                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.calories} kcl</td>
+                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.protein} g</td>
+                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.carbs} g</td>
+                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.fats} g</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             {/* Download Button */}
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-end mb-3">
                 <PDFDownloadLink
                     document={<NutritionPDF data={data} totals={totals} />}
                     fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="flex items-center mt-8 gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                     {({ loading }) => (
                         <>
@@ -400,51 +459,6 @@ const NutritionChart: React.FC = () => {
                         </>
                     )}
                 </PDFDownloadLink>
-            </div>
-
-            {/* Nutrition Table */}
-            <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-md">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Food</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Quantity</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Calories</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Protein</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Carbs</th>
-                            <th className="border border-gray-300 px-4 py-2 text-center font-semibold">Fats</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.meals.map((meal, mealIndex) => (
-                            <React.Fragment key={mealIndex}>
-                                <tr className="bg-gray-200">
-                                    <td colSpan={6} className="border border-gray-300 px-4 py-2 font-bold capitalize">
-                                        {meal.mealType}
-                                    </td>
-                                </tr>
-                                {meal.list.map((food, foodIndex) => (
-                                    <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
-                                        <td className="border border-gray-300 px-4 py-2">{food.name}</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.quantity}</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.calories.toFixed(1)} kcl</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.nutrition.protein.toFixed(1)} g</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.nutrition.carb.toFixed(1)} g</td>
-                                        <td className="border border-gray-300 px-4 py-2 text-center">{food.nutrition.fat.toFixed(1)} g</td>
-                                    </tr>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                        <tr className="bg-gray-100 font-bold">
-                            <td className="border border-gray-300 px-4 py-2">Total</td>
-                            <td className="border border-gray-300 px-4 py-2"></td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.calories} kcl</td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.protein} g</td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.carbs} g</td>
-                            <td className="border border-gray-300 px-4 py-2 text-center">{totals.fats} g</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
         </div>
     );
