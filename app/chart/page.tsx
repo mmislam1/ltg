@@ -193,29 +193,31 @@ const pdfStyles = StyleSheet.create({
     },
     tableHeader: {
         flexDirection: 'row',
-        backgroundColor: '#8f8f8fff',
-        borderWidth: 1,
-        borderColor: '#ddd',
+        backgroundColor: '#e0e0e0ff',
+        borderWidth: 2,
+        borderColor: '#888',
+        borderRadius: 5,
+        marginBottom: 5
     },
     tableRow: {
         flexDirection: 'row',
-
+        paddingLeft:5 ,
         borderTopWidth: 1,
         borderColor: '#bbb',
     },
     mealHeaderRow: {
         flexDirection: 'row',
-        backgroundColor: '#b8b8b8ff',
-        borderWidth: 1,
-        borderTopWidth: 0,
-        borderColor: '#ddd',
+        backgroundColor: '#dfdfdfff',
+        borderColor: '#888',
+        
     },
     totalRow: {
         flexDirection: 'row',
-        backgroundColor: '#b6b6b6ff',
+        backgroundColor: '#c0c0c0ff',
         borderTopWidth: 0,
-        borderColor: '#ddd',
+        borderColor: '#dbdbdbff',
         fontWeight: 'bold',
+        
     },
     cell: {
         padding: 6,
@@ -231,19 +233,19 @@ const pdfStyles = StyleSheet.create({
         color: '#ff7b00ff',
     },
     fats: {
-        color: '#9e7900ff',
+        color: '#bd9100ff',
     },
     cellBold: {
         padding: 6,
         fontSize: 9,
         fontWeight: 'bold',
     },
-    col1: { width: '35%' },
-    col2: { width: '13%', textAlign: 'right' },
-    col3: { width: '13%', textAlign: 'right' },
-    col4: { width: '13%', textAlign: 'right' },
-    col5: { width: '13%', textAlign: 'right' },
-    col6: { width: '13%', textAlign: 'right' },
+    col1: { width: '40%' },
+    col2: { width: '12%', textAlign: 'center' },
+    col3: { width: '12%', textAlign: 'center' },
+    col4: { width: '12%', textAlign: 'center' },
+    col5: { width: '12%', textAlign: 'center' },
+    col6: { width: '12%', textAlign: 'center' },
     mealHeaderCell: {
         width: '100%',
         padding: 6,
