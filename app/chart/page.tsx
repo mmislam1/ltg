@@ -213,7 +213,7 @@ const pdfStyles = StyleSheet.create({
     },
     totalRow: {
         flexDirection: 'row',
-        backgroundColor: '#c0c0c0ff',
+        backgroundColor: '#dfdfdfff',
         borderTopWidth: 0,
         borderColor: '#dbdbdbff',
         fontWeight: 'bold',
