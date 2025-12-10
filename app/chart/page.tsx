@@ -235,7 +235,7 @@ const pdfStyles = StyleSheet.create({
         backgroundColor: '#e0e0e0ff',
         borderBottomWidth: 1,
         bordertopWidth: 1,
-        borderColor: '#888',
+        borderBottomColor: '#bbb',
         marginBottom: 5
     },
     tableRow: {
