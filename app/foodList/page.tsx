@@ -6,7 +6,10 @@ import RingChart from '../components/ringChart'
 const FoodList = () => {
 
   return (
-      <div><ListElement />
+      <div>
+        <ListElement selected={true}/>
+        <ListElement selected={false} />
+        <ListElement selected={true} />
       
       </div>
   )

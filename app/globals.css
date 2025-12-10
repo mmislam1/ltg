@@ -20,3 +20,7 @@
 .col{
   background-color: #013220;
 }
+
+.fc{
+  @apply flex items-center justify-center
+}
