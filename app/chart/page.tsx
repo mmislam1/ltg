@@ -233,9 +233,9 @@ const pdfStyles = StyleSheet.create({
     tableHeader: {
         flexDirection: 'row',
         backgroundColor: '#e0e0e0ff',
-        borderWidth: 2,
+        borderBottomWidth: 1,
+        bordertopWidth: 1,
         borderColor: '#888',
-        borderRadius: 5,
         marginBottom: 5
     },
     tableRow: {
