@@ -21,7 +21,7 @@ const ListElement: React.FC<ListElementProps> = ({ selected = false , title='Tit
         <div className="fc text-md md:text-xl font-semibold ">{title}</div>
         <div className="fc text-sm md:text-lg text-gray-500 ">{desc}</div>
       </div>
-      <button className={`fc h-12 w-12 mr-2 md:mr-8 rounded-full transition-all duration-500 ease-in-out ${itemSelected===false?'bg-gray-300':'bg-green-400'} `} onClick={selectHandler}>
+      <button className={`fc h-10 w-10 mr-2 md:mr-8 rounded-full transition-all duration-500 ease-in-out ${itemSelected===false?'bg-gray-300':'bg-green-400'} `} onClick={selectHandler}>
         {
           itemSelected===false?<Plus/>:<CheckIcon color='#fff'/>
         }

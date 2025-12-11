@@ -67,7 +67,7 @@ export const activitySlice = createSlice({
       const totalCalories = chartData.meals.list.reduce(
         (sum, food) =>
           sum +
-          (food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat ||
+          (food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats ||
             0),
         0
       );

@@ -26,7 +26,7 @@ const FoodList = () => {
         item.name.toLowerCase().includes(query.toLowerCase())
       )
     );
-},[query])
+},[query,foods])
   return (
     <div className='fc flex-col'>
         <div className="fc w-full flex-col p-4 bg-green-400">
@@ -41,9 +41,12 @@ const FoodList = () => {
 
           </div>
         </div>
-        <ListElement selected={true}/>
-        <ListElement selected={false} />
-        <ListElement selected={true} />
+
+        <div className="fc flex-col w-full p-3">
+        {filtered.map((food,i) => { return <ListElement key={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={true}/>})}
+        </div>
+        
+        
       
       </div>
   )
