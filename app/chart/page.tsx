@@ -15,8 +15,8 @@ interface UserProfile {
     dailyGoals: {
         calories: number;
         protein: number;
-        carbs: number;
-        fats: number;
+        carbss: number;
+        fatss: number;
     };
 }
 
@@ -29,8 +29,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
     dailyGoals: {
         calories: 1003.3,
         protein: 83.79,
-        carbs: 128.52,
-        fats: 16.45
+        carbss: 128.52,
+        fatss: 16.45
     },
     meals: [
         {
@@ -44,18 +44,20 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                         addedBy: 'string',
                         selectedBy: 99,
                         unit: 'piece',
-                        nutrition: { protein: 0.0, carb: 25.0, fat: 0.0 },
+                        approved: true,
+                        nutrition: { calories: 99, protein: 0.0, carbs: 25.0, fats: 0.0 },
                     },
                     quantity: 1
                 },
                 {
                     foodItem: {
                         id: '2',
-                        name: "yogurt (desi natural) low fat",
+                        name: "yogurt (desi natural) low fats",
                         addedBy: 'string',
                         selectedBy: 99,
                         unit: 'gm',
-                        nutrition: { protein: 4.12, carb: 10.59, fat: 0.88 },
+                        approved: true,
+                        nutrition: { calories: 99, protein: 4.12, carbs: 10.59, fats: 0.88 },
                     },
                     quantity: 100
                 },
@@ -66,7 +68,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                         addedBy: 'string',
                         selectedBy: 99,
                         unit: 'gm',
-                        nutrition: { protein: 12.5, carb: 0.5, fat: 0.0 },
+                        approved: true,
+                        nutrition: { calories: 99, protein: 12.5, carbs: 0.5, fats: 0.0 },
                     },
                     quantity: 15
                 },
@@ -84,7 +87,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'gm',
-                    nutrition: { protein: 25.9, carb: 0.0, fat: 3.0 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 25.9, carbs: 0.0, fats: 3.0 },
                 },
                 quantity: 100
             },
@@ -95,7 +99,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'gm',
-                    nutrition: { protein: 3.0, carb: 28.0, fat: 0.0 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 3.0, carbs: 28.0, fats: 0.0 },
                 },
                 quantity: 100
             },
@@ -106,7 +111,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'cup',
-                    nutrition: { protein: 2.0, carb: 11.0, fat: 0.0 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 2.0, carbs: 11.0, fats: 0.0 },
                 },
                 quantity: 1
             },
@@ -123,7 +129,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'gm',
-                    nutrition: { protein: 1.6, carb: 1.1, fat: 6.4 },
+                    approved: true,
+                    nutrition: { calories:99, protein: 1.6, carbs: 1.1, fats: 6.4 },
                 },
                 quantity: 10
             },
@@ -134,7 +141,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'gm',
-                    nutrition: { protein: 0.0, carb: 14.0, fat: 0.0 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 0.0, carbs: 14.0, fats: 0.0 },
                 },
                 quantity: 100
             },
@@ -145,7 +153,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'piece',
-                    nutrition: { protein: 0.0, carb: 25.0, fat: 0.0 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 0.0, carbs: 25.0, fats: 0.0 },
                 },
                 quantity: 1
             },
@@ -162,7 +171,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'gm',
-                    nutrition: { protein: 10.57, carb: 12.33, fat: 6.17 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 10.57, carbs: 12.33, fats: 6.17 },
                 },
                 quantity: 200
             },
@@ -173,7 +183,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
                     addedBy: 'string',
                     selectedBy: 99,
                     unit: 'gm',
-                    nutrition: { protein: 25.0, carb: 1.0, fat: 0.0 },
+                    approved: true,
+                    nutrition: { calories: 99, protein: 25.0, carbs: 1.0, fats: 0.0 },
                 },
                 quantity: 30
             },
@@ -268,10 +279,10 @@ const pdfStyles = StyleSheet.create({
     total: {
         color: '#ff008cff',
     },
-    carbs: {
+    carbss: {
         color: '#ff7b00ff',
     },
-    fats: {
+    fatss: {
         color: '#bd9100ff',
     },
     cellBold: {
@@ -316,12 +327,12 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         <Text style={[pdfStyles.goalLabel, pdfStyles.protein]}>Protein</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
-                        <Text style={[pdfStyles.goalLabel, pdfStyles.carbs]}>Carbs</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbss.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.carbss]}>carbss</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
-                        <Text style={[pdfStyles.goalLabel, pdfStyles.fats]}>Fats</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fatss.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.fatss]}>fatss</Text>
                     </View>
                 </View>
             </View>
@@ -334,8 +345,8 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                     <Text style={[pdfStyles.cellBold, pdfStyles.col2]}>Quantity</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col3]}>Calories</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col4]}>Protein</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>Carbs</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>Fats</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>carbss</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>fatss</Text>
                 </View>
 
                 {/* Table Body */}
@@ -353,10 +364,10 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                             <View key={foodIndex} style={pdfStyles.tableRow}>
                                 <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem.name}</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem.unit}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat).toFixed(1)} kcl</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1)} kcl</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem.nutrition.protein.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem.nutrition.carb.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem.nutrition.fat.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem.nutrition.carbs.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem.nutrition.fats.toFixed(1)} g</Text>
                             </View>
                         ))}
                     </View>
@@ -368,8 +379,8 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                     <Text style={[pdfStyles.cellBold, pdfStyles.col2]}></Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col3]}>{totals.calories} kcl</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col4]}>{totals.protein} g</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>{totals.carbs} g</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>{totals.fats} g</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>{totals.carbss} g</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>{totals.fatss} g</Text>
                 </View>
             </View>
         </Page>
@@ -387,23 +398,23 @@ const NutritionChart: React.FC = () => {
     const calculateTotals = () => {
         let totalCalories = 0;
         let totalProtein = 0;
-        let totalCarbs = 0;
-        let totalFats = 0;
+        let totalcarbss = 0;
+        let totalfatss = 0;
 
         data.meals.forEach(meal => {
             meal.list.forEach(food => {
-                totalCalories += food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat;
+                totalCalories += food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats;
                 totalProtein += food.foodItem.nutrition.protein;
-                totalCarbs += food.foodItem.nutrition.carb;
-                totalFats += food.foodItem.nutrition.fat;
+                totalcarbss += food.foodItem.nutrition.carbs;
+                totalfatss += food.foodItem.nutrition.fats;
             });
         });
 
         return {
             calories: totalCalories.toFixed(1),
             protein: totalProtein.toFixed(2),
-            carbs: totalCarbs.toFixed(2),
-            fats: totalFats.toFixed(2)
+            carbss: totalcarbss.toFixed(2),
+            fatss: totalfatss.toFixed(2)
         };
     };
 
@@ -430,12 +441,12 @@ const NutritionChart: React.FC = () => {
                             <div className="text-lg font-bold">Protein</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">Carbs</div>
+                            <div className="text-lg font-bold">{data.dailyGoals.carbss.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">carbss</div>
                         </div>
                         <div className="text-center ">
-                            <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">Fats</div>
+                            <div className="text-lg font-bold">{data.dailyGoals.fatss.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">fatss</div>
                         </div>
                     </div>
                 </div>
@@ -451,8 +462,8 @@ const NutritionChart: React.FC = () => {
                             <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Quantity</th>
                             <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Calories</th>
                             <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Protein</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Carbs</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Fats</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">carbss</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">fatss</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -467,10 +478,10 @@ const NutritionChart: React.FC = () => {
                                     <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
                                         <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.foodItem.name}</td>
                                         <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity+' '+food.foodItem.unit}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carb + food.foodItem.nutrition.fat).toFixed(1)} kcl</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1)} kcl</td>
                                         <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.protein.toFixed(1)} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.carb.toFixed(1)} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.fat.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.carbs.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.fats.toFixed(1)} g</td>
                                     </tr>
                                 ))}
                             </React.Fragment>
@@ -480,8 +491,8 @@ const NutritionChart: React.FC = () => {
                             <td className=" border-gray-300 px-3 py-2 font-semibold"></td>
                             <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.calories} kcl</td>
                             <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.protein} g</td>
-                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.carbs} g</td>
-                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.fats} g</td>
+                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.carbss} g</td>
+                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.fatss} g</td>
                         </tr>
                     </tbody>
                 </table>

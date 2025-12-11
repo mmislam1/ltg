@@ -2,10 +2,12 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 import { Search } from "lucide-react";
 import {del} from '../data'
+import { foods } from "../foods";
 
 export interface Nutrition {
-    carb: number,
-    fat: number,
+    calories:number,
+    carbs: number,
+    fats: number,
     protein: number,
 }
 
@@ -16,6 +18,7 @@ export interface Food {
     selectedBy: number,
     unit: string,
     nutrition: Nutrition,
+    approved: boolean,
 }
 export interface Foods {
     list: Food[],
@@ -26,7 +29,7 @@ export interface Foods {
 
 
 export const initialState: Foods = {
-    list: [],
+    list: foods,
     favourites: [],
     loading: true,
 }

@@ -16,7 +16,7 @@ const ListElement: React.FC<ListElementProps> = ({ selected = false , title='Tit
   const selectHandler=()=>{setItemSelected(!itemSelected)}
 
   return (
-    <div className={`flex flex-row justify-between items-center h-20  p-2 ${border===true?'border-t border-gray-300':''}`}>
+    <div className={`flex w-full flex-row justify-between items-center h-20  p-2 ${border===true?'border-t border-gray-300':''}`}>
       <div className={`h-full flex flex-col md:flex-row md:ml-4 p-2 items-start md:items-center md:w-[55%] md:justify-between justify-center `}>
         <div className="fc text-md md:text-xl font-semibold ">{title}</div>
         <div className="fc text-sm md:text-lg text-gray-500 ">{desc}</div>
