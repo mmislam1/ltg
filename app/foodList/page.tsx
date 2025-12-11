@@ -42,7 +42,7 @@ const FoodList = () => {
           </div>
         </div>
 
-        <div className="fc flex-col w-full p-3">
+        <div className="fc flex-col w-full px-3">
         {filtered.map((food,i) => { return <ListElement key={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={true}/>})}
         </div>
         
