@@ -24,3 +24,7 @@
 .fc{
   @apply flex items-center justify-center
 }
+
+input:focus{
+  outline:none;
+}

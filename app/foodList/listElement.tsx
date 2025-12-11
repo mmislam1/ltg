@@ -1,6 +1,6 @@
 'use client'
 import { CheckCheckIcon, CheckIcon, Plus } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 interface ListElementProps {
   selected?: boolean;
@@ -14,6 +14,11 @@ const ListElement: React.FC<ListElementProps> = ({ selected = false , title='Tit
   const [itemSelected, setItemSelected]=useState<boolean>(selected)
 
   const selectHandler=()=>{setItemSelected(!itemSelected)}
+
+  useEffect(() => {
+    setItemSelected(selected);
+  }, [selected]);
+
 
   return (
     <div className={`flex w-full flex-row justify-between items-center h-20  p-2 ${border===true?'border-t border-gray-300':''}`}>
