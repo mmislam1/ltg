@@ -12,7 +12,7 @@ import Icon from "@/components/icon";
 import { useDeviceType } from "./hooks/useDeviceType";
 import RingChart from "./components/ringChart";
 import Meals from "./components/meals";
-import FoodList from "./foodList/page";
+import FoodList from "./foodList/[type]/page";
 
 export default function Home() {
 

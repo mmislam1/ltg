@@ -1,6 +1,6 @@
 
 import type { Metadata, Viewport } from "next";
-import { Inter,Overlock,Advent_Pro } from "next/font/google";
+import { Inter,Overlock,Advent_Pro, Comfortaa } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import ReduxProvider from "./providers/ReduxProvider";
@@ -9,9 +9,9 @@ import { SocketProvider } from "./socket-client";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-const overlock = Overlock({
+const comfortaa = Comfortaa({
   subsets: ['latin'],
-  weight: ['400', '700', '900'], // Specify the weights you need
+  weight: ['400', '700'], // Specify the weights you need
   display: 'swap', // Ensures text is visible while loading
   variable: '--font-overlock', // Define a CSS variable name
 });
@@ -36,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={overlock.variable}>
+    <html lang="en" className={comfortaa.variable}>
       <body
         className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full`}
       >
