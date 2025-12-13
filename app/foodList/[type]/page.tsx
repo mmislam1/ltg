@@ -7,17 +7,25 @@ import Meals from '../../components/meals'
 import RingChart from '../../components/ringChart'
 import { SearchCheck, SearchIcon } from 'lucide-react'
 import { useAppSelector } from '../../store/hooks'
+import { useParams } from 'next/navigation'
 
 interface passedProps{
   type: string,
 }
 
 const FoodList = ({type}:passedProps) => {
-  
+  const params=useParams()
   const charts=useAppSelector((state)=>state.activity.current.charts)
   const foods = useAppSelector((state) => state.foods.list )
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
+
+  const capitalize = (s: string | undefined) => {
+    if (typeof s !== 'string' || s.length === 0) {
+      return '';
+    }
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
 
   const handleSubmit=()=>{
 
@@ -40,7 +48,7 @@ const FoodList = ({type}:passedProps) => {
   return (
     <div className='fc flex-col'>
         <div className="fc w-full flex-col p-4 bg-green-400">
-          <h2 className="text-xl font-bold mb-3"></h2>
+          <h2 className="text-xl font-bold mb-3">{capitalize(params.type as string)}</h2>
           <div className="h-12 fc flex-row w-full bg-white rounded-full">
            <button className="fc m-2 ml-4" onClick={handleSearch}><SearchIcon /> </button> 
           <input className="h-12 w-full bg-white rounded-full p-4"  onChange={handleQuery}/>
@@ -48,6 +56,9 @@ const FoodList = ({type}:passedProps) => {
           
           </div>
           <div className="fc flex-row">
+            <button className="fc w-[25%] ">
+              button 1
+            </button>
 
           </div>
         </div>
