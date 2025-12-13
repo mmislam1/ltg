@@ -13,7 +13,7 @@ interface passedProps{
   type: string,
 }
 
-const FoodList = ({type}:passedProps) => {
+const FoodList = () => {
   const params=useParams()
   const charts=useAppSelector((state)=>state.activity.current.charts)
   const foods = useAppSelector((state) => state.foods.list )
