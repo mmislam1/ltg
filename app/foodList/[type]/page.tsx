@@ -47,21 +47,36 @@ const FoodList = () => {
 },[query,foods])
   return (
     <div className='fc flex-col'>
-        <div className="fc w-full flex-col p-4 bg-green-400">
-          <h2 className="text-xl font-bold mb-3">{capitalize(params.type as string)}</h2>
-          <div className="h-12 fc flex-row w-full bg-white rounded-full">
+        <div className="fc w-full px-4 flex-col bg-green-400">
+          <h2 className="text-xl font-bold my-2">{capitalize(params.type as string)}</h2>
+          <div className="h-12 fc flex-row w-full bg-white rounded-full mb-4 mx-4">
            <button className="fc m-2 ml-4" onClick={handleSearch}><SearchIcon /> </button> 
           <input className="h-12 w-full bg-white rounded-full p-4"  onChange={handleQuery}/>
           
           
           </div>
-          <div className="fc flex-row">
-            <button className="fc w-[25%] ">
-              button 1
-            </button>
-
-          </div>
+        
         </div>
+
+
+      <div className="fc flex-row w-full bg-green-400">
+        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+          All
+        </button>
+
+        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+          Recipes
+        </button>
+
+        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+          Create 
+        </button>
+
+        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+          Favourites
+        </button>
+
+      </div>
 
         <div className="fc flex-col w-full px-3">
         {filtered.map((food,i) => { return <ListElement key={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={false}/>})}
@@ -71,9 +86,9 @@ const FoodList = () => {
       <button
         onClick={handleSubmit}
         className="fixed bottom-10 left-1/2 -translate-x-1/2 
-                 bg-green-600 text-white w-77 md:max-w-2xl h-12 rounded-full 
+                 bg-green-600 text-white w-77 md:max-w-2xl h-11 rounded-full 
                  shadow-xl hover:bg-green-500 transition duration-300 z-50 
-                 flex items-center justify-center text-xl font-bold"
+                 flex items-center justify-center text-lg font-bold"
         aria-label="Add new item"
       >
         Done
