@@ -41,7 +41,7 @@ export default function RootLayout({
         className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full`}
       >
         <ReduxProvider>
-          <SocketProvider serverUrl="http://localhost:5000">
+          {/*<SocketProvider serverUrl="http://localhost:5000">*/}
             <header className="sticky top-0 z-50 w-full">
               <Navbar></Navbar>
             </header>
@@ -50,7 +50,7 @@ export default function RootLayout({
             <footer className="mt-auto w-full row-start-3 flex flex-wrap items-center justify-center">
               <Footer />
             </footer>
-          </SocketProvider>
+          {/*</SocketProvider>*/}
         </ReduxProvider>
       </body>
     </html>

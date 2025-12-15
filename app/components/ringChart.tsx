@@ -1,10 +1,17 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useSelector } from 'react-redux';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
-import { ActivityState } from '../store/features/activitySlice';
-import { RootState } from '../store/store';
+import React from "react";
+import { useSelector } from "react-redux";
+import {
+    PieChart,
+    Pie,
+    Cell,
+    Legend,
+    Tooltip,
+    ResponsiveContainer,
+} from "recharts";
+import { ActivityState } from "../store/features/activitySlice";
+import { RootState } from "../store/store";
 
 interface MacroState {
     macros: {
@@ -14,177 +21,199 @@ interface MacroState {
     };
 }
 
-
-
 export default function RingChart() {
     const { protein, carb, fat } = useSelector(
         (state: RootState) => state.activity.current.macros
     );
-    const { burnt,total } = useSelector(
+    const { burnt, total } = useSelector(
         (state: RootState) => state.activity.current
     );
 
     const data2 = [
-        { name: 'Total', value: total, fill: '#00cca0ff' },
-        { name: 'Burnt', value: burnt, fill: '#7f00d3ff' },
-        
+        { name: "Total", value: total, fill: "#00cca0ff" },
+        { name: "Burnt", value: burnt, fill: "#7f00d3ff" },
     ];
     const data3 = [
-        { name: 'Total', value: total, fill: '#cacacaff' },
-        { name: 'Remaining', value: total-burnt, fill: '#383838ff' },
-
+        { name: "Total", value: total, fill: "#cacacaff" },
+        { name: "Remaining", value: total - burnt, fill: "#383838ff" },
     ];
 
     const data = [
-        { name: 'Protein', value: protein, fill: '#22c55e' },
-        { name: 'Carbs', value: carb, fill: '#3b82f6' },
-        { name: 'Fat', value: fat, fill: '#ef4444' },
+        { name: "Protein", value: protein, fill: "#22c55e" },
+        { name: "Carbs", value: carb, fill: "#3b82f6" },
+        { name: "Fat", value: fat, fill: "#ef4444" },
     ];
 
-    
-
     return (
-
         <div className="w-full md:w-lg flex flex-col items-center p-2 justify-center">
-            
-        
-        <div className="w-full md:w-lg h-50 flex flex-row items-center justify-between">
-            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center ">
-                <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
-                    {data.map((it,n) => {return <div key={n+'a'} className="flex flex-row items-center justify-left gap-2">
-                        <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
-                        <h3 className="text-md text-gray-400 font-semibold" style={{ color: it.fill }}>{it.name}</h3>
-                    </div>})}
+            <div className="w-full md:w-lg h-48 flex flex-row items-center justify-between">
+                <div className="w-full md:w-lg h-48 flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
+                        {data.map((it, n) => {
+                            return (
+                                <div
+                                    key={n + "a"}
+                                    className="flex flex-row items-center justify-left gap-1"
+                                >
+                                    <div
+                                        className={`h-3 w-3 rounded-sm`}
+                                        style={{ backgroundColor: it.fill }}
+                                    ></div>
+                                    <h3
+                                        className="text-sm text-gray-400 font-semibold"
+                                        style={{ color: it.fill }}
+                                    >
+                                        {it.name}
+                                    </h3>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={data}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={40}
+                                outerRadius={50}
+                                paddingAngle={1}
+                                dataKey="value"
+                            >
+                                {data.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Pie>
+
+                            <Tooltip
+                                formatter={(value: number) => `${value}g`}
+                                contentStyle={{
+                                    backgroundColor: "#ffffffff",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    color: "rgba(100, 100, 100, 1)",
+                                }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
                 </div>
-                <ResponsiveContainer width="100%" height="100%">
-                
-                <PieChart>
-                    <Pie
-                        data={data}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={50}
-                        paddingAngle={1}
-                        dataKey="value"
-                    >
-                        {data.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                    </Pie>
-                    
-                    <Tooltip
-                        formatter={(value: number) => `${value}g`}
-                        contentStyle={{
-                            backgroundColor: '#ffffffff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            color: 'rgba(100, 100, 100, 1)',
-                        }}
-                    />
-                    
-                </PieChart>
-                
-                
-            </ResponsiveContainer>
-            </div>
 
-            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center"> 
-                <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
-                    {data2.map((it, n) => {
-                        return <div key={n + 'a'} className="flex flex-row items-center justify-left gap-2">
-                            <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
-                            <h3 className="text-md text-gray-400 font-semibold" style={{ color: it.fill }}>{it.name}</h3>
-                        </div>
-                    })}
+                <div className="w-full md:w-lg h-48 flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
+                        {data2.map((it, n) => {
+                            return (
+                                <div
+                                    key={n + "a"}
+                                    className="flex flex-row items-center justify-left gap-1"
+                                >
+                                    <div
+                                        className={`h-3 w-3 rounded-sm`}
+                                        style={{ backgroundColor: it.fill }}
+                                    ></div>
+                                    <h3
+                                        className="text-sm text-gray-400 font-semibold"
+                                        style={{ color: it.fill }}
+                                    >
+                                        {it.name}
+                                    </h3>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={data2}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={40}
+                                outerRadius={50}
+                                paddingAngle={1}
+                                dataKey="value"
+                            >
+                                {data2.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Pie>
+
+                            <Tooltip
+                                formatter={(value: number) => `${value}g`}
+                                contentStyle={{
+                                    backgroundColor: "#ffffffff",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    color: "rgba(100, 100, 100, 1)",
+                                }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
                 </div>
-            <ResponsiveContainer width="100%" height="100%">
-               
-                <PieChart>
-                    <Pie
-                        data={data2}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={50}
-                        paddingAngle={1}
-                        dataKey="value"
-                    >
-                        {data2.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                    </Pie>
 
-                    <Tooltip
-                        formatter={(value: number) => `${value}g`}
-                        contentStyle={{
-                            backgroundColor: '#ffffffff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            color: 'rgba(100, 100, 100, 1)',
-                        }}
-                    />
+                <div className="w-full md:w-lg h-48 flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
+                        {data3.map((it, n) => {
+                            return (
+                                <div
+                                    key={n + "a"}
+                                    className="flex flex-row items-center justify-left gap-1"
+                                >
+                                    <div
+                                        className={`h-3 w-3 rounded-sm`}
+                                        style={{ backgroundColor: it.fill }}
+                                    ></div>
+                                    <h3
+                                        className="text-sm text-gray-400 font-semibold"
+                                        style={{ color: it.fill }}
+                                    >
+                                        {it.name}
+                                    </h3>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                            <Pie
+                                data={data3}
+                                cx="50%"
+                                cy="50%"
+                                innerRadius={40}
+                                outerRadius={50}
+                                paddingAngle={1}
+                                dataKey="value"
+                            >
+                                {data3.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                                ))}
+                            </Pie>
 
-                </PieChart>
-
-
-            </ResponsiveContainer>
-            </div>
-
-            <div className="w-full md:w-lg h-50 flex flex-col items-center justify-center">
-                <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
-                    {data3.map((it, n) => {
-                        return <div key={n + 'a'} className="flex flex-row items-center justify-left gap-2">
-                            <div className={`h-3 w-3 rounded-sm`} style={{ backgroundColor: it.fill }}></div>
-                            <h3 className="text-md text-gray-400 font-semibold" style={{ color: it.fill }}>{it.name}</h3>
-                        </div>
-                    })}
+                            <Tooltip
+                                formatter={(value: number) => `${value}g`}
+                                contentStyle={{
+                                    backgroundColor: "#ffffffff",
+                                    border: "none",
+                                    borderRadius: "8px",
+                                    color: "rgba(100, 100, 100, 1)",
+                                }}
+                            />
+                        </PieChart>
+                    </ResponsiveContainer>
                 </div>
-            <ResponsiveContainer width="100%" height="100%">
-                
-                <PieChart>
-                    <Pie
-                        data={data3}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={40}
-                        outerRadius={50}
-                        paddingAngle={1}
-                        dataKey="value"
-                    >
-                        {data3.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                    </Pie>
-
-                    <Tooltip
-                        formatter={(value: number) => `${value}g`}
-                        contentStyle={{
-                            backgroundColor: '#ffffffff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            color: 'rgba(100, 100, 100, 1)',
-                        }}
-                    />
-
-                </PieChart>
-
-
-            </ResponsiveContainer>
-            
             </div>
-            
-        </div>
             <div className="w-[100%] flex flex-col items-start justify-center mt-4 mx-6">
                 <p className="text-md font-semibold">Remaining</p>
             </div>
             <div className="w-full h-2 bg-gray-300 rounded-lg overflow-hidden mx-6 mb-8">
                 <div
                     className="h-full bg-orange-400 transition-all duration-500 ease-in-out"
-                    style={{ width: `${Math.min(100, Math.max(0, ((total - burnt) / total) * 100))}%` }}
+                    style={{
+                        width: `${Math.min(
+                            100,
+                            Math.max(0, ((total - burnt) / total) * 100)
+                        )}%`,
+                    }}
                 />
             </div>
         </div>
-
     );
 }

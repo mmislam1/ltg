@@ -60,19 +60,19 @@ const FoodList = () => {
 
 
       <div className="fc flex-row w-full bg-green-400">
-        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-xs md:text-md font-semibold active:bg-green-600 rounded-sm p-1">
           All
         </button>
 
-        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-xs md:text-md font-semibold active:bg-green-600 rounded-sm p-1">
           Recipes
         </button>
 
-        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-xs md:text-md font-semibold active:bg-green-600 rounded-sm p-1">
           Create 
         </button>
 
-        <button className="fc w-[25%] text-xs font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-xs md:text-md font-semibold active:bg-green-600 rounded-sm p-1">
           Favourites
         </button>
 
