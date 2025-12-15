@@ -48,7 +48,7 @@ export const initialState: ActivitiesState = {
   current: {
     charts: [],
     macros: { protein: 10, carb: 20, fat: 30 },
-    water: 0,
+    water: 7,
     burnt: 60,
     total: 200,
     selectedDate: new Date().toDateString(),
@@ -96,8 +96,11 @@ export const activitySlice = createSlice({
     setSelectedDate: (state, action: PayloadAction<string>) => {
       state.current.selectedDate = action.payload;
     },
+    incrementGlass: (state) => {
+            state.current.water += 1;
+    },
   },
 });
 
-export const { addMeal, setSelectedDate } = activitySlice.actions;
+export const { addMeal, setSelectedDate,incrementGlass} = activitySlice.actions;
 export default activitySlice.reducer;
