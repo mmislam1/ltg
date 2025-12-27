@@ -15,8 +15,8 @@ interface UserProfile {
     dailyGoals: {
         calories: number;
         protein: number;
-        carbss: number;
-        fatss: number;
+        carbs: number;
+        fats: number;
     };
 }
 
@@ -29,8 +29,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
     dailyGoals: {
         calories: 1003.3,
         protein: 83.79,
-        carbss: 128.52,
-        fatss: 16.45
+        carbs: 128.52,
+        fats: 16.45
     },
     meals: [
         {
@@ -197,7 +197,7 @@ const sampleData: UserProfile & { meals: Meal[] } = {
 // PDF Styles
 const pdfStyles = StyleSheet.create({
     page: {
-        padding: 30,
+        padding: 50,
         fontSize: 10,
         fontFamily: 'Helvetica',
     },
@@ -327,12 +327,12 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         <Text style={[pdfStyles.goalLabel, pdfStyles.protein]}>Protein</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbss.toFixed(2)}g</Text>
-                        <Text style={[pdfStyles.goalLabel, pdfStyles.carbss]}>carbss</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.carbss]}>Carbs</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fatss.toFixed(2)}g</Text>
-                        <Text style={[pdfStyles.goalLabel, pdfStyles.fatss]}>fatss</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalLabel, pdfStyles.fatss]}>Fats</Text>
                     </View>
                 </View>
             </View>
@@ -345,8 +345,8 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                     <Text style={[pdfStyles.cellBold, pdfStyles.col2]}>Quantity</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col3]}>Calories</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col4]}>Protein</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>carbss</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>fatss</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>Carbs</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>Fats</Text>
                 </View>
 
                 {/* Table Body */}
@@ -441,11 +441,11 @@ const NutritionChart: React.FC = () => {
                             <div className="text-lg font-bold">Protein</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-lg font-bold">{data.dailyGoals.carbss.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
                             <div className="text-lg font-bold">carbss</div>
                         </div>
                         <div className="text-center ">
-                            <div className="text-lg font-bold">{data.dailyGoals.fatss.toFixed(2)}g</div>
+                            <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
                             <div className="text-lg font-bold">fatss</div>
                         </div>
                     </div>
