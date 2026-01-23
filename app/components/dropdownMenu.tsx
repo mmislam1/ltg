@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical, Edit, Trash2, Share2, Copy, Plus, CheckIcon, List, PlusCircleIcon, CopyIcon, MenuIcon, Send, DockIcon, File } from 'lucide-react';
 import { FaCopy } from 'react-icons/fa';
+import { useDeviceType } from '../hooks/useDeviceType';
 
 interface MenuItem {
     id: string;
@@ -60,6 +61,7 @@ export default function DropdownMenu() {
     const [isOpen, setIsOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const device = useDeviceType()
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -107,7 +109,7 @@ export default function DropdownMenu() {
                                     hover:bg-gray-100 active:bg-gray-100 text-gray-700`}
                         >
                             {item.icon && <span className="font-semibold text-lg text-gray-500">{item.icon}</span>}
-                            <span className="font-semibold text-lg text-gray-500">{item.label}</span>
+                            <span className={`font-semibold ${device === 'm' ? 'text-md':'text - lg'} text-gray-500`}>{item.label}</span>
                         </button>
                     ))}
                 </div>
