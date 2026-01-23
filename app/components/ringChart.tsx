@@ -45,7 +45,7 @@ export default function RingChart() {
     ];
 
     return (
-        <div className="w-full md:w-lg flex flex-col items-center p-2 justify-center">
+        <div className="w-full md:w-lg flex flex-col items-center p-2 pt-4 justify-center">
             <div className="w-full md:w-lg h-48 flex flex-row items-center justify-between">
                 <div className="w-full md:w-lg h-48 flex flex-col items-center justify-center">
                     <div className="flex flex-col items-right justify-start gap-1 w-full h-30">

@@ -13,7 +13,7 @@ interface passedProps{
   type: string,
 }
 
-const FoodList = () => {
+const FoodList = ({ type }: passedProps) => {
   const params=useParams()
   const charts=useAppSelector((state)=>state.activity.current.charts)
   const foods = useAppSelector((state) => state.foods.list )
@@ -47,7 +47,7 @@ const FoodList = () => {
 },[query,foods])
   return (
     <div className='fc flex-col'>
-        <div className="fc w-full px-4 flex-col bg-green-400">
+        <div className="fc w-full px-4 flex-col bg-green-700">
           <h2 className="text-xl font-bold my-2">{capitalize(params.type as string)}</h2>
           <div className="h-12 fc flex-row w-full bg-white rounded-full mb-4 mx-4">
            <button className="fc m-2 ml-4" onClick={handleSearch}><SearchIcon /> </button> 
@@ -59,20 +59,20 @@ const FoodList = () => {
         </div>
 
 
-      <div className="fc flex-row w-full bg-green-400">
-        <button className="fc w-[25%] text-xs md:text-lg font-semibold active:bg-green-600 rounded-sm p-1">
+      <div className="fc flex-row w-full bg-green-700 rounded-b-full">
+        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black rounded-sm p-1 rounded-bl-full">
           All
         </button>
 
-        <button className="fc w-[25%] text-xs md:text-lg font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1">
           Recipes
         </button>
 
-        <button className="fc w-[25%] text-xs md:text-lg font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1">
           Create 
         </button>
 
-        <button className="fc w-[25%] text-xs md:text-lg font-semibold active:bg-green-600 rounded-sm p-1">
+        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black rounded-sm p-1 rounded-br-full">
           Favourites
         </button>
 
