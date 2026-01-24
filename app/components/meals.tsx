@@ -2,6 +2,7 @@
 import { PlusIcon } from "lucide-react";
 import React, { JSX } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface Meals {
         id: number;
@@ -11,7 +12,9 @@ interface Meals {
 
 const Meals = () => {
 
-    const addMeal=(e:string)=>{}
+    const router =useRouter()
+
+    const addMeal=(s:string)=>{router.push(`/foodList/${s}`)}
 
     const meals = [
         {
@@ -52,7 +55,7 @@ const Meals = () => {
                             </div>
 
                         </div>
-                        <button onClick={()=>addMeal(meal.title)} className="flex">
+                        <button onClick={()=>addMeal(meal.title.substring(4))} className="flex">
                             <div className="h-10 w-10 flex flex-row items-center justify-center bg-gray-100 hover:bg-green-200 focus:bg-green-200 active:bg-green-200 flex flex-row items-center justify-center rounded-full">
                                 <PlusIcon />
                             </div>

@@ -4,32 +4,33 @@ import { Search } from "lucide-react";
 import { del } from "../data";
 import { Food } from "./foodSlice";
 
-export interface ListItems{
-  foodItem:Food,
-  quantity:number,
+export interface ListItems {
+  foodItem: Food;
+  quantity: number;
 }
 
 export interface Macros {
   protein: number;
-  carb: number;
-  fat: number;
+  carbs: number;
+  fats: number;
 }
-export interface Meal{
+
+export interface Meal {
+  id: string;
   mealType: "breakfast" | "lunch" | "dinner" | "snack";
   list: ListItems[];
-  
-  
 }
+
 export interface Chart {
-  id: string;
-  meals:Meal;
-  lastModified: string;
-  macros: Macros;
-  total: number;
+  //id: string;
+  meals: Meal[];
+  //lastModified: string;
+  //macros: Macros;
+  //total: number;
 }
 
 export interface ActivityState {
-  charts: Chart[];
+  chart: Chart;
   water: number;
   burnt: number;
   macros: Macros;
@@ -46,8 +47,10 @@ export interface ActivitiesState {
 export const initialState: ActivitiesState = {
   activities: [],
   current: {
-    charts: [],
-    macros: { protein: 10, carb: 20, fat: 30 },
+    chart: {
+      meals: [],
+    },
+    macros: { protein: 10, carbs: 20, fats: 30 },
     water: 7,
     burnt: 60,
     total: 200,
@@ -56,51 +59,65 @@ export const initialState: ActivitiesState = {
   },
 };
 
+export const macroCount = (state: ActivitiesState): Macros => {
+  return state.current.chart.meals.reduce(
+    (total: Macros, meal) => {
+      meal.list.forEach((item) => {
+        total.protein += item.foodItem.nutrition.protein * item.quantity;
+        total.carbs += item.foodItem.nutrition.carbs * item.quantity;
+        total.fats += item.foodItem.nutrition.fats * item.quantity;
+      });
+      return total;
+    },
+    { protein: 0, carbs: 0, fats: 0 }
+  );
+};
+
 export const activitySlice = createSlice({
   name: "activity",
   initialState,
   reducers: {
-    addMeal: (state, action: PayloadAction<Chart>) => {
-      const chartData = action.payload;
+    addMeal: (state, action: PayloadAction<Meal>) => {
+      const newMeal = action.payload;
 
-      // Calculate total calories from the food list
-      const totalCalories = chartData.meals.list.reduce(
-        (sum, food) =>
-          sum +
-          (food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats ||
-            0),
-        0
-      );
+      state.current.chart.meals.push(newMeal);
 
-      // Get current timestamp for lastModified
-      const lastModified = new Date().toISOString();
+      state.current.macros = macroCount(state);
 
-      // Update the chart with total calories and lastModified
-      const updatedChart: Chart = {
-        ...chartData,
-        total: totalCalories,
-        lastModified: lastModified,
-      };
+      state.current.total =
+        state.current.macros.protein +
+        state.current.macros.fats +
+        state.current.macros.carbs;
+    },
+    updateMeal: (state, action: PayloadAction<Meal>) => {
+      const newMeal = action.payload;
 
-      // Add the updated chart to the charts array
-      state.current.charts.push(updatedChart);
+      state.current.chart.meals = [
+        ...state.current.chart.meals.filter(
+          (meal: Meal) => meal.id !== newMeal.id
+        ),
+        newMeal,
+      ];
 
-      // Update the total calories in state
-      state.current.total += totalCalories;
+      state.current.macros = macroCount(state);
+
+      state.current.total =
+        state.current.macros.protein +
+        state.current.macros.fats +
+        state.current.macros.carbs;
     },
 
-    updateMeal: () => {},
-
-    addFood: () => {},
+    addFood: () => { },
 
     setSelectedDate: (state, action: PayloadAction<string>) => {
       state.current.selectedDate = action.payload;
     },
     incrementGlass: (state) => {
-            state.current.water += 1;
+      state.current.water += 1;
     },
   },
 });
 
-export const { addMeal, setSelectedDate,incrementGlass} = activitySlice.actions;
+export const { addMeal, setSelectedDate, incrementGlass } =
+  activitySlice.actions;
 export default activitySlice.reducer;

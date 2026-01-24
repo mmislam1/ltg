@@ -13,9 +13,9 @@ interface passedProps{
   type: string,
 }
 
-const FoodList = ({ type }: passedProps) => {
+const FoodList = () => {
   const params=useParams()
-  const charts=useAppSelector((state)=>state.activity.current.charts)
+  const charts=useAppSelector((state)=>state.activity.current.chart)
   const foods = useAppSelector((state) => state.foods.list )
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
@@ -48,7 +48,7 @@ const FoodList = ({ type }: passedProps) => {
   return (
     <div className='fc flex-col'>
         <div className="fc w-full px-4 flex-col bg-green-700">
-          <h2 className="text-xl font-bold my-2">{capitalize(params.type as string)}</h2>
+          <h2 className="text-xl text-white font-bold my-2">{capitalize(params.type as string)}</h2>
           <div className="h-12 fc flex-row w-full bg-white rounded-full mb-4 mx-4">
            <button className="fc m-2 ml-4" onClick={handleSearch}><SearchIcon /> </button> 
           <input className="h-12 w-full bg-white rounded-full p-4"  onChange={handleQuery}/>
@@ -59,8 +59,8 @@ const FoodList = ({ type }: passedProps) => {
         </div>
 
 
-      <div className="fc flex-row w-full bg-green-700 rounded-b-full">
-        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black rounded-sm p-1 rounded-bl-full">
+      <div className="fc flex-row w-full bg-green-700 rounded-b-lg">
+        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1 rounded-bl-lg">
           All
         </button>
 
@@ -72,7 +72,7 @@ const FoodList = ({ type }: passedProps) => {
           Create 
         </button>
 
-        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black rounded-sm p-1 rounded-br-full">
+        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1 rounded-br-lg">
           Favourites
         </button>
 

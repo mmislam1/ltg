@@ -22,7 +22,7 @@ interface MacroState {
 }
 
 export default function RingChart() {
-    const { protein, carb, fat } = useSelector(
+    const { protein, carbs, fats } = useSelector(
         (state: RootState) => state.activity.current.macros
     );
     const { burnt, total } = useSelector(
@@ -40,8 +40,8 @@ export default function RingChart() {
 
     const data = [
         { name: "Protein", value: protein, fill: "#22c55e" },
-        { name: "Carbs", value: carb, fill: "#3b82f6" },
-        { name: "Fat", value: fat, fill: "#ef4444" },
+        { name: "Carbs", value: carbs, fill: "#3b82f6" },
+        { name: "Fat", value: fats, fill: "#ef4444" },
     ];
 
     return (
