@@ -8,11 +8,21 @@ import RingChart from '../../components/ringChart'
 import { SearchCheck, SearchIcon } from 'lucide-react'
 import { useAppSelector } from '../../store/hooks'
 import { useParams } from 'next/navigation'
+import { Food } from '@/app/store/features/foodSlice'
 
 interface passedProps{
   type: string,
 }
+export interface ListItems {
+  foodItem: Food;
+  quantity: number;
+}
 
+export interface Meal {
+  id: string;
+  mealType: "breakfast" | "lunch" | "dinner" | "snack";
+  list: ListItems[];
+}
 const FoodList = () => {
   const params=useParams()
   const charts=useAppSelector((state)=>state.activity.current.chart)
