@@ -3,21 +3,34 @@ import { CheckCheckIcon, CheckIcon, Plus } from "lucide-react";
 import React, { useState,useEffect } from "react";
 
 interface ListElementProps {
-  selected?: boolean;
+  removeItem : (id:string)=>void,
+  id: string,
+  addItem: (id:string)=>void,
   title?: string,
   desc?: string,
   border?: boolean,
 }
 
-const ListElement: React.FC<ListElementProps> = ({ selected = false , title='Title not available', desc='Description not available', border=true}) => {
+const ListElement: React.FC<ListElementProps> = ({ removeItem,addItem, id, title='Title not available', desc='Description not available', border=true}) => {
 
-  const [itemSelected, setItemSelected]=useState<boolean>(selected)
+  const [itemSelected, setItemSelected]=useState<boolean>(false)
 
-  const selectHandler=()=>{setItemSelected(!itemSelected)}
+  const selectHandler=()=>{
+    
+    if(!itemSelected){ 
+      addItem(id)
+    setItemSelected(true)
+    }
+    else{
+      removeItem(id)
+      setItemSelected(true)
 
-  useEffect(() => {
+    }
+   }
+
+  /*useEffect(() => {
     setItemSelected(selected);
-  }, [selected]);
+  }, [selected]);*/
 
 
   return (

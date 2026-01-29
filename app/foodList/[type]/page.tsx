@@ -19,6 +19,7 @@ const FoodList = () => {
   const foods = useAppSelector((state) => state.foods.list )
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
+  
 
   const capitalize = (s: string | undefined) => {
     if (typeof s !== 'string' || s.length === 0) {
@@ -26,6 +27,13 @@ const FoodList = () => {
     }
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
+
+  const addItem(id:string)=>{
+
+  }
+  const removeItem(id: string) => {
+
+  }
 
   const handleSubmit=()=>{
 
@@ -79,7 +87,7 @@ const FoodList = () => {
       </div>
 
         <div className="fc flex-col w-full px-3">
-        {filtered.map((food,i) => { return <ListElement key={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={false}/>})}
+        {filtered.map((food,i) => { return <ListElement key={food.id} id={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} addItem={addItem} removeItem={removeItem}/>})}
         </div>
         
         
