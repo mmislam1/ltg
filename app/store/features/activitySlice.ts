@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api";
 import { Search } from "lucide-react";
-import { del } from "../data";
 import { Food } from "./foodSlice";
 
 export interface ListItems {

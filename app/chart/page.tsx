@@ -359,7 +359,9 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         {/* Meal Header */}
                         <View style={pdfStyles.mealHeaderRow}>
                             <Text style={pdfStyles.mealHeaderCell}>
-                                {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
+                                {meal.mealType
+                                    ? meal.mealType.charAt(0).toUpperCase() + meal.mealType.slice(1)
+                                    : ''}
                             </Text>
                         </View>
 
