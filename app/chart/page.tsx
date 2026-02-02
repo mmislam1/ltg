@@ -33,7 +33,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
         fats: 16.45
     },
     meals: [
-        {
+        {   
+            id: '1',
             mealType: "breakfast",
             list: [
                 
@@ -77,7 +78,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
 
             ]
         },
-{
+{   
+    id: '2',
     mealType: "lunch",
         list: [
             {
@@ -119,7 +121,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
 
         ]
 },
-{
+{   
+    id: '3',
     mealType: "snack",
         list: [
             {
@@ -161,7 +164,8 @@ const sampleData: UserProfile & { meals: Meal[] } = {
         
         ]
 },
-{
+{   
+    id: '4',
     mealType: "dinner",
         list: [
             {
