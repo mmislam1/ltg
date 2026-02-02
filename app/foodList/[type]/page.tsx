@@ -11,7 +11,7 @@ import { useParams } from 'next/navigation'
 import { Food } from '@/app/store/features/foodSlice'
 
 interface passedProps{
-  type: string,
+  type: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined,
 }
 export interface ListItems {
   foodItem: Food;
@@ -20,7 +20,7 @@ export interface ListItems {
 
 export interface Meal {
   id: string;
-  mealType: "breakfast" | "lunch" | "dinner" | "snack";
+  mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
   list: ListItems[];
 }
 const FoodList = () => {
@@ -29,6 +29,7 @@ const FoodList = () => {
   const foods = useAppSelector((state) => state.foods.list )
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
+  const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: params.type, list: [] })
   
 
   const capitalize = (s: string | undefined) => {
@@ -38,11 +39,15 @@ const FoodList = () => {
     return s.charAt(0).toUpperCase() + s.slice(1);
   };
 
-  const addItem(id:string)=>{
-
+  const addItem=(id:string)=>{
+    if (foods.some((item) => item.id===id)){
+      setMeal({...meal,list:[...meal.list,{foodItem:foods.find((item) => { return item.id===id}), quantity: 1}]})
+      }
   }
-  const removeItem(id: string) => {
-
+  const removeItem=(id: string) => {
+    if (meal.list.some((item) => item.foodItem.id === id)) {
+      setMeal({...meal, list: meal.list.filter((item) => { return item.foodItem.id !== id })})
+    }
   }
 
   const handleSubmit=()=>{
@@ -63,6 +68,8 @@ const FoodList = () => {
       )
     );
 },[query,foods])
+
+console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',meal)
   return (
     <div className='fc flex-col'>
         <div className="fc w-full px-4 flex-col bg-green-700">
@@ -97,7 +104,7 @@ const FoodList = () => {
       </div>
 
         <div className="fc flex-col w-full px-3">
-        {filtered.map((food,i) => { return <ListElement key={food.id} id={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} addItem={addItem} removeItem={removeItem}/>})}
+        {filtered.map((food,i) => { return <ListElement key={food.id} id={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={meal.list.some((item)=>item.foodItem.id===food.id)} addItem={addItem} removeItem={removeItem}/>})}
         </div>
         
         

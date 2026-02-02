@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 interface Meals {
         id: number;
-        title: string;
+    title: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
         image: string;
     }
 
@@ -14,7 +14,7 @@ const Meals = () => {
 
     const router =useRouter()
 
-    const addMeal=(s:string)=>{router.push(`/foodList/${s}`)}
+    const addMeal = (s: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined)=>{router.push(`/foodList/${s?s:undefined}`)}
 
     const meals = [
         {

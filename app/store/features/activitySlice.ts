@@ -94,7 +94,7 @@ export const activitySlice = createSlice({
 
       state.current.chart.meals = [
         ...state.current.chart.meals.filter(
-          (meal: Meal) => meal.id !== newMeal.id
+          (meal: Meal) => meal.id !== newMeal.id,
         ),
         newMeal,
       ];
@@ -107,7 +107,7 @@ export const activitySlice = createSlice({
         state.current.macros.carbs;
     },
 
-    addFood: () => { },
+    addFood: () => {},
 
     setSelectedDate: (state, action: PayloadAction<string>) => {
       state.current.selectedDate = action.payload;
