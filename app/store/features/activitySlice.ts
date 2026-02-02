@@ -17,7 +17,7 @@ export interface Macros {
 
 export interface Meal {
   id: string;
-  mealType: "breakfast" | "lunch" | "dinner" | "snack";
+  mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
   list: ListItems[];
 }
 

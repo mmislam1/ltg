@@ -35,7 +35,7 @@ const sampleData: UserProfile & { meals: Meal[] } = {
     meals: [
         {   
             id: '1',
-            mealType: "breakfast",
+            mealType: "Breakfast",
             list: [
                 
                 {   
@@ -80,7 +80,7 @@ const sampleData: UserProfile & { meals: Meal[] } = {
         },
 {   
     id: '2',
-    mealType: "lunch",
+    mealType: "Lunch",
         list: [
             {
                 foodItem: {
@@ -123,7 +123,7 @@ const sampleData: UserProfile & { meals: Meal[] } = {
 },
 {   
     id: '3',
-    mealType: "snack",
+    mealType: "Snack",
         list: [
             {
                 foodItem: {
@@ -166,7 +166,7 @@ const sampleData: UserProfile & { meals: Meal[] } = {
 },
 {   
     id: '4',
-    mealType: "dinner",
+    mealType: "Dinner",
         list: [
             {
                 foodItem: {
@@ -359,7 +359,7 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         {/* Meal Header */}
                         <View style={pdfStyles.mealHeaderRow}>
                             <Text style={pdfStyles.mealHeaderCell}>
-                                {meal.mealType.charAt(0).toUpperCase() + meal.mealType.slice(1)}
+                                {meal?.mealType?.charAt(0).toUpperCase() + meal?.mealType?.slice(1)}
                             </Text>
                         </View>
 
