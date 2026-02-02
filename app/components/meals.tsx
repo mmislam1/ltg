@@ -16,7 +16,7 @@ const Meals = () => {
 
     const addMeal = (s: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined)=>{router.push(`/foodList/${s?s:undefined}`)}
 
-    const meals = [
+    const meals: Meals[] = [
         {
             id: 1,
             mealType: "Breakfast",
@@ -48,7 +48,7 @@ const Meals = () => {
                     >
                         <div className="flex gap-2 md:gap-15">
                             <div className="h-18 w-18 flex flex-row items-center justify-center rounded-md">
-                                <Image src={meal.image} alt={meal.mealType} height={50} width={50} />
+                                <Image src={meal.image} alt={meal?.mealType ? meal?.mealType:''} height={50} width={50} />
                             </div>
                             <div className="h-20 flex flex-row items-center justify-start rounded-md">
                                 <h1 className="text-xl md:text-3xl font-semibold">{'Add '+meal.mealType}</h1>
