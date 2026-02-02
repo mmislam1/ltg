@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 interface Meals {
         id: number;
-    title: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
+        mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
         image: string;
     }
 
@@ -19,22 +19,22 @@ const Meals = () => {
     const meals = [
         {
             id: 1,
-            title: "Add Breakfast",
+            mealType: "Breakfast",
             image: '/breakFast.png',
         },
         {
             id: 2,
-            title: "Add Lunch",
+            mealType: "Lunch",
             image: '/lunch.png',
         },
         {
             id: 3,
-            title: "Add Dinner",
+            mealType: "Dinner",
             image: '/dinner.png',
         },
         {
             id: 4,
-            title: "Add Snacks",
+            mealType: "Snack",
             image: '/snacks.png',
         },
     ];
@@ -48,14 +48,14 @@ const Meals = () => {
                     >
                         <div className="flex gap-2 md:gap-15">
                             <div className="h-18 w-18 flex flex-row items-center justify-center rounded-md">
-                                <Image src={meal.image} alt={meal.title} height={50} width={50} />
+                                <Image src={meal.image} alt={meal.mealType} height={50} width={50} />
                             </div>
                             <div className="h-20 flex flex-row items-center justify-start rounded-md">
-                                <h1 className="text-xl md:text-3xl font-semibold">{meal.title}</h1>
+                                <h1 className="text-xl md:text-3xl font-semibold">{'Add '+meal.mealType}</h1>
                             </div>
 
                         </div>
-                        <button onClick={()=>addMeal(meal.title.substring(4))} className="flex">
+                        <button onClick={()=>addMeal(meal.mealType)} className="flex">
                             <div className="h-10 w-10 flex flex-row items-center justify-center bg-gray-100 hover:bg-green-200 focus:bg-green-200 active:bg-green-200 flex flex-row items-center justify-center rounded-full">
                                 <PlusIcon />
                             </div>
