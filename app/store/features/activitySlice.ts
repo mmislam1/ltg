@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import { Food } from "./foodSlice";
 
 export interface ListItems {
-  foodItem: Food;
+  foodItem: Food | undefined;
   quantity: number;
 }
 
@@ -17,7 +17,7 @@ export interface Macros {
 export interface Meal {
   id: string;
   mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
-  list: ListItems[]|undefined;
+  list: ListItems[]|[];
 }
 
 export interface Chart {
@@ -62,9 +62,9 @@ export const macroCount = (state: ActivitiesState): Macros => {
   return state.current.chart.meals.reduce(
     (total: Macros, meal) => {
       meal?.list?.forEach((item) => {
-        total.protein += item.foodItem.nutrition.protein * item.quantity;
-        total.carbs += item.foodItem.nutrition.carbs * item.quantity;
-        total.fats += item.foodItem.nutrition.fats * item.quantity;
+        total.protein += item.foodItem?item.foodItem.nutrition.protein* item.quantity:0;
+        total.carbs += item.foodItem?item.foodItem.nutrition.carbs * item.quantity:0;
+        total.fats += item.foodItem?item.foodItem.nutrition.fats * item.quantity:0;
       });
       return total;
     },

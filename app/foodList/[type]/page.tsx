@@ -6,9 +6,10 @@ import ListElement from '../listElement'
 import Meals from '../../components/meals'
 import RingChart from '../../components/ringChart'
 import { SearchCheck, SearchIcon } from 'lucide-react'
-import { useAppSelector } from '../../store/hooks'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { useParams } from 'next/navigation'
 import { Food } from '@/app/store/features/foodSlice'
+import { addMeal } from '@/app/store/features/activitySlice'
 
 interface passedProps{
   type: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined,
@@ -31,11 +32,13 @@ const FoodList = () => {
   const params = useParams()
   const charts=useAppSelector((state)=>state.activity.current.chart)
   const foods = useAppSelector((state) => state.foods.list )
+  const dispatch = useAppDispatch()
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
   const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: isMealType(params.type)?params.type:"Breakfast", list: [] })
   
-  
+
+
   
 
   const capitalize = (s: string | undefined) => {
@@ -57,7 +60,7 @@ const FoodList = () => {
   }
 
   const handleSubmit=()=>{
-
+    dispatch(addMeal(meal))
   }
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>)=>{
     setQuery(e.target.value)
