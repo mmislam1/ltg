@@ -32,11 +32,12 @@ export default function Home() {
 
   return (
     <div className="w-full font-sans flex flex-col">
+      <Meals></Meals>
       <FoodList></FoodList>
       <div className="overflowX-auto"><NutritionChart/></div>
       <Water></Water>
       <RingChart></RingChart>
-      <Meals></Meals>
+      
 
     </div>
   );
