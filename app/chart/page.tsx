@@ -399,7 +399,7 @@ const NutritionChart: React.FC = () => {
     const [data,setData] = useState(sampleData);
     const store=useAppSelector(store=>store)
 
-    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',data)
+    //console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',data)
 
     useEffect(()=>{
 
@@ -437,99 +437,127 @@ const NutritionChart: React.FC = () => {
     const totals = calculateTotals();
 
     return (
-        <div className="max-w-6xl mx-auto p-6 bg-white">
-            {/* Header Section */}
+        <div className="w-full bg-white">
+            {/* Scroll container (mobile behaves like PDF viewer) */}
             <div className="overflow-x-auto">
-                <div className=" flex justify-between items-start mb-6 pb-3 border-b-2 border-gray-800">
-                    <div>
-                        <h1 className="text-2xl font-bold mb-2">{data.name}</h1>
-                        <p className="text-md text-gray-600"><span className="font-semibold">Weight:</span> {data.weight}</p>
-                        <p className="text-md text-gray-600"><span className="font-semibold">Height:</span> {data.height}</p>
-                        <p className="text-md text-gray-600"><span className="font-semibold">Age:</span> {data.age} years</p>
+                {/* Fixed-width A4 layout */}
+                <div className="min-w-[800px] max-w-[800px] mx-auto p-6 bg-white">
+
+                    {/* Header Section */}
+                    <div className="flex justify-between items-start mb-6 pb-3 border-b-2 border-gray-800">
+                        <div>
+                            <h1 className="text-[18px] font-bold mb-2">{data.name}</h1>
+                            <p className="text-[12px] text-gray-600">Weight: {data.weight}</p>
+                            <p className="text-[12px] text-gray-600">Height: {data.height}</p>
+                            <p className="text-[12px] text-gray-600">Age: {data.age} years</p>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-6 text-center">
+                            <div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.calories.toFixed(1)} kcl</div>
+                                <div className="text-[12px] font-bold text-pink-600">Cal</div>
+                            </div>
+                            <div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.protein.toFixed(2)} g</div>
+                                <div className="text-[12px] font-bold text-green-600">Protein</div>
+                            </div>
+                            <div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.carbs.toFixed(2)} g</div>
+                                <div className="text-[12px] font-bold text-blue-600">Carbs</div>
+                            </div>
+                            <div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.fats.toFixed(2)} g</div>
+                                <div className="text-[12px] font-bold text-red-600">Fats</div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="flex gap-6">
-                        <div className="text-center ">
-                            <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
-                            <div className="text-lg font-bold">Calories</div>
-                        </div>
-                        <div className="text-center ">
-                            <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">Protein</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">Carbs</div>
-                        </div>
-                        <div className="text-center ">
-                            <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">Fats</div>
-                        </div>
-                    </div>
-                </div>
 
+                    {/* Nutrition Table */}
+                    <table className="w-full border-collapse text-[12px]">
+                        <thead>
+                            <tr className="bg-gray-200 border-y border-gray-400">
+                                <th className="w-[40%] px-2 py-2 text-left font-bold">Food</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold">Quantity</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold">Calories</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold">Protein</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold">Carbs</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold">Fats</th>
+                            </tr>
+                        </thead>
 
-
-                {/* Nutrition Table */}
-
-                <table className="w-full border-collapse text-md">
-                    <thead>
-                        <tr className="bg-gray-100">
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Food</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Quantity</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Calories</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Protein</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Carbs</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Fats</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.meals.map((meal, mealIndex) => (
-                            <React.Fragment key={mealIndex}>
-                                <tr className="bg-gray-200">
-                                    <td colSpan={6} className="border-b border-gray-300 px-3 py-2 font-bold capitalize text-lg">
-                                        {meal.mealType}
-                                    </td>
-                                </tr>
-                                {meal.list?.map((food, foodIndex) => (
-                                    <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
-                                        <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.foodItem?.name}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity+' '+food.foodItem?.unit}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?( food.foodItem.nutrition?.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1):0} kcl</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?food.foodItem.nutrition.protein.toFixed(1):0} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?food.foodItem.nutrition.carbs.toFixed(1):0} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?food.foodItem.nutrition.fats.toFixed(1):0} g</td>
+                        <tbody>
+                            {data.meals.map((meal, mealIndex) => (
+                                <React.Fragment key={mealIndex}>
+                                    {/* Meal Header */}
+                                    <tr className="bg-gray-300">
+                                        <td colSpan={6} className="px-2 py-2 font-bold capitalize">
+                                            {meal.mealType}
+                                        </td>
                                     </tr>
-                                ))}
-                            </React.Fragment>
-                        ))}
-                        <tr className="bg-gray-200 font-bold">
-                            <td className="  px-3 py-2">Total</td>
-                            <td className=" border-gray-300 px-3 py-2 font-semibold"></td>
-                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.calories} kcl</td>
-                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.protein} g</td>
-                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.carbss} g</td>
-                            <td className=" border-gray-300 px-3 py-2 text-center font-semibold">{totals.fatss} g</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            {/* Download Button */}
-            <div className="flex justify-end mb-3">
-                <PDFDownloadLink
-                    document={<NutritionPDF data={data} totals={totals} />}
-                    fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
-                    className="flex items-center mt-8 gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                    {({ loading }) => (
-                        <>
-                            <Download size={18} />
-                            {loading ? 'Generating PDF...' : 'Download PDF'}
-                        </>
-                    )}
-                </PDFDownloadLink>
+
+                                    {/* Food Rows */}
+                                    {meal.list?.map((food, foodIndex) => (
+                                        <tr key={foodIndex} className="border-t border-gray-300">
+                                            <td className="px-2 py-2 whitespace-nowrap overflow-hidden text-ellipsis font-medium">
+                                                {food.foodItem?.name}
+                                            </td>
+                                            <td className="px-2 py-2 text-center">
+                                                {food.quantity} {food.foodItem?.unit}
+                                            </td>
+                                            <td className="px-2 py-2 text-center">
+                                                {food.foodItem
+                                                    ? (food.foodItem.nutrition.protein +
+                                                        food.foodItem.nutrition.carbs +
+                                                        food.foodItem.nutrition.fats).toFixed(1)
+                                                    : 0} kcl
+                                            </td>
+                                            <td className="px-2 py-2 text-center">
+                                                {food.foodItem?.nutrition.protein.toFixed(1)} g
+                                            </td>
+                                            <td className="px-2 py-2 text-center">
+                                                {food.foodItem?.nutrition.carbs.toFixed(1)} g
+                                            </td>
+                                            <td className="px-2 py-2 text-center">
+                                                {food.foodItem?.nutrition.fats.toFixed(1)} g
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </React.Fragment>
+                            ))}
+
+                            {/* Total Row */}
+                            <tr className="bg-gray-300 font-bold border-t border-gray-400">
+                                <td className="px-2 py-2">Total</td>
+                                <td></td>
+                                <td className="text-center">{totals.calories} kcl</td>
+                                <td className="text-center">{totals.protein} g</td>
+                                <td className="text-center">{totals.carbss} g</td>
+                                <td className="text-center">{totals.fatss} g</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    {/* Download Button */}
+                    <div className="flex justify-end mt-6">
+                        <PDFDownloadLink
+                            document={<NutritionPDF data={data} totals={totals} />}
+                            fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
+                            className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            {({ loading }) => (
+                                <>
+                                    <Download size={16} />
+                                    {loading ? 'Generating PDF...' : 'Download PDF'}
+                                </>
+                            )}
+                        </PDFDownloadLink>
+                    </div>
+
+                </div>
             </div>
         </div>
     );
+
 };
 
 export default NutritionChart;
