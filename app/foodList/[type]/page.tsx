@@ -61,6 +61,7 @@ const FoodList = () => {
 
   const handleSubmit=()=>{
     dispatch(addMeal(meal))
+    setMeal({ id: crypto.randomUUID(), mealType: isMealType(params.type) ? params.type : "Breakfast", list: [] })
   }
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>)=>{
     setQuery(e.target.value)
@@ -78,7 +79,7 @@ const FoodList = () => {
     );
 },[query,foods])
 
-console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',meal)
+console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',charts.meals)
   return (
     <div className='fc flex-col'>
         <div className="fc w-full px-4 flex-col bg-green-700">

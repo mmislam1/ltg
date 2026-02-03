@@ -368,12 +368,12 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         {/* Food Items */}
                         {meal.list?.map((food, foodIndex) => (
                             <View key={foodIndex} style={pdfStyles.tableRow}>
-                                <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem.name}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem.unit}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1)} kcl</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem.nutrition.protein.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem.nutrition.carbs.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem.nutrition.fats.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem ?food.foodItem.name:''}</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem?.unit}</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ?(food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1):0} kcl</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem?.nutrition.protein.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem?.nutrition.carbs.toFixed(1)} g</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem?.nutrition.fats.toFixed(1)} g</Text>
                             </View>
                         ))}
                     </View>
@@ -409,10 +409,10 @@ const NutritionChart: React.FC = () => {
 
         data.meals.forEach(meal => {
             meal.list?.forEach(food => {
-                totalCalories += food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats;
-                totalProtein += food.foodItem.nutrition.protein;
-                totalcarbss += food.foodItem.nutrition.carbs;
-                totalfatss += food.foodItem.nutrition.fats;
+                totalCalories += food.foodItem ?food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats:0;
+                totalProtein += food.foodItem ?food.foodItem.nutrition.protein:0;
+                totalcarbss += food.foodItem ?food.foodItem.nutrition.carbs:0;
+                totalfatss += food.foodItem ?food.foodItem.nutrition.fats:0;
             });
         });
 
@@ -440,7 +440,7 @@ const NutritionChart: React.FC = () => {
                     <div className="flex gap-6">
                         <div className="text-center ">
                             <div className="text-lg font-bold">{data.dailyGoals.calories.toFixed(1)}kcl</div>
-                            <div className="text-lg font-bold">Cal</div>
+                            <div className="text-lg font-bold">Calories</div>
                         </div>
                         <div className="text-center ">
                             <div className="text-lg font-bold">{data.dailyGoals.protein.toFixed(2)}g</div>
@@ -448,11 +448,11 @@ const NutritionChart: React.FC = () => {
                         </div>
                         <div className="text-center">
                             <div className="text-lg font-bold">{data.dailyGoals.carbs.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">carbss</div>
+                            <div className="text-lg font-bold">Carbs</div>
                         </div>
                         <div className="text-center ">
                             <div className="text-lg font-bold">{data.dailyGoals.fats.toFixed(2)}g</div>
-                            <div className="text-lg font-bold">fatss</div>
+                            <div className="text-lg font-bold">Fats</div>
                         </div>
                     </div>
                 </div>
@@ -468,8 +468,8 @@ const NutritionChart: React.FC = () => {
                             <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Quantity</th>
                             <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Calories</th>
                             <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Protein</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">carbss</th>
-                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">fatss</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Carbs</th>
+                            <th className="border-b border-t border-gray-300 px-3 py-2 text-center ">Fats</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -482,12 +482,12 @@ const NutritionChart: React.FC = () => {
                                 </tr>
                                 {meal.list?.map((food, foodIndex) => (
                                     <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
-                                        <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.foodItem.name}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity+' '+food.foodItem.unit}</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{(food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1)} kcl</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.protein.toFixed(1)} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.carbs.toFixed(1)} g</td>
-                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem.nutrition.fats.toFixed(1)} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.foodItem?.name}</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity+' '+food.foodItem?.unit}</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?( food.foodItem.nutrition?.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1):0} kcl</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?food.foodItem.nutrition.protein.toFixed(1):0} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?food.foodItem.nutrition.carbs.toFixed(1):0} g</td>
+                                        <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.foodItem ?food.foodItem.nutrition.fats.toFixed(1):0} g</td>
                                     </tr>
                                 ))}
                             </React.Fragment>
