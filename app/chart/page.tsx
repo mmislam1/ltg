@@ -1,10 +1,12 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Download } from 'lucide-react';
 import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
 import dynamic from "next/dynamic";
 import { Macros, Meal, Chart } from '../store/features/activitySlice';
 import { Food } from '../store/features/foodSlice'
+import Meals from '../components/meals';
+import { useAppSelector } from '../store/hooks';
 
 
 interface UserProfile {
@@ -278,16 +280,16 @@ const pdfStyles = StyleSheet.create({
         fontSize: 9,
     },
     protein: {
-        color: '#ff0037ff',
+        color: 'rgb(0, 158, 8)',
     },
     total: {
-        color: '#ff008cff',
+        color: 'rgb(255, 62, 168)',
     },
     carbss: {
-        color: '#ff7b00ff',
+        color: 'rgb(0, 4, 255)',
     },
     fatss: {
-        color: '#bd9100ff',
+        color: 'rgb(255, 0, 0)',
     },
     cellBold: {
         padding: 6,
@@ -394,7 +396,15 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
 );
 
 const NutritionChart: React.FC = () => {
-    const [data] = useState(sampleData);
+    const [data,setData] = useState(sampleData);
+    const store=useAppSelector(store=>store)
+
+    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',data)
+
+    useEffect(()=>{
+
+        setData({ ...data, meals: store.activity.current.chart.meals })
+    },[store.activity.current.chart.meals])
     const PDFDownloadLink = dynamic(
         () => import("@react-pdf/renderer").then(mod => mod.PDFDownloadLink),
         { ssr: false }

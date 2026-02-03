@@ -14,6 +14,7 @@ import RingChart from "./components/ringChart";
 import Meals from "./components/meals";
 import FoodList from "./foodList/[type]/page";
 import Water from "./components/water";
+import NutritionChart from "./chart/page";
 
 export default function Home() {
 
@@ -32,6 +33,7 @@ export default function Home() {
   return (
     <div className="w-full font-sans flex flex-col">
       <FoodList></FoodList>
+      <div className="overflowX-auto"><NutritionChart/></div>
       <Water></Water>
       <RingChart></RingChart>
       <Meals></Meals>
