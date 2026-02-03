@@ -17,19 +17,25 @@ export interface ListItems {
   foodItem: Food;
   quantity: number;
 }
-
+type MealType= "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
 export interface Meal {
   id: string;
   mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
   list: ListItems[];
 }
 const FoodList = () => {
-  const params=useParams()
+  
+  const isMealType = (value: unknown): value is MealType =>
+    typeof value === "string" &&
+    ["Breakfast", "Lunch", "Dinner", "Snack"].includes(value);
+  const params = useParams()
   const charts=useAppSelector((state)=>state.activity.current.chart)
   const foods = useAppSelector((state) => state.foods.list )
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
-  const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: params.type, list: [] })
+  const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: isMealType(params.type)?params.type:"Breakfast", list: [] })
+  
+  
   
 
   const capitalize = (s: string | undefined) => {
