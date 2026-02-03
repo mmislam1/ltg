@@ -14,14 +14,14 @@ interface passedProps{
   type: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined,
 }
 export interface ListItems {
-  foodItem: Food;
+  foodItem: Food | undefined;
   quantity: number;
 }
 type MealType= "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
 export interface Meal {
   id: string;
   mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
-  list: ListItems[];
+  list: ListItems[] | [];
 }
 const FoodList = () => {
   
@@ -51,8 +51,8 @@ const FoodList = () => {
       }
   }
   const removeItem=(id: string) => {
-    if (meal.list.some((item) => item.foodItem.id === id)) {
-      setMeal({...meal, list: meal.list.filter((item) => { return item.foodItem.id !== id })})
+    if (meal.list?.some((item) => item.foodItem?.id === id)) {
+      setMeal({...meal, list: meal.list?.filter((item) => { return item.foodItem?.id !== id })})
     }
   }
 
@@ -110,7 +110,7 @@ console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',meal)
       </div>
 
         <div className="fc flex-col w-full px-3">
-        {filtered.map((food,i) => { return <ListElement key={food.id} id={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={meal.list.some((item)=>item.foodItem.id===food.id)} addItem={addItem} removeItem={removeItem}/>})}
+        {filtered.map((food,i) => { return <ListElement key={food.id} id={food.id} title={food.name} desc={`${food.nutrition.calories} cal`} border={i===0?false:true} selected={meal.list?.some((item)=>item.foodItem?.id===food.id)} addItem={addItem} removeItem={removeItem}/>})}
         </div>
         
         

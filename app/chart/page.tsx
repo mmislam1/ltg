@@ -366,7 +366,7 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                         </View>
 
                         {/* Food Items */}
-                        {meal.list.map((food, foodIndex) => (
+                        {meal.list?.map((food, foodIndex) => (
                             <View key={foodIndex} style={pdfStyles.tableRow}>
                                 <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem.name}</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem.unit}</Text>
@@ -408,7 +408,7 @@ const NutritionChart: React.FC = () => {
         let totalfatss = 0;
 
         data.meals.forEach(meal => {
-            meal.list.forEach(food => {
+            meal.list?.forEach(food => {
                 totalCalories += food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats;
                 totalProtein += food.foodItem.nutrition.protein;
                 totalcarbss += food.foodItem.nutrition.carbs;
@@ -480,7 +480,7 @@ const NutritionChart: React.FC = () => {
                                         {meal.mealType}
                                     </td>
                                 </tr>
-                                {meal.list.map((food, foodIndex) => (
+                                {meal.list?.map((food, foodIndex) => (
                                     <tr key={`${mealIndex}-${foodIndex}`} className="hover:bg-gray-50">
                                         <td className="border-b border-gray-300 px-3 py-2 font-semibold">{food.foodItem.name}</td>
                                         <td className="border-b border-gray-300 px-3 py-2 text-center font-semibold">{food.quantity+' '+food.foodItem.unit}</td>

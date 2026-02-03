@@ -17,7 +17,7 @@ export interface Macros {
 export interface Meal {
   id: string;
   mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
-  list: ListItems[];
+  list: ListItems[]|undefined;
 }
 
 export interface Chart {
@@ -61,7 +61,7 @@ export const initialState: ActivitiesState = {
 export const macroCount = (state: ActivitiesState): Macros => {
   return state.current.chart.meals.reduce(
     (total: Macros, meal) => {
-      meal.list.forEach((item) => {
+      meal?.list?.forEach((item) => {
         total.protein += item.foodItem.nutrition.protein * item.quantity;
         total.carbs += item.foodItem.nutrition.carbs * item.quantity;
         total.fats += item.foodItem.nutrition.fats * item.quantity;
