@@ -399,7 +399,7 @@ const NutritionChart: React.FC = () => {
     const [data,setData] = useState(sampleData);
     const store=useAppSelector(store=>store)
 
-    //console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',data)
+    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',store.activity.current)
 
     useEffect(()=>{
 
