@@ -372,7 +372,7 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                             <View key={foodIndex} style={pdfStyles.tableRow}>
                                 <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem ?food.foodItem.name:''}</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem?.unit}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ?(food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats).toFixed(1):0} kcl</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ?(food.foodItem.nutrition.protein*4 + food.foodItem.nutrition.carbs*4 + food.foodItem.nutrition.fats*9).toFixed(1):0} kcl</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem?.nutrition.protein.toFixed(1)} g</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem?.nutrition.carbs.toFixed(1)} g</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem?.nutrition.fats.toFixed(1)} g</Text>
@@ -419,7 +419,7 @@ const NutritionChart: React.FC = () => {
 
         data.meals.forEach(meal => {
             meal.list?.forEach(food => {
-                totalCalories += food.foodItem ?food.foodItem.nutrition.protein + food.foodItem.nutrition.carbs + food.foodItem.nutrition.fats:0;
+                totalCalories += food.foodItem ?food.foodItem.nutrition.protein*4 + food.foodItem.nutrition.carbs*4 + food.foodItem.nutrition.fats*9:0;
                 totalProtein += food.foodItem ?food.foodItem.nutrition.protein:0;
                 totalcarbss += food.foodItem ?food.foodItem.nutrition.carbs:0;
                 totalfatss += food.foodItem ?food.foodItem.nutrition.fats:0;
