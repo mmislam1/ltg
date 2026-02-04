@@ -119,7 +119,7 @@ const NutritionDashboard: React.FC = () => {
         activity.macros.fats * 9;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-emerald-50/20 p-2">
+        <div className="min-h-screen bg-white p-2">
             
 
             <div className="max-w-6xl mx-auto">
@@ -134,9 +134,9 @@ const NutritionDashboard: React.FC = () => {
                 {/* Macronutrients Section */}
                 <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 mb-8 border border-stone-300">
                     <div className="flex items-center gap-3 mb-8 pb-6 border-b border-stone-200">
-                        <div className="w-1.5 h-8 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full" />
+                        <div className="w-1.5 h-8 bg-white rounded-full" />
                         <h2 className="heading-font text-xl font-bold text-stone-800">
-                            Macronutrient Targets
+                            Macronutrients
                         </h2>
                     </div>
 
