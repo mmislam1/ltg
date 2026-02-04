@@ -68,7 +68,7 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
 
     // Dynamic color based on completion percentage
     const getBarColor = () => {
-        if (percentageText >= 90 && percentageText <= 110) {
+        if (percentageText >= 90 ) {
             return 'bg-gradient-to-r from-emerald-400 to-emerald-600'; 
         } else if (percentageText >= 70 && percentageText < 90) {
             return 'bg-gradient-to-r from-yellow-400 to-yellow-600'; 
@@ -126,7 +126,7 @@ const NutritionDashboard: React.FC = () => {
                 {/* Header */}
                 <div className="mb-12">
                     <h1 className="fc heading-font text-xl font-bold text-stone-800 mb-3 tracking-tight">
-                        Nutrition Tracker
+                        Daily Report
                     </h1>
                     
                 </div>
