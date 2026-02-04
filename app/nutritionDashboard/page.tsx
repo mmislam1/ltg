@@ -134,7 +134,7 @@ const NutritionDashboard: React.FC = () => {
                 {/* Macronutrients Section */}
                 <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 mb-8 border border-stone-300">
                     <div className="flex items-center gap-3 mb-8 pb-6 border-b border-stone-200">
-                        <div className="w-1.5 h-8 bg-white rounded-full" />
+                        <div className="w-1.5 h-8 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full" />
                         <h2 className="heading-font text-xl font-bold text-stone-800">
                             Macronutrients
                         </h2>
