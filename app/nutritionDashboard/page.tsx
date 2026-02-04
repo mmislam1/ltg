@@ -66,6 +66,17 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
     const percentageText = Math.round((current / target) * 100);
     const isOverTarget = current > target;
 
+    // Dynamic color based on completion percentage
+    const getBarColor = () => {
+        if (percentageText >= 90 && percentageText <= 110) {
+            return 'bg-gradient-to-r from-emerald-400 to-emerald-600'; 
+        } else if (percentageText >= 70 && percentageText < 90) {
+            return 'bg-gradient-to-r from-yellow-400 to-yellow-600'; 
+        } else {
+            return 'bg-gradient-to-r from-red-400 to-red-600'; 
+        }
+    };
+
     return (
         <div className="mb-5">
             <div className="flex justify-between items-baseline mb-1.5">
@@ -75,7 +86,7 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
                         {current.toFixed(1)} / {target.toFixed(1)} {unit}
                     </span>
                     <span
-                        className={`text-[15px] font-semibold ${percentageText >= 90 && percentageText <= 110
+                        className={`text-[15px] font-bold ${percentageText >= 90 && percentageText <= 110
                                 ? 'text-emerald-600'
                                 : percentageText > 110
                                     ? 'text-amber-600'
@@ -86,9 +97,9 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
                     </span>
                 </div>
             </div>
-            <div className="h-[18px] bg-stone-100 rounded-full overflow-hidden relative shadow-inner">
+            <div className="h-[12px] bg-stone-100 rounded-full overflow-hidden relative shadow-inner">
                 <div
-                    className={`h-full ${color} transition-all duration-700 ease-out rounded-full`}
+                    className={`h-full ${getBarColor()} transition-all duration-700 ease-out rounded-full`}
                     style={{ width: `${percentage}%` }}
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent" />
@@ -101,7 +112,7 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
 const NutritionDashboard: React.FC = () => {
     const activity = useSelector((state: RootState) => state.activity.current);
 
-    
+    // Calculate energy from macros (4 cal/g protein, 4 cal/g carbs, 9 cal/g fat)
     const currentEnergy =
         activity.macros.protein * 4 +
         activity.macros.carbs * 4 +
@@ -110,22 +121,21 @@ const NutritionDashboard: React.FC = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-stone-50 via-amber-50/30 to-emerald-50/20 p-2">
             
+
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
-                    <h1 className="heading-font text-xl font-semibold text-stone-800 mb-3 tracking-tight">
+                    <h1 className="fc heading-font text-xl font-bold text-stone-800 mb-3 tracking-tight">
                         Nutrition Tracker
                     </h1>
-                    <p className="text-stone-500 text-lg">
-                        Your daily intake versus recommended values
-                    </p>
+                    
                 </div>
 
                 {/* Macronutrients Section */}
-                <div className="bg-white rounded-xl shadow-xl shadow-stone-200/50 p-4 mb-8 border border-stone-200">
+                <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 mb-8 border border-stone-300">
                     <div className="flex items-center gap-3 mb-8 pb-6 border-b border-stone-200">
                         <div className="w-1.5 h-8 bg-gradient-to-b from-amber-500 to-orange-600 rounded-full" />
-                        <h2 className="heading-font text-xl font-semibold text-stone-800">
+                        <h2 className="heading-font text-xl font-bold text-stone-800">
                             Macronutrient Targets
                         </h2>
                     </div>
@@ -165,10 +175,10 @@ const NutritionDashboard: React.FC = () => {
                 {/* Micronutrients Grid */}
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Vitamins Section */}
-                    <div className="bg-white rounded-xl shadow-xl shadow-stone-200/50 p-4 border border-stone-200">
+                    <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 border border-stone-300">
                         <div className="flex items-center gap-3 mb-8 pb-6 border-b border-stone-200">
                             <div className="w-1.5 h-8 bg-gradient-to-b from-violet-500 to-purple-600 rounded-full" />
-                            <h2 className="heading-font text-xl font-semibold text-stone-800">
+                            <h2 className="heading-font text-xl font-bold text-stone-800">
                                 Vitamins
                             </h2>
                         </div>
@@ -262,10 +272,10 @@ const NutritionDashboard: React.FC = () => {
                     </div>
 
                     {/* Minerals Section */}
-                    <div className="bg-white rounded-xl shadow-xl shadow-stone-200/50 p-4 border border-stone-200">
+                    <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 border border-stone-300">
                         <div className="flex items-center gap-3 mb-8 pb-6 border-b border-stone-200">
                             <div className="w-1.5 h-8 bg-gradient-to-b from-cyan-500 to-blue-600 rounded-full" />
-                            <h2 className="heading-font text-xl font-semibold text-stone-800">
+                            <h2 className="heading-font text-xl font-bold text-stone-800">
                                 Minerals
                             </h2>
                         </div>
