@@ -237,11 +237,11 @@ const pdfStyles = StyleSheet.create({
     },
     goalValue: {
         fontSize: 12,
-        fontWeight: 'bold',
+        fontWeight: 'normal',
     },
     goalLabel: {
         fontSize: 10,
-        fontWeight: 'bold',
+        fontWeight: 'normal',
         color: '#666',
     },
     table: {
@@ -272,7 +272,7 @@ const pdfStyles = StyleSheet.create({
         backgroundColor: '#dfdfdfff',
         borderTopWidth: 0,
         borderColor: '#dbdbdbff',
-        fontWeight: 'bold',
+        fontWeight: 'normal',
 
     },
     cell: {
@@ -293,20 +293,20 @@ const pdfStyles = StyleSheet.create({
     },
     cellBold: {
         padding: 6,
-        fontSize: 9,
-        fontWeight: 'bold',
+        fontSize: 11,
+        fontWeight: 'normal',
     },
-    col1: { width: '40%' },
-    col2: { width: '12%', textAlign: 'center' },
-    col3: { width: '12%', textAlign: 'center' },
-    col4: { width: '12%', textAlign: 'center' },
-    col5: { width: '12%', textAlign: 'center' },
-    col6: { width: '12%', textAlign: 'center' },
+    col1: { width: '35%' },
+    col2: { width: '13%', textAlign: 'center' },
+    col3: { width: '13%', textAlign: 'center' },
+    col4: { width: '13%', textAlign: 'center' },
+    col5: { width: '13%', textAlign: 'center' },
+    col6: { width: '13%', textAlign: 'center' },
     mealHeaderCell: {
         width: '100%',
         padding: 6,
-        fontSize: 9,
-        fontWeight: 'bold',
+        fontSize: 11,
+        fontWeight: 'normal',
         textTransform: 'capitalize',
     },
 });
@@ -325,19 +325,19 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                 </View>
                 <View style={pdfStyles.headerRight}>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.calories.toFixed(1)}kcl</Text>
+                        <Text style={[pdfStyles.goalValue, pdfStyles.total]}>{data.dailyGoals.calories.toFixed(2)}kcl</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.total]}>Cal</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.protein.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue, pdfStyles.protein]}>{data.dailyGoals.protein.toFixed(2)}g</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.protein]}>Protein</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue, pdfStyles.carbss]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.carbss]}>Carbs</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue, pdfStyles.fatss]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.fatss]}>Fats</Text>
                     </View>
                 </View>
@@ -372,7 +372,7 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                             <View key={foodIndex} style={pdfStyles.tableRow}>
                                 <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem ?food.foodItem.name:''}</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem?.unit}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ?(food.foodItem.nutrition.protein*4 + food.foodItem.nutrition.carbs*4 + food.foodItem.nutrition.fats*9).toFixed(1):0} kcl</Text>
+                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ?((food.foodItem.nutrition.protein*4) + (food.foodItem.nutrition.carbs*4) + (food.foodItem.nutrition.fats*9)).toFixed(1):0} kcl</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem?.nutrition.protein.toFixed(1)} g</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem?.nutrition.carbs.toFixed(1)} g</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem?.nutrition.fats.toFixed(1)} g</Text>
@@ -399,7 +399,7 @@ const NutritionChart: React.FC = () => {
     const [data,setData] = useState(sampleData);
     const store=useAppSelector(store=>store)
 
-    console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',store.activity.current)
+    //console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',store.activity.current)
 
     useEffect(()=>{
 
@@ -419,7 +419,7 @@ const NutritionChart: React.FC = () => {
 
         data.meals.forEach(meal => {
             meal.list?.forEach(food => {
-                totalCalories += food.foodItem ?food.foodItem.nutrition.protein*4 + food.foodItem.nutrition.carbs*4 + food.foodItem.nutrition.fats*9:0;
+                totalCalories += food.foodItem ?((food.foodItem.nutrition.protein*4) + (food.foodItem.nutrition.carbs*4) + (food.foodItem.nutrition.fats*9)):0;
                 totalProtein += food.foodItem ?food.foodItem.nutrition.protein:0;
                 totalcarbss += food.foodItem ?food.foodItem.nutrition.carbs:0;
                 totalfatss += food.foodItem ?food.foodItem.nutrition.fats:0;
@@ -506,9 +506,9 @@ const NutritionChart: React.FC = () => {
                                             </td>
                                             <td className="px-2 py-2 text-center">
                                                 {food.foodItem
-                                                    ? (food.foodItem.nutrition.protein +
-                                                        food.foodItem.nutrition.carbs +
-                                                        food.foodItem.nutrition.fats).toFixed(1)
+                                                    ? (food.foodItem.nutrition.protein*4 +
+                                                        food.foodItem.nutrition.carbs*4 +
+                                                        food.foodItem.nutrition.fats*9).toFixed(1)
                                                     : 0} kcl
                                             </td>
                                             <td className="px-2 py-2 text-center">
@@ -537,8 +537,10 @@ const NutritionChart: React.FC = () => {
                         </tbody>
                     </table>
 
-                    {/* Download Button */}
-                    <div className="flex justify-end mt-6">
+                    
+                </div>
+            </div>{/* Download Button */}
+                    <div className="fc justify-end mt-6">
                         <PDFDownloadLink
                             document={<NutritionPDF data={data} totals={totals} />}
                             fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
@@ -553,8 +555,6 @@ const NutritionChart: React.FC = () => {
                         </PDFDownloadLink>
                     </div>
 
-                </div>
-            </div>
         </div>
     );
 

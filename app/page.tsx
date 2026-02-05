@@ -36,7 +36,8 @@ export default function Home() {
       <Meals></Meals>
       <FoodList></FoodList>
       <NutritionDashboard/>
-      <div className="overflowX-auto"><NutritionChart/></div>
+      <NutritionChart/>
+      <div className="overflowX-auto"></div>
       <Water></Water>
       <RingChart></RingChart>
       
