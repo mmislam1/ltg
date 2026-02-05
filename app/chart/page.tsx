@@ -325,19 +325,19 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data
                 </View>
                 <View style={pdfStyles.headerRight}>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue, pdfStyles.total]}>{data.dailyGoals.calories.toFixed(2)}kcl</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.calories.toFixed(2)}kcl</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.total]}>Cal</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue, pdfStyles.protein]}>{data.dailyGoals.protein.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.protein.toFixed(2)}g</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.protein]}>Protein</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue, pdfStyles.carbss]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.carbss]}>Carbs</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue, pdfStyles.fatss]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.fatss]}>Fats</Text>
                     </View>
                 </View>
