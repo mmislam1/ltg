@@ -6,6 +6,7 @@ import Navbar from "./components/navbar";
 import ReduxProvider from "./providers/ReduxProvider";
 import Footer from "./components/footer";
 import { SocketProvider } from "./socket-client";
+import BottomBar from "./components/botomBar";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -49,6 +50,7 @@ export default function RootLayout({
 
             <footer className="mt-auto w-full row-start-3 flex flex-wrap items-center justify-center">
               <Footer />
+              <BottomBar/>
             </footer>
           {/*</SocketProvider>*/}
         </ReduxProvider>

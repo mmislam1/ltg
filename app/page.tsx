@@ -16,6 +16,7 @@ import FoodList from "./foodList/[type]/page";
 import Water from "./components/water";
 import NutritionChart from "./chart/page";
 import NutritionDashboard from "./nutritionDashboard/page";
+import BottomBar from "./components/botomBar";
 
 export default function Home() {
 
@@ -32,6 +33,7 @@ export default function Home() {
   
 
   return (
+    <div>
     <div className="w-full font-sans flex flex-col">
       <Meals></Meals>
       <FoodList></FoodList>
@@ -42,6 +44,8 @@ export default function Home() {
       <RingChart></RingChart>
       
 
+    </div>
+    
     </div>
   );
 }

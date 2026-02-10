@@ -120,7 +120,7 @@ console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',charts.meals)
         
       <button
         onClick={handleSubmit}
-        className="fixed bottom-10 left-1/2 -translate-x-1/2 
+        className="fixed bottom-25 left-1/2 -translate-x-1/2 
                  bg-green-600 text-white w-77 md:max-w-2xl h-11 rounded-full 
                  shadow-xl hover:bg-green-500 transition duration-300 z-50 
                  flex items-center justify-center text-lg font-bold"
