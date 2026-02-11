@@ -79,7 +79,7 @@ export default function DatePicker() {
 
                 <button
                     onClick={() => setShowCalendar(!showCalendar)}
-                    className="px-1 py-2 rounded hover:bg-gray-100 text-gray-500 font-bold text-md"
+                    className="px-1 py-2 rounded hover:bg-gray-100 text-gray-500 font-bold text-xs md:text-md"
                 >
                     {formatDate(dateObj)}
                 </button>

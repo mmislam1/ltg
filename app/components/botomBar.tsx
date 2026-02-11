@@ -31,11 +31,11 @@ const BottomBar: React.FC = () => {
     return (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom">
             <div className="max-w-screen-lg mx-auto px-4">
-                <div className="flex items-center justify-around h-20 relative">
+                <div className="flex items-center justify-around h-12 relative">
                     {/* Home */}
                     <NavItem
                         icon={<Home className="w-full h-full" strokeWidth={2} />}
-                        label="HOME"
+                        label=""
                         isActive={activeTab === 'home'}
                         onClick={() => setActiveTab('home')}
                     />
@@ -43,7 +43,7 @@ const BottomBar: React.FC = () => {
                     {/* Diary */}
                     <NavItem
                         icon={<BookOpen className="w-full h-full" strokeWidth={2} />}
-                        label="DIARY"
+                        label=""
                         isActive={activeTab === 'diary'}
                         onClick={() => setActiveTab('diary')}
                     />
@@ -59,7 +59,7 @@ const BottomBar: React.FC = () => {
                     {/* Progress */}
                     <NavItem
                         icon={<BarChart3 className="w-full h-full" strokeWidth={2} />}
-                        label="PROGRESS"
+                        label=""
                         isActive={activeTab === 'progress'}
                         onClick={() => setActiveTab('progress')}
                     />
@@ -67,7 +67,7 @@ const BottomBar: React.FC = () => {
                     {/* More */}
                     <NavItem
                         icon={<MoreHorizontal className="w-full h-full" strokeWidth={2} />}
-                        label="MORE"
+                        label=""
                         isActive={activeTab === 'more'}
                         onClick={() => setActiveTab('more')}
                     />

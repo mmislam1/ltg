@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { useParams } from 'next/navigation'
 import { Food } from '@/app/store/features/foodSlice'
 import { addMeal } from '@/app/store/features/activitySlice'
+import { useRouter } from 'next/navigation'
 
 interface passedProps{
   type: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined,
@@ -25,7 +26,7 @@ export interface Meal {
   list: ListItems[] | [];
 }
 const FoodList = () => {
-  
+  const router=useRouter()
   const isMealType = (value: unknown): value is MealType =>
     typeof value === "string" &&
     ["Breakfast", "Lunch", "Dinner", "Snack"].includes(value);
@@ -35,7 +36,7 @@ const FoodList = () => {
   const dispatch = useAppDispatch()
   const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
-  const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: isMealType(params.type)?params.type:"Breakfast", list: [] })
+  const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: isMealType(params.type)?params.type:undefined , list: [] })
   
 
 
@@ -61,7 +62,9 @@ const FoodList = () => {
 
   const handleSubmit=()=>{
     dispatch(addMeal(meal))
-    setMeal({ id: crypto.randomUUID(), mealType: isMealType(params.type) ? params.type : "Breakfast", list: [] })
+    
+    router.replace('/chart')
+    setMeal({ id: crypto.randomUUID(), mealType: undefined, list: [] })
   }
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>)=>{
     setQuery(e.target.value)
@@ -78,6 +81,16 @@ const FoodList = () => {
       )
     );
 },[query,foods])
+
+/*
+
+useEffect(()=>{
+    if(!meal.mealType){
+      router.push('/addMeal')
+    }
+  },[meal.mealType])
+  
+  */
 
 console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',charts.meals)
   return (
@@ -120,7 +133,7 @@ console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',charts.meals)
         
       <button
         onClick={handleSubmit}
-        className="fixed bottom-25 left-1/2 -translate-x-1/2 
+        className="fixed bottom-18 left-1/2 -translate-x-1/2 
                  bg-green-600 text-white w-77 md:max-w-2xl h-11 rounded-full 
                  shadow-xl hover:bg-green-500 transition duration-300 z-50 
                  flex items-center justify-center text-lg font-bold"
