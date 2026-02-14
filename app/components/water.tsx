@@ -35,7 +35,7 @@ export default function Water() {
     const iconSize: IconSize = device==='m'?48:84;
 
     return (
-        <div className="flex flex-col items-start justify-center p-4 bg-white rounded-xl shadow-lg border border-gray-100">
+        <div className="flex flex-col items-start justify-center p-4 bg-white rounded-xl shadow-md shadow-stone-300 border border-stone-300">
             <div className="w-full fc flex-row pb-2 border-b-2 border-gray-300 mb-4">
                 <h2 className="text-lg">Water</h2>
             </div>

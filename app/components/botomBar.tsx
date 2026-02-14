@@ -37,7 +37,7 @@ const BottomBar: React.FC = () => {
                         icon={<Home className="w-full h-full" strokeWidth={2} />}
                         label=""
                         isActive={activeTab === 'home'}
-                        onClick={() => setActiveTab('home')}
+                        onClick={() => {setActiveTab('home'); router.push("/")}}
                     />
 
                     {/* Diary */}

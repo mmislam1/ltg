@@ -46,7 +46,7 @@ export default function RootLayout({
             <header className="sticky top-0 z-50 w-full">
               <Navbar></Navbar>
             </header>
-            <main className="w-full max-w-7xl overflow-hidden">{children}</main>
+            <main className="w-full max-w-6xl overflow-hidden">{children}</main>
 
             <footer className="mt-auto w-full row-start-3 flex flex-wrap items-center justify-center">
               <Footer />

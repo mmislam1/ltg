@@ -35,14 +35,16 @@ export default function Home() {
   return (
     <div>
     <div className="w-full font-sans flex flex-col">
+      {/*
       <Meals></Meals>
       <FoodList></FoodList>
-      <NutritionDashboard/>
+      
       <NutritionChart/>
-      <div className="overflowX-auto"></div>
+      
+      */}
+      <NutritionDashboard/>
       <Water></Water>
       <RingChart></RingChart>
-      
 
     </div>
     
