@@ -39,13 +39,13 @@ export default function RingChart() {
     ];
 
     const data = [
-        { name: "Protein", value: protein===0?.00001:protein, fill: "#22c55e" },
-        { name: "Carbs", value: carbs === 0 ? .00001 : carbs, fill: "#3b82f6" },
-        { name: "Fat", value: fats === 0 ? .00001 : fats, fill: "#ef4444" },
+        { name: "Protein", value: protein, fill: "#22c55e" },
+        { name: "Carbs", value: carbs, fill: "#3b82f6" },
+        { name: "Fat", value: fats, fill: "#ef4444" },
     ];
 
     return (
-        <div className="w-full flex flex-col items-center p-2 pt-4 justify-center  my-4 px-4 rounded-md">
+        <div className="w-full flex flex-col items-center p-2 pt-4 justify-center">
             <div className="w-full md:w-2xl h-48 flex flex-row items-center justify-between">
                 <div className="w-full md:w-2xl h-48 flex flex-col items-center justify-center">
                     <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
@@ -72,7 +72,7 @@ export default function RingChart() {
                     <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
                             <Pie
-                                data={total === 0 ? [{ name: "No Data", value: 1,fill:"rgb(177, 177, 177)" }]:data}
+                                data={data}
                                 cx="50%"
                                 cy="50%"
                                 innerRadius={40}
@@ -90,7 +90,7 @@ export default function RingChart() {
                                 contentStyle={{
                                     backgroundColor: "#ffffffff",
                                     border: "none",
-                                    borderRadius: "28px",
+                                    borderRadius: "8px",
                                     color: "rgba(100, 100, 100, 1)",
                                 }}
                             />
