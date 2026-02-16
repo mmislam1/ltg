@@ -48,13 +48,13 @@ export default function Water() {
                     className="flex items-center justify-center  transition-all duration-150 transform hover:scale-105 action:scale-105"
                     aria-label="Add a glass of water"
                 >
-                    {/* 🌟 New structure: Relative container for overlay */}
+                    
                     <div className="relative flex items-center justify-center">
 
-                        {/* Background Icon (The Glass) 
+                        {/* Background Icon 
                         <GlassIcon size={iconSize}/>*/}
                         <Image src={"/trimmed_glass_transparent.svg"} alt={'full glass'} height={iconSize} width={iconSize} />
-                        {/* 🌟 Overlay Icon (The Plus) */}
+                        
                         <Plus
                             size={iconSize / 2} // Half the size of the glass icon
                             className="absolute text-stone-600 font-semibold top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"

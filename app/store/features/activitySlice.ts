@@ -233,15 +233,10 @@ export const activitySlice = createSlice({
         state.current.macros.fats +
         state.current.macros.carbs;
     },
-    updateMeal: (state, action: PayloadAction<Meal>) => {
+    updateMeal: (state, action: PayloadAction<Meal[]>) => {
       const newMeal = action.payload;
 
-      state.current.chart.meals = [
-        ...state.current.chart.meals.filter(
-          (meal: Meal) => meal.id !== newMeal.id,
-        ),
-        newMeal,
-      ];
+      state.current.chart.meals = newMeal
 
       state.current.macros = macroCount(state);
       state.current.totalMicro = microCount(state);
@@ -263,6 +258,6 @@ export const activitySlice = createSlice({
   },
 });
 
-export const { addMeal, setSelectedDate, incrementGlass } =
+export const { addMeal, setSelectedDate, incrementGlass, updateMeal} =
   activitySlice.actions;
 export default activitySlice.reducer;
