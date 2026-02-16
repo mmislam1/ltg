@@ -50,7 +50,7 @@ const BottomBar: React.FC = () => {
 
                     {/* Center Add Button */}
                     <button
-                        onClick={() => router.push('/addMeal')}
+                        onClick={() => router.push('/manage_meals')}
                         className="flex items-center justify-center w-14 h-14 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 transition-colors -mt-2"
                     >
                         <Plus className="w-8 h-8 text-white" strokeWidth={2.5} />
