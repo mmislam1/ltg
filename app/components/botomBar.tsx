@@ -61,7 +61,7 @@ const BottomBar: React.FC = () => {
                         icon={<BarChart3 className="w-full h-full" strokeWidth={2} />}
                         label=""
                         isActive={activeTab === 'progress'}
-                        onClick={() => {setActiveTab('progress');router.push('/meals')}}
+                        onClick={() => {setActiveTab('progress');router.push('/add_meal')}}
                     />
 
                     {/* More */}
