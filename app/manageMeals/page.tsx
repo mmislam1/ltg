@@ -141,14 +141,14 @@ const sampleFoods: Food[] = [
 ];
 
 export default function MealsPage() {
-    const [meals, setMeals] = useState<Meal[]>([
+
+    const currentMeals = useAppSelector((state) => state.activity.current.chart.meals)
+
+    const [meals, setMeals] = useState<Meal[]>(currentMeals.length===0?[
         {
             id: '1',
             mealType: 'Breakfast',
-            list: [
-                { foodItem: sampleFoods[0], quantity: 1 },
-                { foodItem: sampleFoods[1], quantity: 1 },
-            ],
+            list: [],
         },
         {
             id: '2',
@@ -165,7 +165,7 @@ export default function MealsPage() {
             mealType: 'Snack',
             list: [],
         },
-    ]);
+    ]:currentMeals);
 
     const [foods, setFoods] = useState<Food[]>(useAppSelector((state) => state.foods.list))
 
@@ -261,9 +261,9 @@ export default function MealsPage() {
     },[meals])
 
     return (
-        <div className="min-h-screen bg-white py-8">
-            <div className="max-w-4xl mx-auto px-2 lg:px-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-8">My Meals</h1>
+        <div className="min-h-screen bg-white py-4 md:py-8">
+            <div className="max-w-4xl mx-auto px-2 md:px-4">
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-3">My Meals</h1>
 
                 <div className="space-y-6">
                     {meals.map((meal) => (
@@ -272,17 +272,19 @@ export default function MealsPage() {
                             className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
                         >
                             {/* Meal Header */}
-                            <div className="flex items-center justify-between px-3 py-4 border-b border-gray-200">
-                                <h2 className="text-md md:text-xl font-semibold text-gray-900">
+                            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                                <h2 className="text-md md:text-2xl font-semibold text-gray-900">
                                     {meal.mealType}
                                 </h2>
                                 <div className="flex items-center gap-4">
-                                    <span className="text-xl font-semibold text-gray-900">
+                                    <span className="text-md md:text-2xl font-semibold text-gray-900">
                                         {calculateMealCalories(meal)}
                                     </span>
+                                    {/* 
                                     <button className="text-gray-400 hover:text-gray-600">
                                         <MoreVertical size={20} />
                                     </button>
+                                    */}
                                 </div>
                             </div>
 
