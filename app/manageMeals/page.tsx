@@ -272,7 +272,7 @@ export default function MealsPage() {
                             className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
                         >
                             {/* Meal Header */}
-                            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                            <div className="flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b border-gray-200">
                                 <h2 className="text-md md:text-2xl font-semibold text-gray-900">
                                     {meal.mealType}
                                 </h2>
