@@ -437,7 +437,7 @@ const NutritionChart: React.FC = () => {
     const totals = calculateTotals();
 
     return (
-        <div className="w-full bg-white">
+        <div className="w-full bg-white py-4">
             {/* Scroll container (mobile behaves like PDF viewer) */}
             <div className="overflow-x-auto">
                 {/* Fixed-width A4 layout */}
@@ -486,7 +486,11 @@ const NutritionChart: React.FC = () => {
                         </thead>
 
                         <tbody>
-                            {data.meals.map((meal, mealIndex) => (
+                            {data.meals.map((meal, mealIndex) =>{ 
+                                if(meal.list.length===0){
+                                    return null
+                                }
+                                return(
                                 <React.Fragment key={mealIndex}>
                                     {/* Meal Header */}
                                     <tr className="bg-gray-300">
@@ -523,7 +527,7 @@ const NutritionChart: React.FC = () => {
                                         </tr>
                                     ))}
                                 </React.Fragment>
-                            ))}
+                            )})}
 
                             {/* Total Row */}
                             <tr className="bg-gray-300 font-bold border-t border-gray-400">
