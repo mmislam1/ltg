@@ -17,6 +17,16 @@
   }
 }
 
+/* Hide scrollbar */
+.no-scr::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scr {
+  -ms-overflow-style: none;  /* IE & Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
 .col{
   background-color: #013220;
 }

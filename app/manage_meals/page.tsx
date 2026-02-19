@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Trash2, Plus, MoreVertical } from 'lucide-react';
+import { Trash2, Plus, MoreVertical, X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { updateMeal } from '../store/features/activitySlice';
 
@@ -269,10 +269,10 @@ export default function MealsPage() {
                     {meals.map((meal) => (
                         <div
                             key={meal.id}
-                            className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+                            className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden"
                         >
                             {/* Meal Header */}
-                            <div className="flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b border-gray-200">
+                            <div className="flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b border-gray-300">
                                 <h2 className="text-md md:text-2xl font-semibold text-gray-900">
                                     {meal.mealType}
                                 </h2>
@@ -289,7 +289,7 @@ export default function MealsPage() {
                             </div>
 
                             {/* Food List */}
-                            <div className="divide-y divide-gray-100">
+                            <div className="divide-y divide-gray-300">
                                 {meal.list.map((item) => {
                                     if (!item.foodItem) return null;
 
@@ -321,7 +321,7 @@ export default function MealsPage() {
                                                                                 item.quantity - 1
                                                                             )
                                                                         }
-                                                                        className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold"
+                                                                        className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-semibold"
                                                                     >
                                                                         −
                                                                     </button>
@@ -336,7 +336,7 @@ export default function MealsPage() {
                                                                                 item.quantity + 1
                                                                             )
                                                                         }
-                                                                        className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center text-gray-600 text-sm font-semibold"
+                                                                        className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-semibold"
                                                                     >
                                                                         +
                                                                     </button>
@@ -374,17 +374,17 @@ export default function MealsPage() {
                                                 </h3>
                                                 <button
                                                     onClick={() => setShowFoodSelector(null)}
-                                                    className="text-sm text-gray-500 hover:text-gray-700"
+                                                    className="text-sm text-red-700 hover:text-red-500 mr-1"
                                                 >
-                                                    Cancel
+                                                    <X/>
                                                 </button>
                                             </div>
-                                            <div className="grid gap-2 max-h-64 overflow-y-auto">
+                                            <div className="grid gap-2 max-h-64 border p-1 border-stone-300 rounded-lg shadow-[0_0_6px_1px_rgb(0,0,0)] shadow-stone-300 overflow-y-auto no-scr">
                                                 {foods.map((food) => (
                                                     <button
                                                         key={food.id}
                                                         onClick={() => addFoodToMeal(meal.id, food)}
-                                                        className="text-left px-4 py-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                                                        className="text-left px-4 py-3 rounded-lg border border-gray-300 hover:bg-blue-50 hover:border-blue-300 transition-colors"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div>
@@ -417,7 +417,7 @@ export default function MealsPage() {
                 </div>
 
                 {/* Summary */}
-                <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4">
+                <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-300 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <span className="text-lg font-semibold text-gray-700">
                             Total Daily Calories
