@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { ActivityState } from "../store/features/activitySlice";
 import { RootState } from "../store/store";
+import { useAppSelector } from "../store/hooks";
 
 interface MacroState {
     macros: {
@@ -22,16 +23,21 @@ interface MacroState {
 }
 
 export default function RingChart() {
-    const { protein, carbs, fats } = useSelector(
+    const { protein, carbs, fats } = useAppSelector(
         (state: RootState) => state.activity.current.macros
     );
+    const goals = useAppSelector(
+        (state: RootState) => state.auth.user?.dailyGoals
+    );
+    const { targetCalories, targetProtein, targetCarb, targetFat } = goals ? goals : { targetCalories: 0, targetProtein: 0, targetCarb: 0, targetFat: 0 } 
     const { burnt, total } = useSelector(
         (state: RootState) => state.activity.current
     );
 
     const data2 = [
-        { name: "Total", value: total , fill: "#00cca0ff" },
-        { name: "Burnt", value: burnt, fill: "#7f00d3ff" },
+        { name: "Protein", value: targetProtein ? targetProtein :0, fill: "#22c55e" },
+        { name: "Carbs", value: targetCarb ? targetCarb :0, fill: "#3b82f6" },
+        { name: "Fat", value: targetFat ? targetFat:0, fill: "#ef4444" },
     ];
     const data3 = [
         { name: "Total", value: total, fill: "#cacacaff" },
@@ -44,12 +50,31 @@ export default function RingChart() {
         { name: "Fat", value: fats, fill: "#ef4444" },
     ];
 
+
+    if (targetCalories===0){
+        data2.push({ name: "No Data", value: 1, fill: "#a5a5a5" })
+        data2[0] = { name: "Protein", value: 0, fill: "#22c55e" }
+        data2[1] = { name: "Carbs", value: 0, fill: "#3b82f6" }
+        data2[2] = { name: "Fat", value: 0, fill: "#ef4444" }   
+    }
+    if (protein === 0 && carbs===0 && fats===0) {
+        data.push({ name: "No Data", value: 1, fill: "#a5a5a5" })
+        data[0] = { name: "Protein", value: 0, fill: "#22c55e" }
+        data[1] = { name: "Carbs", value: 0, fill: "#3b82f6" }
+        data[2] = { name: "Fat", value: 0, fill: "#ef4444" }
+    }
+
+
+
+
     return (
         <div className="w-full flex flex-col items-center p-2 pt-4 justify-center">
             <div className="w-full md:w-2xl h-48 flex flex-row items-center justify-between">
                 <div className="w-full md:w-2xl h-48 flex flex-col items-center justify-center">
                     <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
                         {data.map((it, n) => {
+                            if(it.name==="No Data")
+                            return
                             return (
                                 <div
                                     key={n + "a"}
@@ -101,6 +126,8 @@ export default function RingChart() {
                 <div className="w-full md:w-2xl h-48 flex flex-col items-center justify-center">
                     <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
                         {data2.map((it, n) => {
+                            if (it.name === "No Data")
+                                return
                             return (
                                 <div
                                     key={n + "a"}

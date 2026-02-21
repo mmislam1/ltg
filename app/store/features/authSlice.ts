@@ -4,16 +4,15 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  image?: string;
   phone?: string;
   weight: number;
   height: number;
   age: number;
   dailyGoals: {
-    calories: number;
-    protein: number;
-    carb: number;
-    fat: number;
+    targetCalories: number;
+    targetProtein: number;
+    targetCarb: number;
+    targetFat: number;
   };
 }
 export interface AuthState {
@@ -24,16 +23,20 @@ export interface AuthState {
   error: string | null;
 }
 const initialState: AuthState = {
-  user: { id: "1", name: "mm", email: "mmislam272@gmail.com", image: "", weight: 99,
-  height: 188,
-  age: 29,
-  dailyGoals: {
-    calories: 1600,
-    protein: 200,
-    carb: 34,
-    fat: 256,
-  }
- },
+  user: {
+    id: "1",
+    name: "mm",
+    email: "mmislam272@gmail.com",
+    weight: 99,
+    height: 188,
+    age: 29,
+    dailyGoals: {
+      targetCalories: 1600,
+      targetProtein: 200,
+      targetCarb: 34,
+      targetFat: 256,
+    },
+  },
   accessToken: "dfgdfgd",
   refreshToken: "dfgdfgd",
   loading: false,
@@ -51,16 +54,21 @@ export const loginUser = createAsyncThunk(
     if (!res.ok) throw new Error("Login failed");
     return (await res.json()) as { user: User; accessToken: string; refreshToken: string };*/
     return {
-      user: { id: "1", name: "mm", email: "mmislam272@gmail.com", image: "", weight: 99,
-  height: 188,
-  age: 29,
-  dailyGoals: {
-    calories: 1600,
-    protein: 200,
-    carb: 34,
-    fat: 256,
-  }
- },
+      user: {
+        id: "1",
+        name: "mm",
+        email: "mmislam272@gmail.com",
+        image: "",
+        weight: 99,
+        height: 188,
+        age: 29,
+        dailyGoals: {
+          targetCalories: 1600,
+          targetProtein: 200,
+          targetCarb: 34,
+          targetFat: 256,
+        },
+      },
       accessToken: "dfgdfgd",
       refreshToken: "",
     };
@@ -84,16 +92,21 @@ export const registerUser = createAsyncThunk(
     if (!res.ok) throw new Error("Register failed");
     return (await res.json()) as { user: User; accessToken: string; refreshToken: string };*/
     return {
-      user: { id: "1", name: "mm", email: "mmislam272@gmail.com", image: "", weight: 99,
-  height: 188,
-  age: 29,
-  dailyGoals: {
-    calories: 1600,
-    protein: 200,
-    carb: 34,
-    fat: 256,
-  }
- },
+      user: {
+        id: "1",
+        name: "mm",
+        email: "mmislam272@gmail.com",
+        image: "",
+        weight: 99,
+        height: 188,
+        age: 29,
+        dailyGoals: {
+          targetCalories: 1600,
+          targetProtein: 200,
+          targetCarb: 34,
+          targetFat: 256,
+        },
+      },
       accessToken: "",
       refreshToken: "",
     };
