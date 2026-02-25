@@ -548,7 +548,7 @@ const NutritionChart: React.FC = () => {
                         <PDFDownloadLink
                             document={<NutritionPDF data={data} totals={totals} />}
                             fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
-                            className="flex items-center gap-2 px-3 py-2 hover:bg-green-700 hover:text-white rounded bg-white text-green-700 border border-green-700"
+                            className="flex items-center font-semibold gap-2 px-3 py-2 hover:bg-green-700 hover:text-white rounded bg-white text-green-700 border-2 border-green-700"
                         >
                             {({ loading }) => (
                                 <>
