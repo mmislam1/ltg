@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MoreVertical, Edit, Trash2, Share2, Copy, Plus, CheckIcon, List, PlusCircleIcon, CopyIcon, MenuIcon, Send, DockIcon, File } from 'lucide-react';
 import { FaCopy } from 'react-icons/fa';
 import { useDeviceType } from '../hooks/useDeviceType';
+import { useRouter } from 'next/navigation';
 
 interface MenuItem {
     id: string;
@@ -11,47 +12,7 @@ interface MenuItem {
     onClick?: () => void;
     danger?: boolean;
 }
-const items = [{
-    id: '1',
-    label: 'Mark Day as Complete',
-    icon: <CheckIcon/>,
-  },
-  {
-        id: '2',
-        label: 'Daily Report',
-        icon: <List />,
-    },
-    {
-        id: '3',
-        label: 'Multi-Select',
-        icon: <PlusCircleIcon />,
-    },
-    {
-        id: '4',
-        label: 'Copy Current Day',
-        icon: <CopyIcon />,
-    },
-    {
-        id: '5',
-        label: 'Copy Previous Day',
-        icon: <File/>,
-    },
-    {
-        id: '6',
-        label: 'Clear All Serving Sizes',
-        icon: <MenuIcon />,
-    },
-    {
-        id: '7',
-        label: 'Delete All Diary Entries',
-        icon: <Trash2 />,
-    },
-    {
-        id: '8',
-        label: 'Export Chart',
-        icon: <Send />,
-    }
-]
+
 interface DropdownMenuProps {
     items: MenuItem[];
     onItemClick?: (item: MenuItem) => void;
@@ -62,6 +23,61 @@ export default function DropdownMenu() {
     const menuRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const device = useDeviceType()
+    const router = useRouter()
+
+
+
+
+    const items = [{
+        id: '1',
+        label: 'Mark Day as Complete',
+        icon: <CheckIcon />,
+        onClick:()=>router.push('/'),
+    },
+    {
+        id: '2',
+        label: 'Daily Report',
+        icon: <List />,
+        onClick: () => router.push('/'),
+    },
+    {
+        id: '3',
+        label: 'Multi-Select',
+        icon: <PlusCircleIcon />,
+        onClick: () => router.push('/'),
+    },
+    {
+        id: '4',
+        label: 'Copy Current Day',
+        icon: <CopyIcon />,
+        onClick: () => router.push('/'),
+    },
+    {
+        id: '5',
+        label: 'Copy Previous Day',
+        icon: <File />,
+        onClick: () => router.push('/'),
+    },
+    {
+        id: '6',
+        label: 'Clear All Serving Sizes',
+        icon: <MenuIcon />,
+        onClick: () => router.push('/'),
+    },
+    {
+        id: '7',
+        label: 'Delete All Diary Entries',
+        icon: <Trash2 />,
+        onClick: () => router.push('/'),
+    },
+    {
+        id: '8',
+        label: 'Export Chart',
+        icon: <Send />,
+        onClick: () => router.push('/chart'),
+
+    }
+    ]
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -104,7 +120,7 @@ export default function DropdownMenu() {
                     {items.map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => handleItemClick(item)}
+                            onClick={item.onClick}
                             className={`w-full px-4 py-2 text-left text-sm flex items-center justify-start gap-6 transition-colors 
                                     hover:bg-gray-100 active:bg-gray-100 text-gray-700`}
                         >
