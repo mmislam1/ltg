@@ -27,7 +27,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="w-full flex flex-row justify-center items-center px-5 md:px-40 py-2 bg-white border-b-2 border-gray-300">
+    <nav className="flex w-full flex-row items-center justify-center border-b border-line bg-surface px-5 py-2 md:px-40">
       <div className="flex flex-row justify-between items-center w-full max-w-7xl">
 
       
@@ -35,15 +35,15 @@ const Navbar = () => {
         <Logo/>
       </Link>
 
-      {!isMobile &&(<div className="text1 text-[#545454]">
+      {!isMobile &&(<div className="text-muted">
         {navLinks.map((link) => (
           <Link
             key={link.name}
             href={link.href}
             className={`transition-colors duration-200 ${
               pathname === link.href
-                ? "text-[#EFB639] font-semibold"
-                : "hover:text-[#EFB639]"
+                ? "text-brand font-semibold"
+                : "hover:text-brand"
             } px-3`}
           >
             {link.name}

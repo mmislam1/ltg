@@ -1,20 +1,18 @@
 
 import type { Metadata, Viewport } from "next";
-import { Inter,Overlock,Advent_Pro, Comfortaa } from "next/font/google";
+import { Comfortaa } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar";
 import ReduxProvider from "./providers/ReduxProvider";
 import Footer from "./components/footer";
-import { SocketProvider } from "./socket-client";
 import BottomBar from "./components/botomBar";
-
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+import { themeStyle } from "./theme";
 
 const comfortaa = Comfortaa({
-  subsets: ['latin'],
-  weight: ['400', '700'], // Specify the weights you need
-  display: 'swap', // Ensures text is visible while loading
-  variable: '--font-overlock', // Define a CSS variable name
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-comfortaa",
 });
 
 export const metadata: Metadata = {
@@ -37,10 +35,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={comfortaa.variable}>
-      <body
-        className={` min-h-screen antialiased flex flex-col items-center w-full max-w-full`}
-      >
+    <html lang="en" className={comfortaa.variable} style={themeStyle}>
+      <body className="flex min-h-screen w-full max-w-full flex-col items-center antialiased">
         <ReduxProvider>
           {/*<SocketProvider serverUrl="http://localhost:5000">*/}
             <header className="sticky top-0 z-50 w-full">

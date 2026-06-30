@@ -14,12 +14,14 @@ interface NavItemProps {
 const NavItem: React.FC<NavItemProps> = ({ icon, label, isActive, onClick }) => {
     return (
         <button
+            type="button"
             onClick={onClick}
-            className={`flex flex-col items-center justify-center gap-1 transition-colors ${isActive ? 'text-blue-600' : 'text-gray-500'
-                } hover:text-blue-600`}
+            className={`btn btn-ghost btn-icon flex-col ${isActive ? 'text-brand' : 'text-muted'}`}
+            aria-label={label}
+            aria-current={isActive ? 'page' : undefined}
         >
             <div className="w-6 h-6">{icon}</div>
-            <span className="text-xs font-medium uppercase tracking-wide">{label}</span>
+            <span className="sr-only">{label}</span>
         </button>
     );
 };
@@ -29,13 +31,13 @@ const BottomBar: React.FC = () => {
     const router = useRouter()
 
     return (
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 safe-area-bottom">
+        <div className="safe-area-bottom fixed right-0 bottom-0 left-0 border-t border-line bg-surface">
             <div className="max-w-screen-lg mx-auto px-4">
                 <div className="flex items-center justify-around h-12 relative">
                     {/* Home */}
                     <NavItem
                         icon={<Home className="w-full h-full" strokeWidth={2} />}
-                        label=""
+                        label="Home"
                         isActive={activeTab === 'home'}
                         onClick={() => {setActiveTab('home'); router.push("/")}}
                     />
@@ -43,23 +45,25 @@ const BottomBar: React.FC = () => {
                     {/* Diary */}
                     <NavItem
                         icon={<BookOpen className="w-full h-full" strokeWidth={2} />}
-                        label=""
+                        label="Diary"
                         isActive={activeTab === 'diary'}
                         onClick={() => setActiveTab('diary')}
                     />
 
                     {/* Center Add Button */}
                     <button
+                        type="button"
                         onClick={() => router.push('/manage_meals')}
-                        className="flex items-center justify-center w-14 h-14 bg-blue-600 rounded-full shadow-lg hover:bg-blue-700 transition-colors -mt-2"
+                        className="btn btn-primary btn-icon -mt-2 h-14 min-h-14 w-14 min-w-14 shadow-lg"
+                        aria-label="Manage meals"
                     >
-                        <Plus className="w-8 h-8 text-white" strokeWidth={2.5} />
+                        <Plus className="h-8 w-8 text-on-brand" strokeWidth={2.5} />
                     </button>
 
                     {/* Progress */}
                     <NavItem
                         icon={<BarChart3 className="w-full h-full" strokeWidth={2} />}
-                        label=""
+                        label="Add meal"
                         isActive={activeTab === 'progress'}
                         onClick={() => {setActiveTab('progress');router.push('/add_meal')}}
                     />
@@ -67,7 +71,7 @@ const BottomBar: React.FC = () => {
                     {/* More */}
                     <NavItem
                         icon={<MoreHorizontal className="w-full h-full" strokeWidth={2} />}
-                        label=""
+                        label="More"
                         isActive={activeTab === 'more'}
                         onClick={() => setActiveTab('more')}
                     />

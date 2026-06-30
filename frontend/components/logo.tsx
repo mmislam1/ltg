@@ -9,7 +9,7 @@ interface LogoProps {
   size?: number;
 }
 
-const Logo: React.FC<LogoProps> = ({ color = "#EFB639", size = 65 }) => {
+const Logo: React.FC<LogoProps> = ({ color = "var(--theme-primary)", size = 65 }) => {
   const device=useDeviceType()
   return (
     <div className="flex flex-col items-center justify-center" style={{color}}>

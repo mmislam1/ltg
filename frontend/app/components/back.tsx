@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation'
 const Back = () => {
     const router=useRouter()
   return (
-      <button className='flex items-center justify-center p-2' onClick={() => router.back()}>
+      <button type="button" className="btn btn-ghost btn-icon" onClick={() => router.back()} aria-label="Go back">
         <ArrowLeft></ArrowLeft>
     </button>
   )

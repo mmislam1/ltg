@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { setSelectedDate } from '../store/features/activitySlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -13,10 +13,12 @@ export default function DatePicker() {
 
     const dateObj = selectedDate ? new Date(selectedDate) : new Date();
 
-    if (!selectedDate) {
-        const today = new Date().toISOString().split('T')[0];
-        dispatch(setSelectedDate(today));
-    }
+    useEffect(() => {
+        if (!selectedDate) {
+            const today = new Date().toISOString().split('T')[0];
+            dispatch(setSelectedDate(today));
+        }
+    }, [dispatch, selectedDate]);
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('en-GB', {
@@ -71,31 +73,38 @@ export default function DatePicker() {
         <div className="relative inline-block">
             <div className="flex items-center gap-1">
                 <button
+                    type="button"
                     onClick={handlePrevDay}
-                    className="p-1 hover:bg-gray-200 rounded text-gray-500"
+                    className="btn btn-ghost btn-icon"
+                    aria-label="Previous day"
                 >
                     <ChevronLeft size={30} />
                 </button>
 
                 <button
+                    type="button"
                     onClick={() => setShowCalendar(!showCalendar)}
-                    className="px-1 py-2 rounded hover:bg-gray-100 text-gray-500 font-bold text-xs md:text-md"
+                    className="btn btn-ghost px-2 text-xs md:text-sm"
+                    aria-expanded={showCalendar}
+                    aria-haspopup="dialog"
                 >
                     {formatDate(dateObj)}
                 </button>
 
                 <button
+                    type="button"
                     onClick={handleNextDay}
-                    className="p-1 hover:bg-gray-200 rounded text-gray-500"
+                    className="btn btn-ghost btn-icon"
+                    aria-label="Next day"
                 >
                     <ChevronRight size={30} />
                 </button>
             </div>
 
             {showCalendar && (
-                <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-md shadow-gray-400 p-3 z-10 w-75 left-1/3 -translate-x-1/2">
+                <div className="card absolute top-full left-1/3 z-10 mt-2 w-75 -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
                     <div className="flex items-center justify-between mb-4">
-                        <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-200 rounded text-gray-500">
+                        <button type="button" onClick={handlePrevMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Previous month">
                             <ChevronLeft size={20} />
                         </button>
                         <div className="text-center font-bold min-w-[150px]">
@@ -104,14 +113,14 @@ export default function DatePicker() {
                                 year: 'numeric',
                             })}
                         </div>
-                        <button onClick={handleNextMonth} className="p-1 hover:bg-gray-200 rounded text-gray-500">
+                        <button type="button" onClick={handleNextMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Next month">
                             <ChevronRight size={20} />
                         </button>
                     </div>
 
                     <div className="grid grid-cols-7 gap-2 mb-2">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                            <div key={day} className="w-10 h-10 flex items-center justify-center text-sm lg:text-md font-semibold text-gray-500">
+                            <div key={day} className="flex h-10 w-10 items-center justify-center text-sm font-semibold text-muted">
                                 {day}
                             </div>
                         ))}
@@ -123,11 +132,12 @@ export default function DatePicker() {
                         ))}
                         {days.map((day) => (
                             <button
+                                type="button"
                                 key={day}
                                 onClick={() => handleDateSelect(day)}
-                                className={`w-10 h-10 flex items-center justify-center rounded text-sm font-semibold text-gray-500 ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
-                                    ? 'bg-blue-500 text-white'
-                                    : 'hover:bg-gray-200'
+                                className={`btn btn-icon btn-icon-sm text-sm ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
+                                    ? 'btn-primary'
+                                    : 'btn-ghost'
                                     }`}
                             >
                                 {day}

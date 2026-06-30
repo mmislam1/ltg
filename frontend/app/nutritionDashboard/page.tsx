@@ -80,9 +80,9 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
     return (
         <div className="mb-5">
             <div className="flex justify-between items-baseline mb-1.5">
-                <span className="text-[15px] font-medium text-stone-700">{label}</span>
+                <span className="text-[15px] font-medium text-ink">{label}</span>
                 <div className="flex items-baseline gap-2">
-                    <span className="text-[13px] text-stone-500">
+                    <span className="text-[13px] text-muted">
                         {current.toFixed(1)} / {target.toFixed(1)} {unit}
                     </span>
                     <span
@@ -90,14 +90,14 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
                                 ? 'text-emerald-600'
                                 : percentageText > 110
                                     ? 'text-amber-600'
-                                    : 'text-stone-400'
+                                    : 'text-muted'
                             }`}
                     >
                         {percentageText}%
                     </span>
                 </div>
             </div>
-            <div className="h-[12px] bg-stone-100 rounded-full overflow-hidden relative shadow-inner">
+            <div className="relative h-[12px] overflow-hidden rounded-full bg-brand-soft shadow-inner">
                 <div
                     className={`h-full ${getBarColor()} transition-all duration-700 ease-out rounded-full`}
                     style={{ width: `${percentage}%` }}
@@ -119,22 +119,22 @@ const NutritionDashboard: React.FC = () => {
         activity.macros.fats * 9;
 
     return (
-        <div className="min-h-screen bg-white p-2">
+        <div className="min-h-screen bg-canvas p-2">
             
 
             <div className="max-w-6xl mx-auto">
                 {/* Header */}
                 <div className="mb-12">
-                    <h1 className="fc heading-font text-xl font-bold text-stone-800 mb-3 tracking-tight">
+                    <h1 className="fc mb-3 text-xl font-bold tracking-tight text-ink">
                         Daily Report
                     </h1>
                     
                 </div>
 
                 {/* Macronutrients Section */}
-                <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 mb-8 border border-stone-300">
-                    <div className="flex items-center gap-3 mb-8 pb-4 border-b border-stone-300">
-                        <h2 className="heading-font text-xl font-bold text-stone-800">
+                <div className="card mb-8 p-4">
+                    <div className="mb-8 flex items-center gap-3 border-b border-line pb-4">
+                        <h2 className="text-xl font-bold text-ink">
                             Macronutrients
                         </h2>
                     </div>
@@ -174,9 +174,9 @@ const NutritionDashboard: React.FC = () => {
                 {/* Micronutrients Grid */}
                 <div className="grid md:grid-cols-2 gap-8">
                     {/* Vitamins Section */}
-                    <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 border border-stone-300">
-                        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-stone-300">
-                            <h2 className="heading-font text-xl font-bold text-stone-800">
+                    <div className="card p-4">
+                        <div className="mb-8 flex items-center gap-3 border-b border-line pb-4">
+                            <h2 className="text-xl font-bold text-ink">
                                 Vitamins
                             </h2>
                         </div>
@@ -270,9 +270,9 @@ const NutritionDashboard: React.FC = () => {
                     </div>
 
                     {/* Minerals Section */}
-                    <div className="bg-white rounded-xl shadow-md shadow-stone-300 p-4 border border-stone-300">
-                        <div className="flex items-center gap-3 mb-8 pb-4 border-b border-stone-300">
-                            <h2 className="heading-font text-xl font-bold text-stone-800">
+                    <div className="card p-4">
+                        <div className="mb-8 flex items-center gap-3 border-b border-line pb-4">
+                            <h2 className="text-xl font-bold text-ink">
                                 Minerals
                             </h2>
                         </div>
@@ -353,7 +353,7 @@ const NutritionDashboard: React.FC = () => {
                 </div>
 
                 {/* Footer Note */}
-                <div className="mt-8 text-center text-stone-500 text-sm">
+                <div className="mt-8 text-center text-sm text-muted">
                     <p>
                         Values shown are based on general RDA guidelines for adult males.
                         Consult a healthcare professional for personalized recommendations.

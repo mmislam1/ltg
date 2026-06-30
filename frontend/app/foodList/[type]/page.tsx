@@ -1,20 +1,15 @@
 
 'use client'
 
-import React, {useEffect, useState} from 'react'
+import React, {useMemo, useState} from 'react'
 import ListElement from '../listElement'
-import Meals from '../../components/meals'
-import RingChart from '../../components/ringChart'
-import { SearchCheck, SearchIcon } from 'lucide-react'
+import { SearchIcon } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../../store/hooks'
 import { useParams } from 'next/navigation'
 import { Food } from '@/app/store/features/foodSlice'
 import { addMeal } from '@/app/store/features/activitySlice'
 import { useRouter } from 'next/navigation'
 
-interface passedProps{
-  type: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined,
-}
 export interface ListItems {
   foodItem: Food | undefined;
   quantity: number;
@@ -31,10 +26,8 @@ const FoodList = () => {
     typeof value === "string" &&
     ["Breakfast", "Lunch", "Dinner", "Snack"].includes(value);
   const params = useParams()
-  const charts=useAppSelector((state)=>state.activity.current.chart)
   const foods = useAppSelector((state) => state.foods.list )
   const dispatch = useAppDispatch()
-  const [filtered, setFiltered]=useState(foods)
   const [query,setQuery]=useState('')
   const [meal, setMeal] = useState<Meal>({ id: crypto.randomUUID(), mealType: isMealType(params.type)?params.type:undefined , list: [] })
   
@@ -68,19 +61,13 @@ const FoodList = () => {
   }
   const handleQuery = (e: React.ChangeEvent<HTMLInputElement>)=>{
     setQuery(e.target.value)
-    /*setFiltered(foods.filter(item =>
-      item.name.toLowerCase().includes(query.toLowerCase())) */
   }
-  const handleSearch = ()=>{
-
-  }
-  useEffect(() => {
-    setFiltered(
-      foods.filter((item) =>
-        item.name.toLowerCase().includes(query.toLowerCase())
-      )
-    );
-},[query,foods])
+  const filtered = useMemo(
+    () => foods.filter((item) =>
+      item.name.toLowerCase().includes(query.toLowerCase())
+    ),
+    [foods, query],
+  )
 
 /*
 
@@ -92,35 +79,40 @@ useEffect(()=>{
   
   */
 
-console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',charts.meals)
   return (
     <div className='fc flex-col'>
-        <div className="fc w-full px-4 flex-col bg-green-700">
-          <h2 className="text-xl text-white font-bold my-2">{capitalize(params.type as string)}</h2>
-          <div className="h-12 fc flex-row w-full bg-white rounded-full mb-4 mx-4">
-           <button className="fc m-2 ml-4" onClick={handleSearch}><SearchIcon /> </button> 
-          <input className="h-12 w-full bg-white rounded-full p-4"  onChange={handleQuery}/>
-          
-          
+        <div className="fc w-full flex-col bg-brand px-4">
+          <h2 className="my-2 text-xl font-bold text-on-brand">{capitalize(params.type as string)}</h2>
+          <div className="relative mx-4 mb-4 w-full">
+            <label className="sr-only" htmlFor="food-search">Search foods</label>
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted" size={20} aria-hidden="true" />
+            <input
+              id="food-search"
+              name="food-search"
+              type="search"
+              className="form-control rounded-full pl-12"
+              placeholder="Search foods"
+              value={query}
+              onChange={handleQuery}
+            />
           </div>
-        
         </div>
 
 
-      <div className="fc flex-row w-full bg-green-700 rounded-b-lg">
-        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1 rounded-bl-lg">
+      <div className="fc w-full flex-row rounded-b-lg bg-brand">
+        <button type="button" className="btn w-[25%] rounded-t-none rounded-br-none text-xs text-on-brand hover:bg-brand-soft hover:text-brand-active md:text-base">
           All
         </button>
 
-        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1">
+        <button type="button" className="btn w-[25%] rounded-none text-xs text-on-brand hover:bg-brand-soft hover:text-brand-active md:text-base">
           Recipes
         </button>
 
-        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1">
+        <button type="button" className="btn w-[25%] rounded-none text-xs text-on-brand hover:bg-brand-soft hover:text-brand-active md:text-base">
           Create 
         </button>
 
-        <button className="fc w-[25%] text-white text-xs md:text-lg font-semibold active:bg-green-400 hover:bg-green-400 hover:text-black p-1 rounded-br-lg">
+        <button type="button" className="btn w-[25%] rounded-t-none rounded-bl-none text-xs text-on-brand hover:bg-brand-soft hover:text-brand-active md:text-base">
           Favourites
         </button>
 
@@ -132,12 +124,9 @@ console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',charts.meals)
         
         
       <button
+        type="button"
         onClick={handleSubmit}
-        className="fixed bottom-18 left-1/2 -translate-x-1/2 
-                 bg-green-600 text-white w-77 md:max-w-2xl h-11 rounded-full 
-                 shadow-xl hover:bg-green-500 transition duration-300 z-50 
-                 flex items-center justify-center text-lg font-bold"
-        aria-label="Add new item"
+        className="btn btn-primary fixed bottom-18 left-1/2 z-50 w-77 -translate-x-1/2 rounded-full shadow-xl md:max-w-2xl"
       >
         Done
       </button>

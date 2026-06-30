@@ -104,28 +104,33 @@ export default function DropdownMenu() {
     return (
         <div className="relative inline-block">
             <button
+                type="button"
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                className="btn btn-ghost btn-icon"
                 aria-label="Menu"
+                aria-expanded={isOpen}
+                aria-haspopup="menu"
             >
-                <MoreVertical size={20} className="text-gray-600" />
+                <MoreVertical size={20} />
             </button>
 
             {isOpen && (
                 <div
                     ref={menuRef}
-                    className="absolute right-0 mt-2 w-65 bg-white rounded-lg shadow-lg border border-gray-200 z-10 py-1"
+                    className="card absolute right-0 z-10 mt-2 w-65 py-1"
+                    role="menu"
                 >
                     {items.map((item) => (
                         <button
+                            type="button"
                             key={item.id}
                             onClick={item.onClick}
-                            className={`w-full px-4 py-2 text-left text-sm flex items-center justify-start gap-6 transition-colors 
-                                    hover:bg-gray-100 active:bg-gray-100 text-gray-700`}
+                            className="btn btn-ghost w-full justify-start rounded-none px-4 text-left text-sm"
+                            role="menuitem"
                         >
-                            {item.icon && <span className="font-semibold text-lg text-gray-500">{item.icon}</span>}
-                            <span className={`font-semibold ${device === 'm' ? 'text-md':'text - lg'} text-gray-500`}>{item.label}</span>
+                            {item.icon && <span className="text-lg">{item.icon}</span>}
+                            <span className={device === 'm' ? 'text-sm' : 'text-base'}>{item.label}</span>
                         </button>
                     ))}
                 </div>
@@ -165,11 +170,11 @@ export function DropdownMenuExample() {
     ]);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-50">
-            <div className="bg-white p-8 rounded-lg shadow-md">
+        <div className="flex min-h-screen items-center justify-center bg-canvas">
+            <div className="card p-8">
                 <h1 className="text-2xl font-bold mb-6">Dropdown Menu Example</h1>
                 <div className="flex items-center gap-4">
-                    <span className="text-gray-600">Click the menu button:</span>
+                    <span className="text-muted">Click the menu button:</span>
                     <DropdownMenu />
                 </div>
             </div>

@@ -5,7 +5,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <div className="w-full bg-[#013220] h-[300px]">
+    <div className="h-[300px] w-full bg-brand-active">
 
     </div>
   )

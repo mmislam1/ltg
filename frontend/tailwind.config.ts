@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: "var(--font-overlock), sans-serif",
+        sans: "var(--theme-font-family)",
       },
     },
   },

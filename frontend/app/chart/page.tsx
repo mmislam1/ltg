@@ -312,7 +312,14 @@ const pdfStyles = StyleSheet.create({
 });
 
 // PDF Document Component
-const NutritionPDF: React.FC<{ data: typeof sampleData; totals: any }> = ({ data, totals }) => (
+interface NutritionTotals {
+    calories: string;
+    protein: string;
+    carbss: string;
+    fatss: string;
+}
+
+const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals }> = ({ data, totals }) => (
     <Document>
         <Page size="A4" style={pdfStyles.page}>
             {/* Header */}
@@ -437,7 +444,7 @@ const NutritionChart: React.FC = () => {
     const totals = calculateTotals();
 
     return (
-        <div className="w-full bg-white py-4">
+        <div className="w-full bg-canvas py-4">
             {/* Scroll container (mobile behaves like PDF viewer) */}
             <div className="overflow-x-auto">
                 {/* Fixed-width A4 layout */}
@@ -548,7 +555,7 @@ const NutritionChart: React.FC = () => {
                         <PDFDownloadLink
                             document={<NutritionPDF data={data} totals={totals} />}
                             fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
-                            className="flex items-center font-semibold gap-2 px-3 py-2 hover:bg-green-700 hover:text-white rounded bg-white text-green-700 border-2 border-green-700"
+                            className="btn btn-primary"
                         >
                             {({ loading }) => (
                                 <>

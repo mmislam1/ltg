@@ -1,42 +1,40 @@
-"use client";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 
-import React from "react";
-
-interface ButtonProps {
+interface ButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
   text: string;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  borderColor?: string;
-  backgroundColor?: string;
-  textColor?: string;
-  size?: number; 
-  className?: string; 
+  icon?: ReactNode;
+  variant?: "primary" | "secondary" | "ghost" | "danger";
+  size?: "small" | "medium" | "large";
+  fullWidth?: boolean;
+  loading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
+const Button = ({
   text,
-  onClick,
-  borderColor,
-  backgroundColor,
-  textColor='#ffffff',
-  size = 52,
+  icon,
+  variant = "primary",
+  size = "medium",
+  fullWidth = false,
+  loading = false,
   className = "",
-}) => {
-  
-  const defaultGradient =
-    "linear-gradient(to right, #EFB639, #C59325)";
+  disabled,
+  type = "button",
+  ...props
+}: ButtonProps) => {
+  const sizeClass =
+    size === "small" ? "btn-sm" : size === "large" ? "btn-lg" : "";
 
   return (
     <button
-      onClick={onClick}
-      className={`rounded-lg font-semibold px-6 transition-all duration-200 shadow-md hover:opacity-90 active:scale-95 ${className}`}
-      style={{
-        background: backgroundColor || defaultGradient,
-        color: textColor || "#fff",
-        border: borderColor ? `2px solid ${borderColor}` : "none",
-        height: `${size}px`,
-        minWidth: "fit-content",
-      }}
+      {...props}
+      type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      className={`btn btn-${variant} ${sizeClass} ${fullWidth ? "w-full" : ""} ${className}`}
     >
+      {icon}
+      {loading && <span className="sr-only">Loading: </span>}
       {text}
     </button>
   );

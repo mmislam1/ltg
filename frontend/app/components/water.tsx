@@ -36,16 +36,17 @@ export default function Water() {
     const iconSize: IconSize = device==='m'?48:84;
 
     return (
-        <div className="flex flex-col items-start justify-center p-4 rounded-xl m-2 shadow-md shadow-stone-300 border border-stone-300 bg-white">
-            <div className="w-full fc flex-row pb-2 border-b-2 border-gray-300 mb-4">
+        <div className="card m-2 flex flex-col items-start justify-center p-4">
+            <div className="fc mb-4 w-full flex-row border-b border-line pb-2">
                 <h2 className="text-lg">Water</h2>
             </div>
 
             {/* Icon Display Area */}
             <div className="flex flex-wrap justify-left items-center gap-1 mb-6 min-h-[50px]">
                 <button
+                    type="button"
                     onClick={handleIncrement}
-                    className="flex items-center justify-center  transition-all duration-150 transform hover:scale-105 action:scale-105"
+                    className="btn btn-secondary btn-icon h-auto min-h-14 w-auto min-w-14 p-1"
                     aria-label="Add a glass of water"
                 >
                     
@@ -57,7 +58,7 @@ export default function Water() {
                         
                         <Plus
                             size={iconSize / 2} // Half the size of the glass icon
-                            className="absolute text-stone-600 font-semibold top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-semibold text-ink"
                         />
                     </div>
                 </button>
@@ -67,7 +68,7 @@ export default function Water() {
                         <Image key={index} src={"/trimmed_glass_transparent.svg"} alt={'full glass'} height={iconSize} width={iconSize} />
                     ))
                 ) : (
-                    <p className="text-gray-500 italic">Click the glass below to start!</p>
+                    <p className="text-muted italic">Click the glass below to start!</p>
                 )}
             </div>
 

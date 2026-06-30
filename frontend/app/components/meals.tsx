@@ -39,12 +39,12 @@ const Meals = () => {
         },
     ];
     return (
-        <div className="flex flex-col p-2 md:p-4 m-1 shadow-sm border border-gray-300 rounded-lg gap-4 bg-gray-100 md:max-w-xl md:m-auto">
+        <div className="card m-1 flex flex-col gap-4 bg-canvas p-2 md:m-auto md:max-w-xl md:p-4">
             {meals.map((meal) => {
                 return (
                     <div
                         key={meal.id}
-                        className="w-full flex flex-row items-center justify-between gap-4 p-2 shadow-sm border border-gray-300 rounded-lg p-4 bg-white md:px-8"
+                        className="card flex w-full flex-row items-center justify-between gap-4 p-4 md:px-8"
                     >
                         <div className="flex gap-2 md:gap-15">
                             <div className="h-18 w-18 flex flex-row items-center justify-center rounded-md">
@@ -55,10 +55,8 @@ const Meals = () => {
                             </div>
 
                         </div>
-                        <button onClick={()=>addMeal(meal.mealType)} className="flex">
-                            <div className="h-10 w-10 flex flex-row items-center justify-center bg-gray-100 hover:bg-green-200 focus:bg-green-200 active:bg-green-200 flex flex-row items-center justify-center rounded-full">
-                                <PlusIcon />
-                            </div>
+                        <button type="button" onClick={()=>addMeal(meal.mealType)} className="btn btn-secondary btn-icon" aria-label={`Add ${meal.mealType}`}>
+                            <PlusIcon />
                         </button>
                     </div>
                 );

@@ -35,31 +35,31 @@ export default function RingChart() {
     );
 
     const data2 = [
-        { name: "Protein", value: targetProtein ? targetProtein :0, fill: "#22c55e" },
+        { name: "Protein", value: targetProtein ? targetProtein :0, fill: "var(--theme-primary)" },
         { name: "Carbs", value: targetCarb ? targetCarb :0, fill: "#3b82f6" },
         { name: "Fat", value: targetFat ? targetFat:0, fill: "#ef4444" },
     ];
     const data3 = [
-        { name: "Total", value: total, fill: "#cacacaff" },
-        { name: "Remaining", value: total - burnt, fill: "#383838ff" },
+        { name: "Total", value: total, fill: "var(--theme-border)" },
+        { name: "Remaining", value: total - burnt, fill: "var(--theme-primary)" },
     ];
 
     const data = [
-        { name: "Protein", value: protein, fill: "#22c55e" },
+        { name: "Protein", value: protein, fill: "var(--theme-primary)" },
         { name: "Carbs", value: carbs, fill: "#3b82f6" },
         { name: "Fat", value: fats, fill: "#ef4444" },
     ];
 
 
     if (targetCalories===0){
-        data2.push({ name: "No Data", value: 1, fill: "#a5a5a5" })
-        data2[0] = { name: "Protein", value: 0, fill: "#22c55e" }
+        data2.push({ name: "No Data", value: 1, fill: "var(--theme-muted)" })
+        data2[0] = { name: "Protein", value: 0, fill: "var(--theme-primary)" }
         data2[1] = { name: "Carbs", value: 0, fill: "#3b82f6" }
         data2[2] = { name: "Fat", value: 0, fill: "#ef4444" }   
     }
     if (protein === 0 && carbs===0 && fats===0) {
-        data.push({ name: "No Data", value: 1, fill: "#a5a5a5" })
-        data[0] = { name: "Protein", value: 0, fill: "#22c55e" }
+        data.push({ name: "No Data", value: 1, fill: "var(--theme-muted)" })
+        data[0] = { name: "Protein", value: 0, fill: "var(--theme-primary)" }
         data[1] = { name: "Carbs", value: 0, fill: "#3b82f6" }
         data[2] = { name: "Fat", value: 0, fill: "#ef4444" }
     }
@@ -85,7 +85,7 @@ export default function RingChart() {
                                         style={{ backgroundColor: it.fill }}
                                     ></div>
                                     <h3
-                                        className="text-sm text-gray-400 font-semibold"
+                                        className="text-sm font-semibold"
                                         style={{ color: it.fill }}
                                     >
                                         {it.name}
@@ -113,10 +113,10 @@ export default function RingChart() {
                             <Tooltip
                                 formatter={(value: number) => `${value}g`}
                                 contentStyle={{
-                                    backgroundColor: "#ffffffff",
+                                    backgroundColor: "var(--theme-surface)",
                                     border: "none",
                                     borderRadius: "8px",
-                                    color: "rgba(100, 100, 100, 1)",
+                                    color: "var(--theme-muted)",
                                 }}
                             />
                         </PieChart>
@@ -138,7 +138,7 @@ export default function RingChart() {
                                         style={{ backgroundColor: it.fill }}
                                     ></div>
                                     <h3
-                                        className="text-sm text-gray-400 font-semibold"
+                                        className="text-sm font-semibold"
                                         style={{ color: it.fill }}
                                     >
                                         {it.name}
@@ -166,10 +166,10 @@ export default function RingChart() {
                             <Tooltip
                                 formatter={(value: number) => `${value}g`}
                                 contentStyle={{
-                                    backgroundColor: "#ffffffff",
+                                    backgroundColor: "var(--theme-surface)",
                                     border: "none",
                                     borderRadius: "8px",
-                                    color: "rgba(100, 100, 100, 1)",
+                                    color: "var(--theme-muted)",
                                 }}
                             />
                         </PieChart>
@@ -189,7 +189,7 @@ export default function RingChart() {
                                         style={{ backgroundColor: it.fill }}
                                     ></div>
                                     <h3
-                                        className="text-sm text-gray-400 font-semibold"
+                                        className="text-sm font-semibold"
                                         style={{ color: it.fill }}
                                     >
                                         {it.name}
@@ -217,10 +217,10 @@ export default function RingChart() {
                             <Tooltip
                                 formatter={(value: number) => `${value}g`}
                                 contentStyle={{
-                                    backgroundColor: "#ffffffff",
+                                    backgroundColor: "var(--theme-surface)",
                                     border: "none",
                                     borderRadius: "8px",
-                                    color: "rgba(100, 100, 100, 1)",
+                                    color: "var(--theme-muted)",
                                 }}
                             />
                         </PieChart>
@@ -230,9 +230,9 @@ export default function RingChart() {
             <div className="w-[100%] flex flex-col items-start justify-center mt-4 mx-6">
                 <p className="text-md font-semibold">Remaining</p>
             </div>
-            <div className="w-full h-2 bg-gray-300 rounded-lg overflow-hidden mx-6 mb-8">
+            <div className="mx-6 mb-8 h-2 w-full overflow-hidden rounded-lg bg-line">
                 <div
-                    className="h-full bg-orange-400 transition-all duration-500 ease-in-out"
+                    className="h-full bg-brand transition-all duration-500 ease-in-out"
                     style={{
                         width: `${Math.min(
                             100,

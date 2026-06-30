@@ -261,23 +261,23 @@ export default function MealsPage() {
     },[meals])
 
     return (
-        <div className="min-h-screen bg-white py-4 md:py-8">
+        <div className="min-h-screen bg-canvas py-4 md:py-8">
             <div className="max-w-4xl mx-auto px-2 md:px-4">
-                <h1 className="text-xl md:text-3xl font-bold text-gray-900 mb-3">My Meals</h1>
+                <h1 className="mb-3 text-xl font-bold text-ink md:text-3xl">My Meals</h1>
 
                 <div className="space-y-6">
                     {meals.map((meal) => (
                         <div
                             key={meal.id}
-                            className="bg-white rounded-lg shadow-sm border border-gray-300 overflow-hidden"
+                            className="card overflow-hidden"
                         >
                             {/* Meal Header */}
-                            <div className="flex items-center justify-between px-3 md:px-6 py-3 md:py-4 border-b border-gray-300">
-                                <h2 className="text-md md:text-2xl font-semibold text-gray-900">
+                            <div className="flex items-center justify-between border-b border-line px-3 py-3 md:px-6 md:py-4">
+                                <h2 className="text-md font-semibold text-ink md:text-2xl">
                                     {meal.mealType}
                                 </h2>
                                 <div className="flex items-center gap-4">
-                                    <span className="text-md md:text-2xl font-semibold text-gray-900">
+                                    <span className="text-md font-semibold text-ink md:text-2xl">
                                         {calculateMealCalories(meal)}
                                     </span>
                                     {/* 
@@ -289,7 +289,7 @@ export default function MealsPage() {
                             </div>
 
                             {/* Food List */}
-                            <div className="divide-y divide-gray-300">
+                            <div className="divide-y divide-line">
                                 {meal.list.map((item) => {
                                     if (!item.foodItem) return null;
 
@@ -298,15 +298,15 @@ export default function MealsPage() {
                                     return (
                                         <div
                                             key={item.foodItem.id}
-                                            className="px-6 py-4 hover:bg-gray-50 transition-colors"
+                                            className="px-6 py-4 transition-colors hover:bg-brand-soft"
                                         >
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
-                                                    <h3 className="text-base font-medium text-gray-900">
+                                                    <h3 className="text-base font-medium text-ink">
                                                         {item.foodItem.name}
                                                     </h3>
                                                     <div className="flex items-center gap-2 mt-1">
-                                                        <p className="text-sm text-gray-500">
+                                                        <p className="text-sm text-muted">
                                                             {item.foodItem.unit}
                                                         </p>
                                                         {item.quantity > 1 && (
@@ -314,6 +314,7 @@ export default function MealsPage() {
                                                                 <span className="text-gray-300">•</span>
                                                                 <div className="flex items-center gap-1">
                                                                     <button
+                                                                        type="button"
                                                                         onClick={() =>
                                                                             updateQuantity(
                                                                                 meal.id,
@@ -321,14 +322,16 @@ export default function MealsPage() {
                                                                                 item.quantity - 1
                                                                             )
                                                                         }
-                                                                        className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-semibold"
+                                                                        className="btn btn-secondary btn-icon btn-icon-sm"
+                                                                        aria-label={`Decrease ${item.foodItem.name} quantity`}
                                                                     >
                                                                         −
                                                                     </button>
-                                                                    <span className="text-sm text-gray-600 px-2">
+                                                                    <span className="px-2 text-sm text-muted">
                                                                         {item.quantity}
                                                                     </span>
                                                                     <button
+                                                                        type="button"
                                                                         onClick={() =>
                                                                             updateQuantity(
                                                                                 meal.id,
@@ -336,7 +339,8 @@ export default function MealsPage() {
                                                                                 item.quantity + 1
                                                                             )
                                                                         }
-                                                                        className="w-6 h-6 rounded-full bg-gray-100 hover:bg-gray-300 flex items-center justify-center text-gray-600 text-sm font-semibold"
+                                                                        className="btn btn-secondary btn-icon btn-icon-sm"
+                                                                        aria-label={`Increase ${item.foodItem.name} quantity`}
                                                                     >
                                                                         +
                                                                     </button>
@@ -347,14 +351,16 @@ export default function MealsPage() {
                                                 </div>
 
                                                 <div className="flex items-center gap-4 ml-4">
-                                                    <span className="text-base font-medium text-gray-900">
+                                                    <span className="text-base font-medium text-ink">
                                                         {totalCalories}
                                                     </span>
                                                     <button
+                                                        type="button"
                                                         onClick={() =>
                                                             removeFoodFromMeal(meal.id, item.foodItem!.id)
                                                         }
-                                                        className="text-red-400 hover:text-red-600 transition-colors"
+                                                        className="btn btn-danger btn-icon"
+                                                        aria-label={`Remove ${item.foodItem.name}`}
                                                     >
                                                         <Trash2 size={18} />
                                                     </button>
@@ -369,31 +375,34 @@ export default function MealsPage() {
                                     {showFoodSelector === meal.id ? (
                                         <div className="space-y-2">
                                             <div className="flex items-center justify-between mb-3">
-                                                <h3 className="text-sm font-medium text-gray-700">
+                                                <h3 className="text-sm font-medium text-ink">
                                                     Select Food
                                                 </h3>
                                                 <button
+                                                    type="button"
                                                     onClick={() => setShowFoodSelector(null)}
-                                                    className="text-sm text-red-700 hover:text-red-500 mr-1"
+                                                    className="btn btn-danger btn-icon"
+                                                    aria-label="Close food selector"
                                                 >
                                                     <X/>
                                                 </button>
                                             </div>
-                                            <div className="grid gap-2 max-h-64 border p-1 border-stone-300 rounded-lg shadow-[0_0_6px_1px_rgb(0,0,0)] shadow-stone-300 overflow-y-auto no-scr">
+                                            <div className="no-scr grid max-h-64 gap-2 overflow-y-auto rounded-lg border border-line bg-canvas p-1">
                                                 {foods.map((food) => (
                                                     <button
+                                                        type="button"
                                                         key={food.id}
                                                         onClick={() => addFoodToMeal(meal.id, food)}
-                                                        className="text-left px-4 py-3 rounded-lg border border-gray-300 hover:bg-blue-50 hover:border-blue-300 transition-colors"
+                                                        className="btn btn-secondary w-full justify-between px-4 py-3 text-left"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div>
-                                                                <p className="font-medium text-gray-900">
+                                                                <p className="font-medium text-ink">
                                                                     {food.name}
                                                                 </p>
-                                                                <p className="text-sm text-gray-500">{food.unit}</p>
+                                                                <p className="text-sm text-muted">{food.unit}</p>
                                                             </div>
-                                                            <span className="text-sm font-medium text-gray-700">
+                                                            <span className="text-sm font-medium text-ink">
                                                                 {food.nutrition.calories} cal
                                                             </span>
                                                         </div>
@@ -403,8 +412,9 @@ export default function MealsPage() {
                                         </div>
                                     ) : (
                                         <button
+                                            type="button"
                                             onClick={() => setShowFoodSelector(meal.id)}
-                                            className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold text-xs md:text-md transition-colors"
+                                            className="btn btn-secondary btn-sm"
                                         >
                                             <Plus size={16} />
                                             ADD FOOD
@@ -417,12 +427,12 @@ export default function MealsPage() {
                 </div>
 
                 {/* Summary */}
-                <div className="mt-8 bg-white rounded-lg shadow-sm border border-gray-300 px-6 py-4">
+                <div className="card mt-8 px-6 py-4">
                     <div className="flex items-center justify-between">
-                        <span className="text-lg font-semibold text-gray-700">
+                        <span className="text-lg font-semibold text-ink">
                             Total Daily Calories
                         </span>
-                        <span className="text-2xl font-bold text-gray-900">
+                        <span className="text-2xl font-bold text-ink">
                             {meals.reduce((total, meal) => total + calculateMealCalories(meal), 0)}
                         </span>
                     </div>
