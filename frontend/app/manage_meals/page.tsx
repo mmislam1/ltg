@@ -373,8 +373,8 @@ export default function MealsPage() {
                                 {/* Add Food Button */}
                                 <div className="px-2 py-4">
                                     {showFoodSelector === meal.id ? (
-                                        <div className="space-y-2">
-                                            <div className="flex items-center justify-between mb-3">
+                                        <div className="selection-panel space-y-3 p-3">
+                                            <div className="flex items-center justify-between">
                                                 <h3 className="text-sm font-medium text-ink">
                                                     Select Food
                                                 </h3>
@@ -387,7 +387,7 @@ export default function MealsPage() {
                                                     <X/>
                                                 </button>
                                             </div>
-                                            <div className="no-scr grid max-h-64 gap-2 overflow-y-auto rounded-lg border border-line bg-canvas p-1">
+                                            <div className="no-scr grid max-h-64 gap-2 overflow-y-auto rounded-lg p-1">
                                                 {foods.map((food) => (
                                                     <button
                                                         type="button"
@@ -395,14 +395,14 @@ export default function MealsPage() {
                                                         onClick={() => addFoodToMeal(meal.id, food)}
                                                         className="btn btn-secondary w-full justify-between px-4 py-3 text-left"
                                                     >
-                                                        <div className="flex items-center justify-between">
-                                                            <div>
-                                                                <p className="font-medium text-ink">
+                                                        <div className="flex w-full min-w-0 items-center justify-between gap-4">
+                                                            <div className="min-w-0 text-left">
+                                                                <p className="truncate font-medium text-ink">
                                                                     {food.name}
                                                                 </p>
                                                                 <p className="text-sm text-muted">{food.unit}</p>
                                                             </div>
-                                                            <span className="text-sm font-medium text-ink">
+                                                            <span className="ml-auto shrink-0 text-right text-sm font-medium text-ink tabular-nums">
                                                                 {food.nutrition.calories} cal
                                                             </span>
                                                         </div>
