@@ -7,6 +7,7 @@ import { Macros, Meal, Chart } from '../store/features/activitySlice';
 import { Food } from '../store/features/foodSlice'
 import Meals from '../components/meals';
 import { useAppSelector } from '../store/hooks';
+import { NUTRITION_COLORS } from '../nutritionColors';
 
 
 interface UserProfile {
@@ -280,16 +281,16 @@ const pdfStyles = StyleSheet.create({
         fontSize: 9,
     },
     protein: {
-        color: 'rgb(0, 158, 8)',
+        color: NUTRITION_COLORS.protein,
     },
     total: {
-        color: 'rgb(255, 62, 168)',
+        color: NUTRITION_COLORS.calories,
     },
     carbss: {
-        color: 'rgb(0, 4, 255)',
+        color: NUTRITION_COLORS.carbs,
     },
     fatss: {
-        color: 'rgb(255, 0, 0)',
+        color: NUTRITION_COLORS.fat,
     },
     cellBold: {
         padding: 6,
@@ -357,9 +358,9 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
                     <Text style={[pdfStyles.cellBold, pdfStyles.col1]}>Food</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col2]}>Quantity</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col3]}>Calories</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col4]}>Protein</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>Carbs</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>Fats</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col4, pdfStyles.protein]}>Protein</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col5, pdfStyles.carbss]}>Carbs</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col6, pdfStyles.fatss]}>Fats</Text>
                 </View>
 
                 {/* Table Body */}
@@ -462,19 +463,19 @@ const NutritionChart: React.FC = () => {
                         <div className="grid grid-cols-4 gap-6 text-center">
                             <div>
                                 <div className="text-[14px] font-bold">{data.dailyGoals.calories.toFixed(1)} kcl</div>
-                                <div className="text-[12px] font-bold text-pink-600">Cal</div>
+                                <div className="text-[12px] font-bold text-calories">Cal</div>
                             </div>
                             <div>
                                 <div className="text-[14px] font-bold">{data.dailyGoals.protein.toFixed(2)} g</div>
-                                <div className="text-[12px] font-bold text-green-600">Protein</div>
+                                <div className="text-[12px] font-bold text-protein">Protein</div>
                             </div>
                             <div>
                                 <div className="text-[14px] font-bold">{data.dailyGoals.carbs.toFixed(2)} g</div>
-                                <div className="text-[12px] font-bold text-blue-600">Carbs</div>
+                                <div className="text-[12px] font-bold text-carbs">Carbs</div>
                             </div>
                             <div>
                                 <div className="text-[14px] font-bold">{data.dailyGoals.fats.toFixed(2)} g</div>
-                                <div className="text-[12px] font-bold text-red-600">Fats</div>
+                                <div className="text-[12px] font-bold text-fat">Fats</div>
                             </div>
                         </div>
                     </div>
@@ -486,9 +487,9 @@ const NutritionChart: React.FC = () => {
                                 <th className="w-[40%] px-2 py-2 text-left font-bold">Food</th>
                                 <th className="w-[12%] px-2 py-2 text-center font-bold">Quantity</th>
                                 <th className="w-[12%] px-2 py-2 text-center font-bold">Calories</th>
-                                <th className="w-[12%] px-2 py-2 text-center font-bold">Protein</th>
-                                <th className="w-[12%] px-2 py-2 text-center font-bold">Carbs</th>
-                                <th className="w-[12%] px-2 py-2 text-center font-bold">Fats</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold text-protein">Protein</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold text-carbs">Carbs</th>
+                                <th className="w-[12%] px-2 py-2 text-center font-bold text-fat">Fats</th>
                             </tr>
                         </thead>
 

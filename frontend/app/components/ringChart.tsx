@@ -35,9 +35,9 @@ export default function RingChart() {
     );
 
     const data2 = [
-        { name: "Protein", value: targetProtein ? targetProtein :0, fill: "var(--theme-primary)" },
-        { name: "Carbs", value: targetCarb ? targetCarb :0, fill: "#3b82f6" },
-        { name: "Fat", value: targetFat ? targetFat:0, fill: "#ef4444" },
+        { name: "Protein", value: targetProtein ? targetProtein :0, fill: "var(--nutrition-protein)" },
+        { name: "Carbs", value: targetCarb ? targetCarb :0, fill: "var(--nutrition-carbs)" },
+        { name: "Fat", value: targetFat ? targetFat:0, fill: "var(--nutrition-fat)" },
     ];
     const data3 = [
         { name: "Total", value: total, fill: "var(--theme-border)" },
@@ -45,23 +45,23 @@ export default function RingChart() {
     ];
 
     const data = [
-        { name: "Protein", value: protein, fill: "var(--theme-primary)" },
-        { name: "Carbs", value: carbs, fill: "#3b82f6" },
-        { name: "Fat", value: fats, fill: "#ef4444" },
+        { name: "Protein", value: protein, fill: "var(--nutrition-protein)" },
+        { name: "Carbs", value: carbs, fill: "var(--nutrition-carbs)" },
+        { name: "Fat", value: fats, fill: "var(--nutrition-fat)" },
     ];
 
 
     if (targetCalories===0){
         data2.push({ name: "No Data", value: 1, fill: "var(--theme-muted)" })
-        data2[0] = { name: "Protein", value: 0, fill: "var(--theme-primary)" }
-        data2[1] = { name: "Carbs", value: 0, fill: "#3b82f6" }
-        data2[2] = { name: "Fat", value: 0, fill: "#ef4444" }   
+        data2[0] = { name: "Protein", value: 0, fill: "var(--nutrition-protein)" }
+        data2[1] = { name: "Carbs", value: 0, fill: "var(--nutrition-carbs)" }
+        data2[2] = { name: "Fat", value: 0, fill: "var(--nutrition-fat)" }
     }
     if (protein === 0 && carbs===0 && fats===0) {
         data.push({ name: "No Data", value: 1, fill: "var(--theme-muted)" })
-        data[0] = { name: "Protein", value: 0, fill: "var(--theme-primary)" }
-        data[1] = { name: "Carbs", value: 0, fill: "#3b82f6" }
-        data[2] = { name: "Fat", value: 0, fill: "#ef4444" }
+        data[0] = { name: "Protein", value: 0, fill: "var(--nutrition-protein)" }
+        data[1] = { name: "Carbs", value: 0, fill: "var(--nutrition-carbs)" }
+        data[2] = { name: "Fat", value: 0, fill: "var(--nutrition-fat)" }
     }
 
 

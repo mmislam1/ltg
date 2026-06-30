@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
+import { NUTRITION_COLORS } from "./nutritionColors";
 
-type ThemeProperties = CSSProperties & Record<`--theme-${string}`, string>;
+type ThemeProperties = CSSProperties &
+  Record<`--theme-${string}` | `--nutrition-${string}`, string>;
 
 const readThemeValue = (name: string, fallback: string) => {
   const value = process.env[name]?.trim();
@@ -25,6 +27,10 @@ const resolvedFontFamily =
     : fontFamily;
 
 export const themeStyle: ThemeProperties = {
+  "--nutrition-calories": NUTRITION_COLORS.calories,
+  "--nutrition-protein": NUTRITION_COLORS.protein,
+  "--nutrition-carbs": NUTRITION_COLORS.carbs,
+  "--nutrition-fat": NUTRITION_COLORS.fat,
   "--theme-font-family": resolvedFontFamily,
   "--theme-primary": readThemeValue(
     "NEXT_PUBLIC_THEME_PRIMARY",

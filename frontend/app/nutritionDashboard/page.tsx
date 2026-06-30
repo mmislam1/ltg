@@ -53,6 +53,7 @@ interface NutrientBarProps {
     target: number;
     unit: string;
     color: string;
+    labelColor?: string;
 }
 
 const NutrientBar: React.FC<NutrientBarProps> = ({
@@ -61,26 +62,14 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
     target,
     unit,
     color,
+    labelColor = "text-ink",
 }) => {
     const percentage = Math.min((current / target) * 100, 100);
     const percentageText = Math.round((current / target) * 100);
-    const isOverTarget = current > target;
-
-    // Dynamic color based on completion percentage
-    const getBarColor = () => {
-        if (percentageText >= 90 ) {
-            return 'bg-gradient-to-r from-emerald-400 to-emerald-600'; 
-        } else if (percentageText >= 70 && percentageText < 90) {
-            return 'bg-gradient-to-r from-yellow-400 to-yellow-600'; 
-        } else {
-            return 'bg-gradient-to-r from-red-400 to-red-600'; 
-        }
-    };
-
     return (
         <div className="mb-5">
             <div className="flex justify-between items-baseline mb-1.5">
-                <span className="text-[15px] font-medium text-ink">{label}</span>
+                <span className={`text-[15px] font-medium ${labelColor}`}>{label}</span>
                 <div className="flex items-baseline gap-2">
                     <span className="text-[13px] text-muted">
                         {current.toFixed(1)} / {target.toFixed(1)} {unit}
@@ -99,7 +88,7 @@ const NutrientBar: React.FC<NutrientBarProps> = ({
             </div>
             <div className="relative h-[12px] overflow-hidden rounded-full bg-brand-soft shadow-inner">
                 <div
-                    className={`h-full ${getBarColor()} transition-all duration-700 ease-out rounded-full`}
+                    className={`h-full ${color} rounded-full transition-all duration-700 ease-out`}
                     style={{ width: `${percentage}%` }}
                 >
                     <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent" />
@@ -145,28 +134,32 @@ const NutritionDashboard: React.FC = () => {
                             current={currentEnergy}
                             target={IDEAL_NUTRITION.macros.energy}
                             unit="kcal"
-                            color="bg-gradient-to-r from-blue-400 to-blue-600"
+                            color="bg-calories"
+                            labelColor="text-calories"
                         />
                         <NutrientBar
                             label="Protein"
                             current={activity.macros.protein}
                             target={IDEAL_NUTRITION.macros.protein}
                             unit="g"
-                            color="bg-gradient-to-r from-emerald-400 to-emerald-600"
+                            color="bg-protein"
+                            labelColor="text-protein"
                         />
                         <NutrientBar
                             label="Net Carbs"
                             current={activity.macros.carbs}
                             target={IDEAL_NUTRITION.macros.carbs}
                             unit="g"
-                            color="bg-gradient-to-r from-sky-400 to-sky-600"
+                            color="bg-carbs"
+                            labelColor="text-carbs"
                         />
                         <NutrientBar
                             label="Fat"
                             current={activity.macros.fats}
                             target={IDEAL_NUTRITION.macros.fats}
                             unit="g"
-                            color="bg-gradient-to-r from-rose-400 to-rose-600"
+                            color="bg-fat"
+                            labelColor="text-fat"
                         />
                     </div>
                 </div>

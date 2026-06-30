@@ -14,6 +14,11 @@
   --color-muted: var(--theme-muted);
   --color-line: var(--theme-border);
   --color-danger: var(--theme-danger);
+
+  --color-calories: var(--nutrition-calories);
+  --color-protein: var(--nutrition-protein);
+  --color-carbs: var(--nutrition-carbs);
+  --color-fat: var(--nutrition-fat);
 }
 
 @layer base {
