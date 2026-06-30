@@ -46,7 +46,7 @@ export default function Water() {
                 <button
                     type="button"
                     onClick={handleIncrement}
-                    className="btn btn-secondary btn-icon h-auto min-h-14 w-auto min-w-14 p-1"
+                    className="flex items-center justify-center border-0 bg-transparent p-0"
                     aria-label="Add a glass of water"
                 >
                     

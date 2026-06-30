@@ -80,7 +80,7 @@ export const initialState: ActivitiesState = {
       meals: [],
     },
     macros: { protein: 0, carbs: 0, fats: 0 },
-    water: 7,
+    water: 0,
     burnt: 0,
     total: 0,
     selectedDate: new Date().toDateString(),
