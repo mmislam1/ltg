@@ -5,13 +5,12 @@ import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Link from "next/link";
 import { logoutUser } from "../store/features/authSlice";
-import { BellDot, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useDeviceType } from "../hooks/useDeviceType";
 import { useRouter } from "next/navigation";
 
 interface UserIconProps {
     variant?: "small" | "medium" | "large";
-    showNotification?: boolean;
     onClick?: () => void;
     className?: string;
 }
@@ -19,7 +18,6 @@ interface UserIconProps {
 const UserTab: React.FC<UserIconProps> = ({
     
     variant = 'small',
-    showNotification = true,
     onClick,
     className = "",
 }) => {
@@ -51,23 +49,14 @@ const UserTab: React.FC<UserIconProps> = ({
         small: {
             container: "w-8 h-8 md:w-10 md:h-10",
             image: 40,
-            notification: "w-4 h-4 text-xs",
-            notificationBg: "top-0 right-0",
-            notificationAlign:'right-3 bottom-8'
         },
         medium: {
             container: "w-8 h-8 md:w-10 md:h-10",
             image: 48,
-            notification: "w-4 h-4 text-sm",
-            notificationBg: "top-0 right-0",
-            notificationAlign: 'right-3 bottom-8'
         },
         large: {
             container: "w-12 h-12 md:w-16 md:h-16",
             image: 64,
-            notification: "w-7 h-7 text-base",
-            notificationBg: "top-2 right-2",
-            notificationAlign: 'right-3 bottom-2'
         },
     };
 
@@ -85,37 +74,6 @@ const UserTab: React.FC<UserIconProps> = ({
 
     return (
         <div className="flex flex-row items-center justify-center gap-4">
-            {showNotification && (
-            <div className="flex h-8 flex-row items-center justify-center">
-                <BellDot />
-                {8 > 0 && (
-                    <div
-                        className={`
-            ${config.notificationBg}
-            relative
-            ${config.notification}
-            ${config.notificationAlign}
-            rounded-full
-            bg-rose-600
-            hover:bg-rose-700
-            text-white
-            flex
-            items-center
-            justify-center
-            font-semibold
-            ring-2
-            ring-white
-            dark:ring-gray-900
-            transition-colors
-            duration-200
-          `}
-                    >
-                        {8 > 99 ? "99+" : 8}
-                    </div>
-                )}
-            </div>
-            )}
-
             {!user ? (
                 <div className="flex items-center gap-2 sm:gap-4">
                     <Link
@@ -204,7 +162,6 @@ const UserTab: React.FC<UserIconProps> = ({
                         </div>
                     )}
 
-                    {/* Notification Badge */}
                 </div>
             )}
         </div>

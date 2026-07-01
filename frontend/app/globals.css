@@ -243,7 +243,12 @@
 }
 
 .safe-area-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.375rem);
+}
+
+.bottom-nav {
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .col {

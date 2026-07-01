@@ -23,34 +23,36 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="flex w-full flex-row items-center justify-center border-b border-line bg-surface px-5 py-2 md:px-40">
-      <div className="flex flex-row justify-between items-center w-full max-w-7xl">
+    <nav className="flex w-full items-center justify-center border-b border-line bg-surface px-4 py-2 sm:px-6 lg:px-8">
+      <div className="relative flex w-full max-w-7xl items-center justify-between">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
+          <Logo/>
+        </Link>
 
-      
-      <Link href="/" className="flex items-center gap-2">
-        <Logo/>
-      </Link>
+        {user ? (
+          <div className="absolute left-1/2 hidden -translate-x-1/2 sm:block">
+            <DatePicker />
+          </div>
+        ) : (
+          !isMobile && <div className="absolute left-1/2 hidden -translate-x-1/2 text-muted xl:flex">
+            {navLinks.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`whitespace-nowrap px-3 transition-colors duration-200 ${
+                  pathname === link.href ? "font-semibold text-brand" : "hover:text-brand"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+        )}
 
-      {!isMobile &&(<div className="text-muted">
-        {navLinks.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className={`transition-colors duration-200 ${
-              pathname === link.href
-                ? "text-brand font-semibold"
-                : "hover:text-brand"
-            } px-3`}
-          >
-            {link.name}
-          </Link>
-        ))}
-      </div>)}
-      <div className="flex items-center gap-2">
-        {user && <DatePicker />}
-        {user && <DropdownMenu />}
-        <UserTab showNotification={Boolean(user)} />
-      </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {user && <DropdownMenu />}
+          <UserTab />
+        </div>
       </div>
     </nav>
   );

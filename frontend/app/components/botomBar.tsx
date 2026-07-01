@@ -67,9 +67,9 @@ export default function BottomBar() {
   return (
     <nav
       aria-label="Primary navigation"
-      className="safe-area-bottom fixed inset-x-0 bottom-0 z-50 border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden"
+      className="bottom-nav safe-area-bottom fixed inset-x-0 bottom-0 z-[100] w-full overflow-visible border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden"
     >
-      <div className="mx-auto grid h-[4.75rem] max-w-lg grid-cols-5 items-center px-2">
+      <div className="mx-auto grid h-20 max-w-lg grid-cols-5 items-center px-2">
         <NavigationLink item={navigationItems[0]} />
         <NavigationLink item={navigationItems[1]} />
 
@@ -77,10 +77,10 @@ export default function BottomBar() {
           href="/add_meal"
           aria-label="Add meal"
           aria-current={addActive ? "page" : undefined}
-          className="group relative -mt-5 flex flex-col items-center gap-1 text-brand"
+          className="group relative -mt-4 flex flex-col items-center gap-1 text-brand"
         >
           <span
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl border-4 border-surface bg-brand text-on-brand shadow-[0_8px_20px_rgba(22,101,52,0.3)] transition-all duration-200 group-active:translate-y-0.5 group-active:shadow-md ${
+            className={`flex h-14 w-14 items-center justify-center rounded-full border-4 border-surface bg-brand text-on-brand shadow-[0_8px_20px_rgba(22,101,52,0.3)] transition-all duration-200 group-active:translate-y-0.5 group-active:shadow-md ${
               addActive ? "ring-4 ring-brand-soft" : "group-hover:bg-brand-hover"
             }`}
           >

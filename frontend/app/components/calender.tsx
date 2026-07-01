@@ -31,7 +31,6 @@ export default function DatePicker() {
     const handlePrevDay = () => {
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() - 1);
-        console.log(newDate.toISOString())
         dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
     };
 
@@ -102,7 +101,7 @@ export default function DatePicker() {
             </div>
 
             {showCalendar && (
-                <div className="card absolute top-full left-1/3 z-10 mt-2 w-75 -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
+                <div className="card absolute top-full left-1/2 z-10 mt-2 w-75 -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
                     <div className="flex items-center justify-between mb-4">
                         <button type="button" onClick={handlePrevMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Previous month">
                             <ChevronLeft size={20} />
