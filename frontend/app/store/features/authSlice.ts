@@ -9,7 +9,7 @@ import api, {
 } from "../api";
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
   image?: string;
@@ -27,13 +27,13 @@ export interface User {
 }
 
 interface ApiUser {
-  id: number;
+  id: string;
   name: string;
   email: string;
   age: number;
-  weight: string;
+  weight: number;
   weight_unit: "kg" | "lb";
-  height: string;
+  height: number;
   height_unit: "cm" | "ft";
   daily_goals: {
     target_calories: number;
@@ -112,7 +112,7 @@ export const loginUser = createAsyncThunk<
   { rejectValue: AuthError }
 >("auth/login", async (credentials, { rejectWithValue }) => {
   try {
-    const { data } = await api.post<AuthResponse>("/auth/signin/", credentials);
+    const { data } = await api.post<AuthResponse>("/auth/signin", credentials);
     const tokens = { accessToken: data.access, refreshToken: data.refresh };
     storeTokens(tokens);
     return { user: mapUser(data.user), tokens };
@@ -127,7 +127,7 @@ export const registerUser = createAsyncThunk<
   { rejectValue: AuthError }
 >("auth/register", async (formData, { rejectWithValue }) => {
   try {
-    const { data } = await api.post<AuthResponse>("/auth/signup/", formData);
+    const { data } = await api.post<AuthResponse>("/auth/signup", formData);
     const tokens = { accessToken: data.access, refreshToken: data.refresh };
     storeTokens(tokens);
     return { user: mapUser(data.user), tokens };
@@ -144,7 +144,7 @@ export const restoreSession = createAsyncThunk<
   const tokens = getStoredTokens();
   if (!tokens) return null;
   try {
-    const { data } = await api.get<ApiUser>("/auth/me/");
+    const { data } = await api.get<ApiUser>("/auth/me");
     return { user: mapUser(data), tokens: getStoredTokens() || tokens };
   } catch (error) {
     clearStoredTokens();
@@ -155,7 +155,7 @@ export const restoreSession = createAsyncThunk<
 export const logoutUser = createAsyncThunk("auth/logout", async () => {
   const refresh = getStoredTokens()?.refreshToken;
   try {
-    if (refresh) await api.post("/auth/logout/", { refresh });
+    if (refresh) await api.post("/auth/logout", { refresh });
   } finally {
     clearStoredTokens();
   }

@@ -86,7 +86,7 @@ const refreshTokens = async () => {
   const response = await axios.post<{
     access: string;
     refresh?: string;
-  }>(`${API_URL}/auth/refresh/`, { refresh: current.refreshToken }, { timeout: 15_000 });
+  }>(`${API_URL}/auth/refresh`, { refresh: current.refreshToken }, { timeout: 15_000 });
 
   const tokens = {
     accessToken: response.data.access,
@@ -100,7 +100,7 @@ api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const request = error.config as (InternalAxiosRequestConfig & { _retry?: boolean }) | undefined;
-    const isRefreshRequest = request?.url?.includes("/auth/refresh/");
+    const isRefreshRequest = request?.url?.includes("/auth/refresh");
 
     if (error.response?.status !== 401 || !request || request._retry || isRefreshRequest) {
       return Promise.reject(error);
@@ -113,7 +113,7 @@ api.interceptors.response.use(
       });
       const tokens = await refreshRequest;
       request.headers.Authorization = `Bearer ${tokens.accessToken}`;
-      if (request.url?.includes("/auth/logout/")) {
+      if (request.url?.includes("/auth/logout")) {
         request.data = JSON.stringify({ refresh: tokens.refreshToken });
       }
       return api(request);
