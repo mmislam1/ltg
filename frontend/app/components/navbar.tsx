@@ -24,13 +24,13 @@ const Navbar = () => {
 
   return (
     <nav className="flex w-full items-center justify-center border-b border-line bg-surface px-4 py-2 sm:px-6 lg:px-8">
-      <div className="relative flex w-full max-w-7xl items-center justify-between">
-        <Link href="/" className="flex shrink-0 items-center gap-2">
+      <div className="relative grid w-full max-w-7xl grid-cols-[auto_1fr_auto] items-center">
+        <Link href="/" className="col-start-1 row-start-1 flex shrink-0 items-center gap-2">
           <Logo/>
         </Link>
 
         {user ? (
-          <div className="absolute left-1/2 hidden -translate-x-1/2 sm:block">
+          <div className="col-span-3 row-start-2 -my-1 justify-self-center sm:absolute sm:left-1/2 sm:top-1/2 sm:col-auto sm:row-auto sm:my-0 sm:-translate-x-1/2 sm:-translate-y-1/2">
             <DatePicker />
           </div>
         ) : (
@@ -49,7 +49,7 @@ const Navbar = () => {
           </div>
         )}
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="col-start-3 row-start-1 flex shrink-0 items-center gap-2 justify-self-end">
           {user && <DropdownMenu />}
           <UserTab />
         </div>

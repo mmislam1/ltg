@@ -70,20 +70,20 @@ export default function DatePicker() {
 
     return (
         <div className="relative inline-block">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0 sm:gap-1">
                 <button
                     type="button"
                     onClick={handlePrevDay}
-                    className="btn btn-ghost btn-icon"
+                    className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
                     aria-label="Previous day"
                 >
-                    <ChevronLeft size={30} />
+                    <ChevronLeft className="h-5 w-5 sm:h-7 sm:w-7" />
                 </button>
 
                 <button
                     type="button"
                     onClick={() => setShowCalendar(!showCalendar)}
-                    className="btn btn-ghost px-2 text-xs md:text-sm"
+                    className="btn btn-ghost min-h-8 px-1 text-[0.7rem] sm:min-h-11 sm:px-2 sm:text-sm"
                     aria-expanded={showCalendar}
                     aria-haspopup="dialog"
                 >
@@ -93,15 +93,15 @@ export default function DatePicker() {
                 <button
                     type="button"
                     onClick={handleNextDay}
-                    className="btn btn-ghost btn-icon"
+                    className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
                     aria-label="Next day"
                 >
-                    <ChevronRight size={30} />
+                    <ChevronRight className="h-5 w-5 sm:h-7 sm:w-7" />
                 </button>
             </div>
 
             {showCalendar && (
-                <div className="card absolute top-full left-1/2 z-10 mt-2 w-75 -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
+                <div className="card absolute top-full left-1/2 z-10 mt-2 w-[min(18.75rem,calc(100vw-1rem))] -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
                     <div className="flex items-center justify-between mb-4">
                         <button type="button" onClick={handlePrevMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Previous month">
                             <ChevronLeft size={20} />
