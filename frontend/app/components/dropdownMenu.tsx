@@ -1,183 +1,133 @@
-'use client'
-import React, { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Edit, Trash2, Share2, Copy, Plus, CheckIcon, List, PlusCircleIcon, CopyIcon, MenuIcon, Send, DockIcon, File } from 'lucide-react';
-import { FaCopy } from 'react-icons/fa';
-import { useDeviceType } from '../hooks/useDeviceType';
-import { useRouter } from 'next/navigation';
+"use client";
 
-interface MenuItem {
-    id: string;
-    label: string;
-    icon?: React.ReactNode;
-    onClick?: () => void;
-    danger?: boolean;
-}
-
-interface DropdownMenuProps {
-    items: MenuItem[];
-    onItemClick?: (item: MenuItem) => void;
-}
+import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  ChartNoAxesColumnIncreasing,
+  ChevronDown,
+  ClipboardList,
+  LogOut,
+  Menu,
+  NotebookTabs,
+  UserRoundPen,
+} from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { logoutUser } from "../store/features/authSlice";
 
 export default function DropdownMenu() {
-    const [isOpen, setIsOpen] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null);
-    const buttonRef = useRef<HTMLButtonElement>(null);
-    const device = useDeviceType()
-    const router = useRouter()
+  const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const user = useAppSelector((state) => state.auth.user);
+  const dispatch = useAppDispatch();
+  const router = useRouter();
 
-
-
-
-    const items = [{
-        id: '1',
-        label: 'Mark Day as Complete',
-        icon: <CheckIcon />,
-        onClick:()=>router.push('/'),
-    },
-    {
-        id: '2',
-        label: 'Daily Report',
-        icon: <List />,
-        onClick: () => router.push('/'),
-    },
-    {
-        id: '3',
-        label: 'Multi-Select',
-        icon: <PlusCircleIcon />,
-        onClick: () => router.push('/'),
-    },
-    {
-        id: '4',
-        label: 'Copy Current Day',
-        icon: <CopyIcon />,
-        onClick: () => router.push('/'),
-    },
-    {
-        id: '5',
-        label: 'Copy Previous Day',
-        icon: <File />,
-        onClick: () => router.push('/'),
-    },
-    {
-        id: '6',
-        label: 'Clear All Serving Sizes',
-        icon: <MenuIcon />,
-        onClick: () => router.push('/'),
-    },
-    {
-        id: '7',
-        label: 'Delete All Diary Entries',
-        icon: <Trash2 />,
-        onClick: () => router.push('/'),
-    },
-    {
-        id: '8',
-        label: 'Export Chart',
-        icon: <Send />,
-        onClick: () => router.push('/chart'),
-
-    }
-    ]
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (
-                menuRef.current &&
-                !menuRef.current.contains(event.target as Node) &&
-                buttonRef.current &&
-                !buttonRef.current.contains(event.target as Node)
-            ) {
-                setIsOpen(false);
-            }
-        }
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
-    const handleItemClick = (item: MenuItem) => {
-        /*item.onClick();
-        onItemClick?.(item);
-        setIsOpen(false);*/
+  useEffect(() => {
+    const close = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
     };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
-    return (
-        <div className="relative inline-block">
-            <button
-                type="button"
-                ref={buttonRef}
-                onClick={() => setIsOpen(!isOpen)}
-                className="btn btn-ghost btn-icon"
-                aria-label="Menu"
-                aria-expanded={isOpen}
-                aria-haspopup="menu"
-            >
-                <MoreVertical size={20} />
-            </button>
+  if (!user) return null;
 
-            {isOpen && (
-                <div
-                    ref={menuRef}
-                    className="card absolute right-0 z-10 mt-2 w-65 py-1"
-                    role="menu"
-                >
-                    {items.map((item) => (
-                        <button
-                            type="button"
-                            key={item.id}
-                            onClick={item.onClick}
-                            className="btn btn-ghost w-full justify-start rounded-none px-4 text-left text-sm"
-                            role="menuitem"
-                        >
-                            {item.icon && <span className="text-lg">{item.icon}</span>}
-                            <span className={device === 'm' ? 'text-sm' : 'text-base'}>{item.label}</span>
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-}
+  const initials = user.name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 
-// Example usage component
-export function DropdownMenuExample() {
-    const [menuItems] = useState<MenuItem[]>([
-        {
-            id: '1',
-            label: 'Edit',
-            icon: <Edit size={16} />,
-            onClick: () => console.log('Edit clicked'),
-        },
-        {
-            id: '2',
-            label: 'Copy',
-            icon: <Copy size={16} />,
-            onClick: () => console.log('Copy clicked'),
-        },
-        {
-            id: '3',
-            label: 'Share',
-            icon: <Share2 size={16} />,
-            onClick: () => console.log('Share clicked'),
-        },
-        {
-            id: '4',
-            label: 'Delete',
-            icon: <Trash2 size={16} />,
-            onClick: () => console.log('Delete clicked'),
-            danger: true,
-        },
-    ]);
+  const navigate = (href: string) => {
+    setIsOpen(false);
+    router.push(href);
+  };
 
-    return (
-        <div className="flex min-h-screen items-center justify-center bg-canvas">
-            <div className="card p-8">
-                <h1 className="text-2xl font-bold mb-6">Dropdown Menu Example</h1>
-                <div className="flex items-center gap-4">
-                    <span className="text-muted">Click the menu button:</span>
-                    <DropdownMenu />
-                </div>
+  const signOut = async () => {
+    setIsOpen(false);
+    await dispatch(logoutUser());
+    router.push("/auth/signin");
+  };
+
+  const items = [
+    { label: "Edit profile", icon: UserRoundPen, href: "/profile" },
+    { label: "Daily report", icon: ClipboardList, href: "/" },
+    { label: "Manage meals", icon: NotebookTabs, href: "/manage_meals" },
+    { label: "Export chart", icon: ChartNoAxesColumnIncreasing, href: "/chart" },
+  ];
+
+  return (
+    <div className="relative inline-flex">
+      <button
+        type="button"
+        ref={buttonRef}
+        onClick={() => setIsOpen((open) => !open)}
+        className="flex h-9 items-center gap-1 rounded-xl border border-line bg-surface px-2.5 text-muted shadow-sm transition-colors hover:border-brand/30 hover:bg-brand-soft hover:text-brand sm:h-10"
+        aria-label="Open account menu"
+        aria-expanded={isOpen}
+        aria-haspopup="menu"
+      >
+        <Menu size={19} aria-hidden="true" />
+        <ChevronDown size={14} className={`hidden transition-transform sm:block ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+      </button>
+
+      {isOpen && (
+        <div ref={menuRef} className="card absolute right-0 top-[calc(100%+0.6rem)] z-50 w-72 overflow-hidden py-1" role="menu">
+          <div className="flex items-center gap-3 border-b border-line px-4 py-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-brand">
+              {initials || "U"}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold text-ink">{user.name}</p>
+              <p className="mt-0.5 truncate text-xs text-muted">{user.email}</p>
             </div>
+          </div>
+
+          <div className="py-1">
+            {items.map(({ label, icon: Icon, href }) => (
+              <button
+                type="button"
+                key={label}
+                onClick={() => navigate(href)}
+                className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm font-semibold text-ink transition-colors hover:bg-brand-soft hover:text-brand"
+                role="menuitem"
+              >
+                <Icon size={18} className="text-muted" />
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="border-t border-line py-1">
+            <button
+              type="button"
+              onClick={signOut}
+              className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm font-semibold text-danger transition-colors hover:bg-red-50"
+              role="menuitem"
+            >
+              <LogOut size={18} /> Sign out
+            </button>
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 }

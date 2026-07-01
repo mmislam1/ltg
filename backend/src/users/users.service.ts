@@ -22,6 +22,13 @@ export class UsersService {
     return this.users.create(data);
   }
 
+  updateProfile(id: string, data: Partial<User>) {
+    if (!Types.ObjectId.isValid(id)) return null;
+    return this.users
+      .findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true })
+      .exec();
+  }
+
   async updateRefreshTokenHash(id: string, refreshTokenHash: string | null) {
     await this.users.updateOne({ _id: id }, { $set: { refreshTokenHash } }).exec();
   }

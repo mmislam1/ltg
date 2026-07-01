@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import Logo from "../../components/logo";
 import { useDeviceType } from "../hooks/useDeviceType";
 import { useAppSelector } from "../store/hooks";
-import UserTab from "./userTab";
 import DropdownMenu from "./dropdownMenu";
 import DatePicker from "./calender";
 const Navbar = () => {
@@ -30,7 +29,7 @@ const Navbar = () => {
         </Link>
 
         {user ? (
-          <div className="col-span-3 row-start-2 -my-1 justify-self-center sm:absolute sm:left-1/2 sm:top-1/2 sm:col-auto sm:row-auto sm:my-0 sm:-translate-x-1/2 sm:-translate-y-1/2">
+          <div className="col-start-2 row-start-1 min-w-0 justify-self-center sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2">
             <DatePicker />
           </div>
         ) : (
@@ -50,8 +49,14 @@ const Navbar = () => {
         )}
 
         <div className="col-start-3 row-start-1 flex shrink-0 items-center gap-2 justify-self-end">
-          {user && <DropdownMenu />}
-          <UserTab />
+          {user ? (
+            <DropdownMenu />
+          ) : (
+            <div className="flex items-center gap-2 sm:gap-4">
+              <Link href="/auth/signin" className="btn btn-secondary">Login</Link>
+              <Link href="/auth/signup" className="btn btn-primary">Sign Up</Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>

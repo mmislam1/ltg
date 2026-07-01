@@ -25,3 +25,4 @@ MongoDB must be available at the `MONGODB_URI` in `.env`.
 - `POST /api/auth/refresh`
 - `POST /api/auth/logout` (Bearer access token)
 - `GET /api/auth/me` (Bearer access token)
+- `PATCH /api/auth/me` (Bearer access token)

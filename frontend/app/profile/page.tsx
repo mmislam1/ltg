@@ -1,0 +1,216 @@
+"use client";
+
+import { FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowLeft, CheckCircle2, Ruler, Save, UserRound, Weight } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  AuthError,
+  User,
+  updateProfile,
+  UpdateProfileData,
+} from "../store/features/authSlice";
+
+type ProfileForm = {
+  name: string;
+  age: string;
+  weight: string;
+  weight_unit: "kg" | "lb";
+  height: string;
+  height_unit: "cm" | "ft";
+  target_calories: string;
+  target_protein: string;
+  target_carbs: string;
+  target_fat: string;
+};
+
+const emptyForm: ProfileForm = {
+  name: "",
+  age: "",
+  weight: "",
+  weight_unit: "kg",
+  height: "",
+  height_unit: "cm",
+  target_calories: "",
+  target_protein: "",
+  target_carbs: "",
+  target_fat: "",
+};
+
+const formFromUser = (user: User): ProfileForm => ({
+  name: user.name,
+  age: String(user.age),
+  weight: String(user.weight),
+  weight_unit: user.weightUnit,
+  height: String(user.height),
+  height_unit: user.heightUnit,
+  target_calories: String(user.dailyGoals.targetCalories),
+  target_protein: String(user.dailyGoals.targetProtein),
+  target_carbs: String(user.dailyGoals.targetCarb),
+  target_fat: String(user.dailyGoals.targetFat),
+});
+
+export default function ProfilePage() {
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const { user, initialized, profileLoading, profileError } = useAppSelector((state) => state.auth);
+  const [form, setForm] = useState<ProfileForm>(emptyForm);
+  const [formUserId, setFormUserId] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (initialized && !user) router.replace("/auth/signin");
+  }, [initialized, router, user]);
+
+  if (user && formUserId !== user.id) {
+    setFormUserId(user.id);
+    setForm(formFromUser(user));
+  }
+
+  const update = (field: keyof ProfileForm, value: string) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setFieldErrors((current) => ({ ...current, [field]: "" }));
+    setSaved(false);
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    const payload: UpdateProfileData = {
+      name: form.name.trim(),
+      age: Number(form.age),
+      weight: Number(form.weight),
+      weight_unit: form.weight_unit,
+      height: Number(form.height),
+      height_unit: form.height_unit,
+      target_calories: Number(form.target_calories),
+      target_protein: Number(form.target_protein),
+      target_carbs: Number(form.target_carbs),
+      target_fat: Number(form.target_fat),
+    };
+
+    const errors: Record<string, string> = {};
+    if (payload.name.length < 2) errors.name = "Enter at least 2 characters.";
+    if (payload.age < 13 || payload.age > 120) errors.age = "Age must be between 13 and 120.";
+    if (payload.weight <= 0) errors.weight = "Enter a valid weight.";
+    if (payload.height <= 0) errors.height = "Enter a valid height.";
+    if (payload.target_calories < 500) errors.target_calories = "Calories must be at least 500.";
+    setFieldErrors(errors);
+    if (Object.keys(errors).length) return;
+
+    try {
+      await dispatch(updateProfile(payload)).unwrap();
+      setSaved(true);
+    } catch (reason) {
+      const fields = (reason as AuthError).fields || {};
+      setFieldErrors(
+        Object.fromEntries(
+          Object.entries(fields).map(([key, value]) => [
+            key,
+            Array.isArray(value) ? value[0] : String(value),
+          ]),
+        ),
+      );
+    }
+  };
+
+  if (!initialized || !user) {
+    return <div className="min-h-[60vh] bg-canvas" />;
+  }
+
+  return (
+    <div className="min-h-screen bg-canvas px-4 py-8 sm:px-6 lg:py-12">
+      <div className="mx-auto max-w-3xl">
+        <button type="button" onClick={() => router.back()} className="btn btn-ghost btn-sm mb-5 -ml-2">
+          <ArrowLeft size={17} /> Back
+        </button>
+
+        <div className="mb-7">
+          <p className="mb-2 text-sm font-bold uppercase tracking-[0.14em] text-brand">Account settings</p>
+          <h1 className="text-3xl font-bold tracking-tight text-ink">Edit your profile</h1>
+          <p className="mt-2 text-sm leading-6 text-muted">Keep your body measurements and nutrition targets accurate.</p>
+        </div>
+
+        <form onSubmit={submit} className="card overflow-hidden">
+          <section className="border-b border-line p-5 sm:p-7">
+            <h2 className="mb-5 text-lg font-bold text-ink">Personal information</h2>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <Field label="Full name" name="name" value={form.name} onChange={(value) => update("name", value)} icon={UserRound} error={fieldErrors.name} />
+              <label className="form-field">
+                <span className="form-label">Email address</span>
+                <input value={user.email} readOnly className="form-control bg-canvas text-muted" aria-label="Email address" />
+                <span className="text-xs text-muted">Contact support to change your email.</span>
+              </label>
+              <Field label="Age" name="age" type="number" min="13" max="120" value={form.age} onChange={(value) => update("age", value)} icon={UserRound} error={fieldErrors.age} />
+              <div className="hidden sm:block" />
+              <MeasurementField label="Weight" name="weight" icon={Weight} value={form.weight} unit={form.weight_unit} units={["kg", "lb"]} onValueChange={(value) => update("weight", value)} onUnitChange={(value) => update("weight_unit", value as "kg" | "lb")} error={fieldErrors.weight} />
+              <MeasurementField label="Height" name="height" icon={Ruler} value={form.height} unit={form.height_unit} units={["cm", "ft"]} onValueChange={(value) => update("height", value)} onUnitChange={(value) => update("height_unit", value as "cm" | "ft")} error={fieldErrors.height} />
+            </div>
+          </section>
+
+          <section className="p-5 sm:p-7">
+            <h2 className="text-lg font-bold text-ink">Daily nutrition targets</h2>
+            <p className="mb-5 mt-1 text-xs text-muted">Adjust these values to match guidance from your nutrition plan.</p>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              <NumberField label="Calories" unit="kcal" name="target_calories" value={form.target_calories} onChange={(value) => update("target_calories", value)} error={fieldErrors.target_calories} />
+              <NumberField label="Protein" unit="g" name="target_protein" value={form.target_protein} onChange={(value) => update("target_protein", value)} error={fieldErrors.target_protein} />
+              <NumberField label="Carbs" unit="g" name="target_carbs" value={form.target_carbs} onChange={(value) => update("target_carbs", value)} error={fieldErrors.target_carbs} />
+              <NumberField label="Fat" unit="g" name="target_fat" value={form.target_fat} onChange={(value) => update("target_fat", value)} error={fieldErrors.target_fat} />
+            </div>
+          </section>
+
+          <div className="flex flex-col gap-3 border-t border-line bg-canvas px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <div className="min-h-5 text-sm">
+              {saved && <span className="inline-flex items-center gap-1.5 font-semibold text-brand"><CheckCircle2 size={17} /> Profile saved</span>}
+              {!saved && profileError && <span className="text-danger">{profileError}</span>}
+            </div>
+            <button type="submit" disabled={profileLoading} className="btn btn-primary sm:min-w-36">
+              {profileLoading ? <span className="auth-spinner" aria-label="Saving profile" /> : <><Save size={17} /> Save changes</>}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+interface FieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+  label: string;
+  name: string;
+  value: string;
+  icon: typeof UserRound;
+  onChange: (value: string) => void;
+  error?: string;
+}
+
+function Field({ label, name, value, icon: Icon, onChange, error, ...props }: FieldProps) {
+  return (
+    <label className="form-field" htmlFor={name}>
+      <span className="form-label">{label}</span>
+      <span className="relative"><Icon size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" /><input {...props} id={name} name={name} value={value} onChange={(event) => onChange(event.target.value)} className="form-control !pl-10" aria-invalid={Boolean(error)} /></span>
+      {error && <span className="form-error">{error}</span>}
+    </label>
+  );
+}
+
+interface MeasurementProps { label: string; name: string; value: string; unit: string; units: string[]; icon: typeof Weight; onValueChange: (value: string) => void; onUnitChange: (value: string) => void; error?: string }
+function MeasurementField({ label, name, value, unit, units, icon: Icon, onValueChange, onUnitChange, error }: MeasurementProps) {
+  return (
+    <label className="form-field" htmlFor={name}>
+      <span className="form-label">{label}</span>
+      <span className="relative flex"><Icon size={17} className="absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" /><input id={name} type="number" min="1" step="0.01" value={value} onChange={(event) => onValueChange(event.target.value)} className="form-control !rounded-r-none !pl-10" aria-invalid={Boolean(error)} /><select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value)} className="rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-3 text-sm font-bold text-brand">{units.map((item) => <option key={item}>{item}</option>)}</select></span>
+      {error && <span className="form-error">{error}</span>}
+    </label>
+  );
+}
+
+interface NumberFieldProps { label: string; unit: string; name: string; value: string; onChange: (value: string) => void; error?: string }
+function NumberField({ label, unit, name, value, onChange, error }: NumberFieldProps) {
+  return (
+    <label className="form-field" htmlFor={name}>
+      <span className="form-label">{label}</span>
+      <span className="relative"><input id={name} type="number" min="0" value={value} onChange={(event) => onChange(event.target.value)} className="form-control !pr-12" aria-invalid={Boolean(error)} /><span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">{unit}</span></span>
+      {error && <span className="form-error">{error}</span>}
+    </label>
+  );
+}

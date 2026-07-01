@@ -61,6 +61,19 @@ export interface SignUpData {
   password_confirm: string;
 }
 
+export interface UpdateProfileData {
+  name: string;
+  age: number;
+  weight: number;
+  weight_unit: "kg" | "lb";
+  height: number;
+  height_unit: "cm" | "ft";
+  target_calories: number;
+  target_protein: number;
+  target_carbs: number;
+  target_fat: number;
+}
+
 export interface AuthError {
   message: string;
   fields?: Record<string, string[] | string>;
@@ -73,6 +86,8 @@ export interface AuthState {
   loading: boolean;
   initialized: boolean;
   error: string | null;
+  profileLoading: boolean;
+  profileError: string | null;
 }
 
 const initialState: AuthState = {
@@ -82,6 +97,8 @@ const initialState: AuthState = {
   loading: false,
   initialized: false,
   error: null,
+  profileLoading: false,
+  profileError: null,
 };
 
 const mapUser = (user: ApiUser): User => ({
@@ -161,6 +178,19 @@ export const logoutUser = createAsyncThunk("auth/logout", async () => {
   }
 });
 
+export const updateProfile = createAsyncThunk<
+  User,
+  UpdateProfileData,
+  { rejectValue: AuthError }
+>("auth/updateProfile", async (profile, { rejectWithValue }) => {
+  try {
+    const { data } = await api.patch<ApiUser>("/auth/me", profile);
+    return mapUser(data);
+  } catch (error) {
+    return rejectWithValue(authError(error, "Profile update failed. Please try again."));
+  }
+});
+
 const applyAuth = (
   state: AuthState,
   payload: { user: User; tokens: StoredTokens },
@@ -227,6 +257,19 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.refreshToken = null;
         state.error = null;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.profileLoading = true;
+        state.profileError = null;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.profileLoading = false;
+        state.profileError = null;
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.profileLoading = false;
+        state.profileError = action.payload?.message || "Profile update failed.";
       });
   },
 });

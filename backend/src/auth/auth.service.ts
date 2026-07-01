@@ -9,6 +9,7 @@ import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
@@ -97,6 +98,23 @@ export class AuthService {
 
   async profile(userId: string) {
     const user = await this.usersService.findById(userId);
+    if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');
+    return this.userResponse(user);
+  }
+
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.usersService.updateProfile(userId, {
+      ...(dto.name !== undefined ? { name: dto.name } : {}),
+      ...(dto.age !== undefined ? { age: dto.age } : {}),
+      ...(dto.weight !== undefined ? { weight: dto.weight } : {}),
+      ...(dto.weight_unit !== undefined ? { weightUnit: dto.weight_unit } : {}),
+      ...(dto.height !== undefined ? { height: dto.height } : {}),
+      ...(dto.height_unit !== undefined ? { heightUnit: dto.height_unit } : {}),
+      ...(dto.target_calories !== undefined ? { targetCalories: dto.target_calories } : {}),
+      ...(dto.target_protein !== undefined ? { targetProtein: dto.target_protein } : {}),
+      ...(dto.target_carbs !== undefined ? { targetCarbs: dto.target_carbs } : {}),
+      ...(dto.target_fat !== undefined ? { targetFat: dto.target_fat } : {}),
+    });
     if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');
     return this.userResponse(user);
   }
