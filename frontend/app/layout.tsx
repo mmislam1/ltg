@@ -2,11 +2,9 @@
 import type { Metadata, Viewport } from "next";
 import { Comfortaa } from "next/font/google";
 import "./globals.css";
-import Navbar from "./components/navbar";
 import ReduxProvider from "./providers/ReduxProvider";
-import Footer from "./components/footer";
-import BottomBar from "./components/botomBar";
 import { themeStyle } from "./theme";
+import SiteShell from "./components/siteShell";
 
 const comfortaa = Comfortaa({
   subsets: ["latin"],
@@ -38,17 +36,7 @@ export default function RootLayout({
     <html lang="en" className={comfortaa.variable} style={themeStyle}>
       <body className="flex min-h-screen w-full max-w-full flex-col items-center antialiased">
         <ReduxProvider>
-          {/*<SocketProvider serverUrl="http://localhost:5000">*/}
-            <header className="sticky top-0 z-50 w-full">
-              <Navbar></Navbar>
-            </header>
-            <main className="w-full max-w-6xl overflow-hidden">{children}</main>
-
-            <footer className="mt-auto w-full row-start-3 flex flex-wrap items-center justify-center">
-              <Footer />
-              <BottomBar/>
-            </footer>
-          {/*</SocketProvider>*/}
+          <SiteShell>{children}</SiteShell>
         </ReduxProvider>
       </body>
     </html>

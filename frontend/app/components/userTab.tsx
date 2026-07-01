@@ -1,14 +1,13 @@
 'use client'
 
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { RootState } from "../store/store";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import Link from "next/link";
-import { User } from "../store/features/authSlice";
-import { BellDot } from "lucide-react";
+import { logoutUser } from "../store/features/authSlice";
+import { BellDot, LogOut } from "lucide-react";
 import { useDeviceType } from "../hooks/useDeviceType";
+import { useRouter } from "next/navigation";
 
 interface UserIconProps {
     variant?: "small" | "medium" | "large";
@@ -25,7 +24,27 @@ const UserTab: React.FC<UserIconProps> = ({
     className = "",
 }) => {
     const user = useAppSelector((store) => store.auth.user);
+    const dispatch = useAppDispatch();
+    const router = useRouter();
     const [imageError, setImageError] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const closeMenu = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", closeMenu);
+        return () => document.removeEventListener("mousedown", closeMenu);
+    }, []);
+
+    const signOut = async () => {
+        await dispatch(logoutUser());
+        setMenuOpen(false);
+        router.push("/auth/signin");
+    };
 
     // Responsive sizing
     const sizeConfig = {
@@ -65,11 +84,11 @@ const UserTab: React.FC<UserIconProps> = ({
     };
 
     return (
-        <div className="flex flex-row items-center justify-center gap-6">
-            <div className="flex flex-row items-center justify-center gap-6"></div>
-            <div className=" h-8 flex flex-row items-center justify-center">
-                <BellDot></BellDot>
-                {showNotification && 8 > 0 && (
+        <div className="flex flex-row items-center justify-center gap-4">
+            {showNotification && (
+            <div className="flex h-8 flex-row items-center justify-center">
+                <BellDot />
+                {8 > 0 && (
                     <div
                         className={`
             ${config.notificationBg}
@@ -95,9 +114,10 @@ const UserTab: React.FC<UserIconProps> = ({
                     </div>
                 )}
             </div>
+            )}
 
             {!user ? (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <Link
                         href="/auth/signin"
                         className="btn btn-secondary"
@@ -112,17 +132,16 @@ const UserTab: React.FC<UserIconProps> = ({
                     </Link>
                 </div>
             ) : (
-                <div
-                    className={`relative inline-flex ${className}`}
-                    onClick={onClick}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter" && onClick) onClick();
-                    }}
-                >
+                <div ref={menuRef} className={`relative inline-flex ${className}`}>
                     {/* Avatar Container */}
-                    <div
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setMenuOpen((value) => !value);
+                            onClick?.();
+                        }}
+                        aria-label="Open account menu"
+                        aria-expanded={menuOpen}
                         className={`
           ${config.container}
           relative
@@ -138,8 +157,9 @@ const UserTab: React.FC<UserIconProps> = ({
           items-center
           justify-center
           bg-brand
-          flex-shrink-0
-        `}
+                        flex-shrink-0
+                        p-0
+                      `}
                     >
                         {!imageError && user.image ? (
                             <Image
@@ -165,7 +185,24 @@ const UserTab: React.FC<UserIconProps> = ({
                                 {getInitials(user.name || "U")}
                             </span>
                         )}
-                    </div>
+                    </button>
+
+                    {menuOpen && (
+                        <div className="card absolute right-0 top-[calc(100%+0.65rem)] z-50 w-64 overflow-hidden" role="menu">
+                            <div className="border-b border-line px-4 py-3">
+                                <p className="truncate text-sm font-bold text-ink">{user.name}</p>
+                                <p className="mt-0.5 truncate text-xs text-muted">{user.email}</p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={signOut}
+                                className="flex w-full items-center gap-2 px-4 py-3 text-left text-sm font-bold text-danger hover:bg-red-50"
+                                role="menuitem"
+                            >
+                                <LogOut size={17} /> Sign out
+                            </button>
+                        </div>
+                    )}
 
                     {/* Notification Badge */}
                 </div>

@@ -1,84 +1,97 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Home, BookOpen, Plus, BarChart3, MoreHorizontal } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  ChartNoAxesColumnIncreasing,
+  Home,
+  NotebookTabs,
+  Plus,
+  Salad,
+  type LucideIcon,
+} from "lucide-react";
 
-interface NavItemProps {
-    icon: React.ReactNode;
-    label: string;
-    isActive?: boolean;
-    onClick?: () => void;
+interface NavigationItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ icon, label, isActive, onClick }) => {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            className={`btn btn-ghost btn-icon flex-col ${isActive ? 'text-brand' : 'text-muted'}`}
-            aria-label={label}
-            aria-current={isActive ? 'page' : undefined}
+const navigationItems: NavigationItem[] = [
+  { href: "/", label: "Home", icon: Home },
+  { href: "/manage_meals", label: "Diary", icon: NotebookTabs },
+  { href: "/chart", label: "Progress", icon: ChartNoAxesColumnIncreasing },
+  { href: "/nutritionDashboard", label: "Nutrition", icon: Salad },
+];
+
+const isCurrentRoute = (pathname: string, href: string) =>
+  href === "/" ? pathname === href : pathname.startsWith(href);
+
+function NavigationLink({ item }: { item: NavigationItem }) {
+  const pathname = usePathname();
+  const active = isCurrentRoute(pathname, item.href);
+  const Icon = item.icon;
+
+  return (
+    <Link
+      href={item.href}
+      aria-current={active ? "page" : undefined}
+      className={`group relative flex min-h-16 flex-col items-center justify-center gap-1 rounded-2xl px-1 transition-colors duration-200 ${
+        active ? "text-brand" : "text-muted hover:text-ink"
+      }`}
+    >
+      {active && (
+        <span
+          aria-hidden="true"
+          className="absolute top-0 h-1 w-7 rounded-b-full bg-brand"
+        />
+      )}
+      <span
+        className={`flex h-8 w-10 items-center justify-center rounded-xl transition-all duration-200 ${
+          active ? "bg-brand-soft" : "group-hover:bg-canvas"
+        }`}
+      >
+        <Icon size={21} strokeWidth={active ? 2.4 : 2} />
+      </span>
+      <span className={`text-[0.65rem] leading-none ${active ? "font-bold" : "font-semibold"}`}>
+        {item.label}
+      </span>
+    </Link>
+  );
+}
+
+export default function BottomBar() {
+  const pathname = usePathname();
+  const addActive = pathname.startsWith("/add_meal");
+
+  return (
+    <nav
+      aria-label="Primary navigation"
+      className="safe-area-bottom fixed inset-x-0 bottom-0 z-50 border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden"
+    >
+      <div className="mx-auto grid h-[4.75rem] max-w-lg grid-cols-5 items-center px-2">
+        <NavigationLink item={navigationItems[0]} />
+        <NavigationLink item={navigationItems[1]} />
+
+        <Link
+          href="/add_meal"
+          aria-label="Add meal"
+          aria-current={addActive ? "page" : undefined}
+          className="group relative -mt-5 flex flex-col items-center gap-1 text-brand"
         >
-            <div className="w-6 h-6">{icon}</div>
-            <span className="sr-only">{label}</span>
-        </button>
-    );
-};
+          <span
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl border-4 border-surface bg-brand text-on-brand shadow-[0_8px_20px_rgba(22,101,52,0.3)] transition-all duration-200 group-active:translate-y-0.5 group-active:shadow-md ${
+              addActive ? "ring-4 ring-brand-soft" : "group-hover:bg-brand-hover"
+            }`}
+          >
+            <Plus size={26} strokeWidth={2.6} />
+          </span>
+          <span className="text-[0.65rem] font-bold leading-none text-ink">Add meal</span>
+        </Link>
 
-const BottomBar: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<string>('home');
-    const router = useRouter()
-
-    return (
-        <div className="safe-area-bottom fixed right-0 bottom-0 left-0 border-t border-line bg-surface">
-            <div className="max-w-screen-lg mx-auto px-4">
-                <div className="flex items-center justify-around h-12 relative">
-                    {/* Home */}
-                    <NavItem
-                        icon={<Home className="w-full h-full" strokeWidth={2} />}
-                        label="Home"
-                        isActive={activeTab === 'home'}
-                        onClick={() => {setActiveTab('home'); router.push("/")}}
-                    />
-
-                    {/* Diary */}
-                    <NavItem
-                        icon={<BookOpen className="w-full h-full" strokeWidth={2} />}
-                        label="Diary"
-                        isActive={activeTab === 'diary'}
-                        onClick={() => setActiveTab('diary')}
-                    />
-
-                    {/* Center Add Button */}
-                    <button
-                        type="button"
-                        onClick={() => router.push('/manage_meals')}
-                        className="btn btn-primary btn-icon -mt-2 h-14 min-h-14 w-14 min-w-14 shadow-lg"
-                        aria-label="Manage meals"
-                    >
-                        <Plus className="h-8 w-8 text-on-brand" strokeWidth={2.5} />
-                    </button>
-
-                    {/* Progress */}
-                    <NavItem
-                        icon={<BarChart3 className="w-full h-full" strokeWidth={2} />}
-                        label="Add meal"
-                        isActive={activeTab === 'progress'}
-                        onClick={() => {setActiveTab('progress');router.push('/add_meal')}}
-                    />
-
-                    {/* More */}
-                    <NavItem
-                        icon={<MoreHorizontal className="w-full h-full" strokeWidth={2} />}
-                        label="More"
-                        isActive={activeTab === 'more'}
-                        onClick={() => setActiveTab('more')}
-                    />
-                </div>
-            </div>
-        </div>
-    );
-};
-
-export default BottomBar;
+        <NavigationLink item={navigationItems[2]} />
+        <NavigationLink item={navigationItems[3]} />
+      </div>
+    </nav>
+  );
+}

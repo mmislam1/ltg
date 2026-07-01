@@ -242,6 +242,10 @@
   scrollbar-width: none;
 }
 
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 .col {
   background-color: var(--theme-primary-active);
 }
@@ -250,4 +254,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.auth-backdrop {
+  background-image:
+    radial-gradient(circle at 90% 8%, color-mix(in srgb, var(--theme-primary) 10%, transparent), transparent 28rem),
+    linear-gradient(135deg, var(--theme-background), color-mix(in srgb, var(--theme-primary-soft) 32%, var(--theme-background)));
+}
+
+.auth-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid color-mix(in srgb, currentColor 35%, transparent);
+  border-top-color: currentColor;
+  border-radius: 9999px;
+  animation: auth-spin 700ms linear infinite;
+}
+
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-spinner { animation-duration: 1.5s; }
 }

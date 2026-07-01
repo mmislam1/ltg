@@ -1,16 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React,{ReactNode} from "react";
 import Logo from "../../components/logo";
 import { useDeviceType } from "../hooks/useDeviceType";
 import { useAppSelector } from "../store/hooks";
-import UserTab from './userTab'
+import UserTab from "./userTab";
 import DropdownMenu from "./dropdownMenu";
-import { Plus } from "lucide-react";
-import DatePickerCalendar from "./calender";
 import DatePicker from "./calender";
 const Navbar = () => {
 
@@ -50,8 +46,11 @@ const Navbar = () => {
           </Link>
         ))}
       </div>)}
-      <DatePicker/>
-      <DropdownMenu />
+      <div className="flex items-center gap-2">
+        {user && <DatePicker />}
+        {user && <DropdownMenu />}
+        <UserTab showNotification={Boolean(user)} />
+      </div>
       </div>
     </nav>
   );
