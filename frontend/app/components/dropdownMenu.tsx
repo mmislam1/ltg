@@ -3,12 +3,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ChartNoAxesColumnIncreasing,
-  ChevronDown,
-  ClipboardList,
+  CheckIcon,
+  CopyIcon,
+  File,
+  List,
   LogOut,
-  Menu,
+  MenuIcon,
+  MoreVertical,
   NotebookTabs,
+  PlusCircleIcon,
+  Send,
+  Trash2,
   UserRoundPen,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -68,29 +73,33 @@ export default function DropdownMenu() {
   };
 
   const items = [
-    { label: "Edit profile", icon: UserRoundPen, href: "/profile" },
-    { label: "Daily report", icon: ClipboardList, href: "/" },
+    { label: "Mark Day as Complete", icon: CheckIcon, href: "/" },
+    { label: "Daily Report", icon: List, href: "/" },
+    { label: "Multi-Select", icon: PlusCircleIcon, href: "/" },
+    { label: "Copy Current Day", icon: CopyIcon, href: "/" },
+    { label: "Copy Previous Day", icon: File, href: "/" },
+    { label: "Clear All Serving Sizes", icon: MenuIcon, href: "/" },
+    { label: "Delete All Diary Entries", icon: Trash2, href: "/" },
+    { label: "Export Chart", icon: Send, href: "/chart" },
     { label: "Manage meals", icon: NotebookTabs, href: "/manage_meals" },
-    { label: "Export chart", icon: ChartNoAxesColumnIncreasing, href: "/chart" },
   ];
 
   return (
-    <div className="relative inline-flex">
+    <div className="relative inline-block">
       <button
         type="button"
         ref={buttonRef}
         onClick={() => setIsOpen((open) => !open)}
-        className="flex h-9 items-center gap-1 rounded-xl border border-line bg-surface px-2.5 text-muted shadow-sm transition-colors hover:border-brand/30 hover:bg-brand-soft hover:text-brand sm:h-10"
-        aria-label="Open account menu"
+        className="btn btn-ghost btn-icon"
+        aria-label="Menu"
         aria-expanded={isOpen}
         aria-haspopup="menu"
       >
-        <Menu size={19} aria-hidden="true" />
-        <ChevronDown size={14} className={`hidden transition-transform sm:block ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+        <MoreVertical size={20} aria-hidden="true" />
       </button>
 
       {isOpen && (
-        <div ref={menuRef} className="card absolute right-0 top-[calc(100%+0.6rem)] z-50 w-72 overflow-hidden py-1" role="menu">
+        <div ref={menuRef} className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 max-h-[calc(100vh-5rem)] w-72 overflow-y-auto py-1" role="menu">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-brand">
               {initials || "U"}
@@ -101,17 +110,29 @@ export default function DropdownMenu() {
             </div>
           </div>
 
+          <div className="border-b border-line py-1">
+            <button
+              type="button"
+              onClick={() => navigate("/profile")}
+              className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm"
+              role="menuitem"
+            >
+              <UserRoundPen size={18} className="text-muted" />
+              <span>Edit profile</span>
+            </button>
+          </div>
+
           <div className="py-1">
             {items.map(({ label, icon: Icon, href }) => (
               <button
                 type="button"
                 key={label}
                 onClick={() => navigate(href)}
-                className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm font-semibold text-ink transition-colors hover:bg-brand-soft hover:text-brand"
+                className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm"
                 role="menuitem"
               >
                 <Icon size={18} className="text-muted" />
-                {label}
+                <span>{label}</span>
               </button>
             ))}
           </div>
@@ -120,7 +141,7 @@ export default function DropdownMenu() {
             <button
               type="button"
               onClick={signOut}
-              className="flex min-h-11 w-full items-center gap-3 px-4 py-2 text-left text-sm font-semibold text-danger transition-colors hover:bg-red-50"
+              className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm text-danger hover:bg-red-50"
               role="menuitem"
             >
               <LogOut size={18} /> Sign out
