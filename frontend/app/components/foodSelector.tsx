@@ -18,6 +18,7 @@ interface FoodSelectorProps {
   onQuantityChange: (foodId: string, quantity: number) => void;
   className?: string;
   maxHeight?: string;
+  showSearch?: boolean;
 }
 
 const validQuantity = (value: number, fallback: number) =>
@@ -30,6 +31,7 @@ export default function FoodSelector({
   onQuantityChange,
   className = "",
   maxHeight,
+  showSearch = true,
 }: FoodSelectorProps) {
   const [query, setQuery] = useState("");
   const [draftQuantities, setDraftQuantities] = useState<Record<string, number>>({});
@@ -61,22 +63,24 @@ export default function FoodSelector({
 
   return (
     <section className={`w-full ${className}`} aria-label="Food selector">
-      <div className="relative mb-3 w-full">
-        <label className="sr-only" htmlFor={searchId}>Search foods</label>
-        <SearchIcon
-          className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
-          size={19}
-          aria-hidden="true"
-        />
-        <input
-          id={searchId}
-          type="search"
-          className="form-control rounded-full pl-11"
-          placeholder="Search foods"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-        />
-      </div>
+      {showSearch && (
+        <div className="relative mb-3 w-full">
+          <label className="sr-only" htmlFor={searchId}>Search foods</label>
+          <SearchIcon
+            className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-muted"
+            size={19}
+            aria-hidden="true"
+          />
+          <input
+            id={searchId}
+            type="search"
+            className="form-control rounded-full pl-11"
+            placeholder="Search foods"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </div>
+      )}
 
       <div
         className="no-scr divide-y divide-line overflow-y-auto rounded-xl border border-line bg-surface"

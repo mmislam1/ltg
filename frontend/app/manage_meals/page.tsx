@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Trash2, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { updateMeal, type Meal } from '../store/features/activitySlice';
 import type { Food } from '../store/features/foodSlice';
-import { NUTRIENT_UNITS, nutritionBasisLabel, quantityStep, scaleNutrient } from '../store/nutritionUnits';
+import { NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
 import FoodSelector from '../components/foodSelector';
 
 export default function MealsPage() {
@@ -144,86 +144,15 @@ export default function MealsPage() {
 
                             {/* Food List */}
                             <div className="divide-y divide-line">
-                                {meal.list.map((item) => {
-                                    if (!item.foodItem) return null;
-
-                                    const totalCalories = scaleNutrient(
-                                        item.foodItem,
-                                        item.foodItem.nutrition.calories,
-                                        item.quantity,
-                                    );
-                                    const step = quantityStep(item.foodItem.unit);
-
-                                    return (
-                                        <div
-                                            key={item.foodItem.id}
-                                            className="px-6 py-4 transition-colors hover:bg-brand-soft"
-                                        >
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex-1">
-                                                    <h3 className="text-base font-medium text-ink">
-                                                        {item.foodItem.name}
-                                                    </h3>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <p className="text-sm text-muted">
-                                                            Nutrition per {nutritionBasisLabel(item.foodItem)}
-                                                        </p>
-                                                        <span className="text-gray-300">•</span>
-                                                        <div className="flex items-center gap-1">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            updateQuantity(
-                                                                                meal.id,
-                                                                                item.foodItem!.id,
-                                                                                item.quantity - step
-                                                                            )
-                                                                        }
-                                                                        className="btn btn-secondary btn-icon btn-icon-sm"
-                                                                        aria-label={`Decrease ${item.foodItem.name} quantity`}
-                                                                    >
-                                                                        −
-                                                                    </button>
-                                                                    <span className="px-2 text-sm text-muted">
-                                                                        {item.quantity} {item.foodItem.unit}
-                                                                    </span>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() =>
-                                                                            updateQuantity(
-                                                                                meal.id,
-                                                                                item.foodItem!.id,
-                                                                                item.quantity + step
-                                                                            )
-                                                                        }
-                                                                        className="btn btn-secondary btn-icon btn-icon-sm"
-                                                                        aria-label={`Increase ${item.foodItem.name} quantity`}
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center gap-4 ml-4">
-                                                    <span className="text-base font-medium text-ink">
-                                                        {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
-                                                    </span>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            removeFoodFromMeal(meal.id, item.foodItem!.id)
-                                                        }
-                                                        className="btn btn-danger btn-icon"
-                                                        aria-label={`Remove ${item.foodItem.name}`}
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
+                                {showFoodSelector !== meal.id && meal.list.length > 0 && (
+                                    <FoodSelector
+                                        foods={meal.list.flatMap((item) => item.foodItem ? [item.foodItem] : [])}
+                                        selectedItems={meal.list}
+                                        onToggle={(food, quantity) => toggleFoodForMeal(meal.id, food, quantity)}
+                                        onQuantityChange={(foodId, quantity) => updateQuantity(meal.id, foodId, quantity)}
+                                        showSearch={false}
+                                    />
+                                )}
 
                                 {/* Add Food Button */}
                                 <div className="px-2 py-4">
