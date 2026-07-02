@@ -7,7 +7,6 @@ import type { ListItems } from "../store/features/activitySlice";
 import type { Food } from "../store/features/foodSlice";
 import {
   NUTRIENT_UNITS,
-  nutritionBasisLabel,
   quantityStep,
   scaleNutrient,
 } from "../store/nutritionUnits";
@@ -109,68 +108,64 @@ export default function FoodSelector({
           return (
             <article
               key={food.id}
-              className={`relative grid gap-3 px-3 py-4 pr-16 transition-colors sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:px-4 sm:pr-16 ${selected ? "bg-brand-soft/60" : "hover:bg-canvas"}`}
+              className={`relative px-3 py-3 pr-16 transition-colors sm:px-4 sm:pr-16 ${selected ? "bg-brand-soft/60" : "hover:bg-canvas"}`}
             >
               <div className="min-w-0">
-                <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                  <h3 className="truncate font-semibold text-ink">{food.name}</h3>
-                  <span className="text-xs text-muted">
-                    Base: {nutritionBasisLabel(food)}
+                <h3 className="truncate font-semibold text-ink">{food.name}</h3>
+
+                <div className="mt-2 flex min-w-0 items-center justify-between gap-2">
+                  <div className="flex shrink-0 items-center gap-1">
+                    <button
+                      type="button"
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-brand-soft"
+                      onClick={() => changeQuantity(food, Math.max(1, quantity - step))}
+                      aria-label={`Decrease ${food.name} portion`}
+                    >
+                      <Minus size={13} />
+                    </button>
+                    <label className="relative flex items-center">
+                      <span className="sr-only">{food.name} portion in {food.unit}</span>
+                      <input
+                        type="number"
+                        min="0.001"
+                        step={step}
+                        inputMode="decimal"
+                        value={quantity}
+                        onChange={(event) => changeQuantity(food, Number(event.target.value))}
+                        className="h-7 w-20 rounded-md border border-line bg-surface px-1.5 pr-7 text-center text-xs text-ink tabular-nums outline-none focus:border-brand"
+                        aria-label={`${food.name} portion`}
+                      />
+                      <span className="pointer-events-none absolute right-1.5 text-[10px] font-bold text-muted">
+                        {food.unit}
+                      </span>
+                    </label>
+                    <button
+                      type="button"
+                      className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-brand-soft"
+                      onClick={() => changeQuantity(food, quantity + step)}
+                      aria-label={`Increase ${food.name} portion`}
+                    >
+                      <Plus size={13} />
+                    </button>
+                  </div>
+
+                  <span className="truncate text-right text-xs font-bold tabular-nums" style={{ color: NUTRITION_COLORS.calories }}>
+                    Total {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
                   </span>
                 </div>
 
-                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-xs tabular-nums">
-                  <span
-                    className="rounded-full px-2 py-1 font-bold text-white"
-                    style={{ backgroundColor: NUTRITION_COLORS.calories }}
-                  >
-                    {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
-                  </span>
+                <div className="mt-2 grid grid-cols-3 gap-2 border-t border-line/70 pt-2 text-xs tabular-nums">
                   {macroCalories.map((macro) => (
-                    <span
-                      key={macro.label}
-                      className="rounded-full border px-2 py-1 font-semibold"
-                      style={{ borderColor: macro.color, color: macro.color }}
-                    >
-                      {macro.label} {macro.calories.toFixed(1)} {NUTRIENT_UNITS.calories}
-                    </span>
+                    <div key={macro.label} className="min-w-0 border-l-2 pl-2" style={{ borderColor: macro.color }}>
+                      <div className="truncate font-semibold" style={{ color: macro.color }}>
+                        {macro.label}
+                      </div>
+                      <div className="truncate font-bold text-ink">
+                        {macro.calories.toFixed(1)} {NUTRIENT_UNITS.calories}
+                      </div>
+                    </div>
                   ))}
                 </div>
-              </div>
-
-              <div className="flex items-center gap-1 justify-self-start sm:justify-self-end">
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-icon btn-icon-sm"
-                  onClick={() => changeQuantity(food, Math.max(1, quantity - step))}
-                  aria-label={`Decrease ${food.name} portion`}
-                >
-                  <Minus size={15} />
-                </button>
-                <label className="relative flex items-center">
-                  <span className="sr-only">{food.name} portion in {food.unit}</span>
-                  <input
-                    type="number"
-                    min="0.001"
-                    step={step}
-                    inputMode="decimal"
-                    value={quantity}
-                    onChange={(event) => changeQuantity(food, Number(event.target.value))}
-                    className="form-control h-9 w-24 px-2 pr-9 text-center text-sm tabular-nums"
-                    aria-label={`${food.name} portion`}
-                  />
-                  <span className="pointer-events-none absolute right-2 text-xs font-bold text-muted">
-                    {food.unit}
-                  </span>
-                </label>
-                <button
-                  type="button"
-                  className="btn btn-secondary btn-icon btn-icon-sm"
-                  onClick={() => changeQuantity(food, quantity + step)}
-                  aria-label={`Increase ${food.name} portion`}
-                >
-                  <Plus size={15} />
-                </button>
               </div>
 
               <button
