@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 import { createHash, randomUUID } from 'node:crypto';
 import type { SignOptions } from 'jsonwebtoken';
-import { UserDocument } from '../users/schemas/user.schema';
+import { UserDocument, UserRole } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -158,6 +158,7 @@ export class AuthService {
       id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role || UserRole.USER,
       age: user.age,
       weight: user.weight,
       weight_unit: user.weightUnit,

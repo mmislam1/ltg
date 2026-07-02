@@ -12,6 +12,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  role: "user" | "admin";
   image?: string;
   age: number;
   weight: number;
@@ -30,6 +31,7 @@ interface ApiUser {
   id: string;
   name: string;
   email: string;
+  role: "user" | "admin";
   age: number;
   weight: number;
   weight_unit: "kg" | "lb";
@@ -105,6 +107,7 @@ const mapUser = (user: ApiUser): User => ({
   id: user.id,
   name: user.name,
   email: user.email,
+  role: user.role,
   age: user.age,
   weight: Number(user.weight),
   weightUnit: user.weight_unit,

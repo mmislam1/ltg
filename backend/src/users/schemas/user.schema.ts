@@ -11,6 +11,11 @@ export enum HeightUnit {
   FT = 'ft',
 }
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
 @Schema({ timestamps: true, versionKey: false, collection: 'users' })
 export class User {
   @Prop({ required: true, trim: true, minlength: 2, maxlength: 120 })
@@ -54,6 +59,9 @@ export class User {
 
   @Prop({ default: true })
   isActive: boolean;
+
+  @Prop({ required: true, enum: UserRole, default: UserRole.USER, index: true })
+  role: UserRole;
 }
 
 export type UserDocument = HydratedDocument<User>;

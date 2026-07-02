@@ -26,3 +26,17 @@ MongoDB must be available at the `MONGODB_URI` in `.env`.
 - `POST /api/auth/logout` (Bearer access token)
 - `GET /api/auth/me` (Bearer access token)
 - `PATCH /api/auth/me` (Bearer access token)
+
+## Food endpoints
+
+- `GET /api/foods` — approved foods for everyone; authenticated creators also receive their own pending foods
+- `POST /api/foods` — create a pending food (Bearer access token)
+- `GET /api/foods/pending` — list every pending food (admin only)
+- `PATCH /api/foods/:id/approve` — approve a pending food (admin only)
+- `DELETE /api/foods/:id` — delete a food (its creator or an admin)
+
+New accounts have the `user` role. Promote an account through MongoDB when an admin is needed:
+
+```javascript
+db.users.updateOne({ email: "admin@example.com" }, { $set: { role: "admin" } })
+```
