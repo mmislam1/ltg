@@ -1,144 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Trash2, Plus, MoreVertical, X } from 'lucide-react';
+import { Trash2, Plus, X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { updateMeal } from '../store/features/activitySlice';
-
-// Interfaces
-export interface ListItems {
-    foodItem: Food | undefined;
-    quantity: number;
-}
-
-export interface Meal {
-    id: string;
-    mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
-    list: ListItems[] | [];
-}
-
-export interface Vitamins {
-    b1: number;
-    b2: number;
-    b3: number;
-    b5: number;
-    b6: number;
-    b7: number;
-    b8: number;
-    b9: number;
-    b12: number;
-    a: number;
-    c: number;
-    d: number;
-    e: number;
-    k: number;
-}
-
-export interface Minerals {
-    calcium: number;
-    copper: number;
-    iron: number;
-    magnesium: number;
-    manganese: number;
-    phosphorus: number;
-    potassium: number;
-    selenium: number;
-    sodium: number;
-    zinc: number;
-}
-
-export interface Nutrition {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fats: number;
-    vitamins?: Vitamins;
-    minerals?: Minerals;
-}
-
-export interface Food {
-    id: string;
-    name: string;
-    addedBy: string;
-    selectedBy: number;
-    unit: string;
-    nutrition: Nutrition;
-    approved: boolean;
-}
-
-// Sample food data
-const sampleFoods: Food[] = [
-    {
-        id: '1',
-        name: 'Mixed Vegetables',
-        addedBy: 'admin',
-        selectedBy: 0,
-        unit: '1 cup',
-        nutrition: {
-            calories: 90,
-            protein: 3,
-            carbs: 18,
-            fats: 0.5,
-        },
-        approved: true,
-    },
-    {
-        id: '2',
-        name: 'ruhi fish',
-        addedBy: 'admin',
-        selectedBy: 0,
-        unit: '100 g',
-        nutrition: {
-            calories: 178,
-            protein: 20,
-            carbs: 0,
-            fats: 10,
-        },
-        approved: true,
-    },
-    {
-        id: '3',
-        name: 'Brown Rice',
-        addedBy: 'admin',
-        selectedBy: 0,
-        unit: '1 cup',
-        nutrition: {
-            calories: 216,
-            protein: 5,
-            carbs: 45,
-            fats: 1.8,
-        },
-        approved: true,
-    },
-    {
-        id: '4',
-        name: 'Chicken Breast',
-        addedBy: 'admin',
-        selectedBy: 0,
-        unit: '100 g',
-        nutrition: {
-            calories: 165,
-            protein: 31,
-            carbs: 0,
-            fats: 3.6,
-        },
-        approved: true,
-    },
-    {
-        id: '5',
-        name: 'Greek Yogurt',
-        addedBy: 'admin',
-        selectedBy: 0,
-        unit: '1 cup',
-        nutrition: {
-            calories: 130,
-            protein: 11,
-            carbs: 9,
-            fats: 5,
-        },
-        approved: true,
-    },
-];
+import { updateMeal, type Meal } from '../store/features/activitySlice';
+import type { Food } from '../store/features/foodSlice';
+import { NUTRIENT_UNITS, nutritionBasisLabel, quantityStep, scaleNutrient } from '../store/nutritionUnits';
+import FoodSelector from '../components/foodSelector';
 
 export default function MealsPage() {
 
@@ -167,7 +35,7 @@ export default function MealsPage() {
         },
     ]:currentMeals);
 
-    const [foods, setFoods] = useState<Food[]>(useAppSelector((state) => state.foods.list))
+    const foods = useAppSelector((state) => state.foods.list)
 
     const [showFoodSelector, setShowFoodSelector] = useState<string | null>(null);
 
@@ -177,43 +45,29 @@ export default function MealsPage() {
     const calculateMealCalories = (meal: Meal): number => {
         return meal.list.reduce((total, item) => {
             if (item.foodItem) {
-                return total + item.foodItem.nutrition.calories * item.quantity;
+                return total + scaleNutrient(
+                    item.foodItem,
+                    item.foodItem.nutrition.calories,
+                    item.quantity,
+                );
             }
             return total;
         }, 0);
     };
 
-    // Add food to meal
-    const addFoodToMeal = (mealId: string, food: Food) => {
+    const toggleFoodForMeal = (mealId: string, food: Food, quantity: number) => {
         setMeals((prevMeals) =>
             prevMeals.map((meal) => {
-                if (meal.id === mealId) {
-                    const existingItem = meal.list.find(
-                        (item) => item.foodItem?.id === food.id
-                    );
-
-                    if (existingItem) {
-                        // Increment quantity if food already exists
-                        return {
-                            ...meal,
-                            list: meal.list.map((item) =>
-                                item.foodItem?.id === food.id
-                                    ? { ...item, quantity: item.quantity + 1 }
-                                    : item
-                            ),
-                        };
-                    } else {
-                        // Add new food
-                        return {
-                            ...meal,
-                            list: [...meal.list, { foodItem: food, quantity: 1 }],
-                        };
-                    }
-                }
-                return meal;
+                if (meal.id !== mealId) return meal;
+                const selected = meal.list.some((item) => item.foodItem?.id === food.id);
+                return {
+                    ...meal,
+                    list: selected
+                        ? meal.list.filter((item) => item.foodItem?.id !== food.id)
+                        : [...meal.list, { foodItem: food, quantity }],
+                };
             })
         );
-        setShowFoodSelector(null);
     };
 
     // Remove food from meal
@@ -258,7 +112,7 @@ export default function MealsPage() {
     useEffect(()=>{
         dispatch(updateMeal(meals))
         /*setMeals()*/
-    },[meals])
+    },[dispatch, meals])
 
     return (
         <div className="min-h-screen bg-canvas py-4 md:py-8">
@@ -278,7 +132,7 @@ export default function MealsPage() {
                                 </h2>
                                 <div className="flex items-center gap-4">
                                     <span className="text-md font-semibold text-ink md:text-2xl">
-                                        {calculateMealCalories(meal)}
+                                        {calculateMealCalories(meal).toFixed(1)} {NUTRIENT_UNITS.calories}
                                     </span>
                                     {/* 
                                     <button className="text-gray-400 hover:text-gray-600">
@@ -293,7 +147,12 @@ export default function MealsPage() {
                                 {meal.list.map((item) => {
                                     if (!item.foodItem) return null;
 
-                                    const totalCalories = item.foodItem.nutrition.calories * item.quantity;
+                                    const totalCalories = scaleNutrient(
+                                        item.foodItem,
+                                        item.foodItem.nutrition.calories,
+                                        item.quantity,
+                                    );
+                                    const step = quantityStep(item.foodItem.unit);
 
                                     return (
                                         <div
@@ -307,19 +166,17 @@ export default function MealsPage() {
                                                     </h3>
                                                     <div className="flex items-center gap-2 mt-1">
                                                         <p className="text-sm text-muted">
-                                                            {item.foodItem.unit}
+                                                            Nutrition per {nutritionBasisLabel(item.foodItem)}
                                                         </p>
-                                                        {item.quantity > 1 && (
-                                                            <>
-                                                                <span className="text-gray-300">•</span>
-                                                                <div className="flex items-center gap-1">
+                                                        <span className="text-gray-300">•</span>
+                                                        <div className="flex items-center gap-1">
                                                                     <button
                                                                         type="button"
                                                                         onClick={() =>
                                                                             updateQuantity(
                                                                                 meal.id,
                                                                                 item.foodItem!.id,
-                                                                                item.quantity - 1
+                                                                                item.quantity - step
                                                                             )
                                                                         }
                                                                         className="btn btn-secondary btn-icon btn-icon-sm"
@@ -328,7 +185,7 @@ export default function MealsPage() {
                                                                         −
                                                                     </button>
                                                                     <span className="px-2 text-sm text-muted">
-                                                                        {item.quantity}
+                                                                        {item.quantity} {item.foodItem.unit}
                                                                     </span>
                                                                     <button
                                                                         type="button"
@@ -336,7 +193,7 @@ export default function MealsPage() {
                                                                             updateQuantity(
                                                                                 meal.id,
                                                                                 item.foodItem!.id,
-                                                                                item.quantity + 1
+                                                                                item.quantity + step
                                                                             )
                                                                         }
                                                                         className="btn btn-secondary btn-icon btn-icon-sm"
@@ -344,15 +201,13 @@ export default function MealsPage() {
                                                                     >
                                                                         +
                                                                     </button>
-                                                                </div>
-                                                            </>
-                                                        )}
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 <div className="flex items-center gap-4 ml-4">
                                                     <span className="text-base font-medium text-ink">
-                                                        {totalCalories}
+                                                        {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
                                                     </span>
                                                     <button
                                                         type="button"
@@ -387,28 +242,13 @@ export default function MealsPage() {
                                                     <X/>
                                                 </button>
                                             </div>
-                                            <div className="no-scr grid max-h-64 gap-2 overflow-y-auto rounded-lg p-1">
-                                                {foods.map((food) => (
-                                                    <button
-                                                        type="button"
-                                                        key={food.id}
-                                                        onClick={() => addFoodToMeal(meal.id, food)}
-                                                        className="btn btn-secondary w-full justify-between px-4 py-3 text-left"
-                                                    >
-                                                        <div className="flex w-full min-w-0 items-center justify-between gap-4">
-                                                            <div className="min-w-0 text-left">
-                                                                <p className="truncate font-medium text-ink">
-                                                                    {food.name}
-                                                                </p>
-                                                                <p className="text-sm text-muted">{food.unit}</p>
-                                                            </div>
-                                                            <span className="ml-auto shrink-0 text-right text-sm font-medium text-ink tabular-nums">
-                                                                {food.nutrition.calories} cal
-                                                            </span>
-                                                        </div>
-                                                    </button>
-                                                ))}
-                                            </div>
+                                            <FoodSelector
+                                                foods={foods}
+                                                selectedItems={meal.list}
+                                                onToggle={(food, quantity) => toggleFoodForMeal(meal.id, food, quantity)}
+                                                onQuantityChange={(foodId, quantity) => updateQuantity(meal.id, foodId, quantity)}
+                                                maxHeight="32rem"
+                                            />
                                         </div>
                                     ) : (
                                         <button
@@ -433,7 +273,7 @@ export default function MealsPage() {
                             Total Daily Calories
                         </span>
                         <span className="text-2xl font-bold text-ink">
-                            {meals.reduce((total, meal) => total + calculateMealCalories(meal), 0)}
+                            {meals.reduce((total, meal) => total + calculateMealCalories(meal), 0).toFixed(1)} {NUTRIENT_UNITS.calories}
                         </span>
                     </div>
                 </div>
