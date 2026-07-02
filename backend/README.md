@@ -40,3 +40,29 @@ New accounts have the `user` role. Promote an account through MongoDB when an ad
 ```javascript
 db.users.updateOne({ email: "admin@example.com" }, { $set: { role: "admin" } })
 ```
+
+## Food unit contract
+
+`unit` is restricted to `g`, `ml`, `pc`, or `slice` (`piece` is normalized to `pc`). `nutritionPer` states how many of that unit the nutrition object describes. For example, `unit: "g"` with `nutritionPer: 100` means every nutrition value is per 100 g; meal quantities are scaled by `quantity / nutritionPer`.
+
+- Calories: kcal
+- Protein, total carbs, fiber, net carbs, and fats: g
+- Vitamins B1, B2, B3, B5, B6, B8, C, and E: mg
+- Vitamins B7, B9, B12, and K: µg
+- Vitamin A: µg RAE
+- Vitamin D: IU
+- Minerals: mg, except selenium in µg
+
+The authoritative source is `seeds/foods.raw.json`; its measurement units are validated and normalized by `npm run seed:export`, which creates the Mongo-ready `seeds/foods.seed.json`.
+
+The supplied source labels B7/biotin as mg even though its values are microgram-scale (including 30 for the multivitamin). The exporter records B7 as µg. Vitamin A is labeled µg RAE to match the standard dietary convention.
+
+If an older system catalog was imported, replace only those system records before importing the regenerated seed. User-created foods are not touched:
+
+```javascript
+db.foods.deleteMany({ addedBy: "system" })
+```
+
+```powershell
+mongoimport --uri "mongodb://localhost:27017/ltg" --collection foods --file seeds/foods.seed.json --jsonArray
+```

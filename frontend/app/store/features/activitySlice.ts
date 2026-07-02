@@ -1,7 +1,6 @@
-import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api";
-import { Search } from "lucide-react";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Food } from "./foodSlice";
+import { nutritionMultiplier } from "../nutritionUnits";
 
 export interface ListItems {
   foodItem: Food | undefined;
@@ -9,8 +8,11 @@ export interface ListItems {
 }
 
 export interface Macros {
+  calories: number;
   protein: number;
   carbs: number;
+  fiber: number;
+  netCarbs: number;
   fats: number;
 }
 
@@ -79,7 +81,7 @@ export const initialState: ActivitiesState = {
     chart: {
       meals: [],
     },
-    macros: { protein: 0, carbs: 0, fats: 0 },
+    macros: { calories: 0, protein: 0, carbs: 0, fiber: 0, netCarbs: 0, fats: 0 },
     water: 0,
     burnt: 0,
     total: 0,
@@ -122,19 +124,31 @@ export const macroCount = (state: ActivitiesState): Macros => {
   return state.current.chart.meals.reduce(
     (total: Macros, meal) => {
       meal?.list?.forEach((item) => {
+        const factor = item.foodItem
+          ? nutritionMultiplier(item.foodItem, item.quantity)
+          : 0;
+        total.calories += item.foodItem
+          ? item.foodItem.nutrition.calories * factor
+          : 0;
         total.protein += item.foodItem
-          ? item.foodItem.nutrition.protein * item.quantity
+          ? item.foodItem.nutrition.protein * factor
           : 0;
         total.carbs += item.foodItem
-          ? item.foodItem.nutrition.carbs * item.quantity
+          ? item.foodItem.nutrition.carbs * factor
+          : 0;
+        total.fiber += item.foodItem
+          ? item.foodItem.nutrition.fiber * factor
+          : 0;
+        total.netCarbs += item.foodItem
+          ? item.foodItem.nutrition.netCarbs * factor
           : 0;
         total.fats += item.foodItem
-          ? item.foodItem.nutrition.fats * item.quantity
+          ? item.foodItem.nutrition.fats * factor
           : 0;
       });
       return total;
     },
-    { protein: 0, carbs: 0, fats: 0 },
+    { calories: 0, protein: 0, carbs: 0, fiber: 0, netCarbs: 0, fats: 0 },
   );
 };
 
@@ -143,41 +157,42 @@ export const microCount = (state: ActivitiesState) => {
     (total, meal) => {
       meal?.list?.forEach((item) => {
         if (item.foodItem && item.foodItem.nutrition) {
+          const factor = nutritionMultiplier(item.foodItem, item.quantity);
           const vitamins = item.foodItem.nutrition.vitamins;
           const minerals = item.foodItem.nutrition.minerals;
 
           if (vitamins) {
-            total.vitamins.b1 += (vitamins.b1 || 0) * item.quantity;
-            total.vitamins.b2 += (vitamins.b2 || 0) * item.quantity;
-            total.vitamins.b3 += (vitamins.b3 || 0) * item.quantity;
-            total.vitamins.b5 += (vitamins.b5 || 0) * item.quantity;
-            total.vitamins.b6 += (vitamins.b6 || 0) * item.quantity;
-            total.vitamins.b7 += (vitamins.b7 || 0) * item.quantity;
-            total.vitamins.b8 += (vitamins.b8 || 0) * item.quantity;
-            total.vitamins.b9 += (vitamins.b9 || 0) * item.quantity;
-            total.vitamins.b12 += (vitamins.b12 || 0) * item.quantity;
-            total.vitamins.a += (vitamins.a || 0) * item.quantity;
-            total.vitamins.c += (vitamins.c || 0) * item.quantity;
-            total.vitamins.d += (vitamins.d || 0) * item.quantity;
-            total.vitamins.e += (vitamins.e || 0) * item.quantity;
-            total.vitamins.k += (vitamins.k || 0) * item.quantity;
+            total.vitamins.b1 += (vitamins.b1 || 0) * factor;
+            total.vitamins.b2 += (vitamins.b2 || 0) * factor;
+            total.vitamins.b3 += (vitamins.b3 || 0) * factor;
+            total.vitamins.b5 += (vitamins.b5 || 0) * factor;
+            total.vitamins.b6 += (vitamins.b6 || 0) * factor;
+            total.vitamins.b7 += (vitamins.b7 || 0) * factor;
+            total.vitamins.b8 += (vitamins.b8 || 0) * factor;
+            total.vitamins.b9 += (vitamins.b9 || 0) * factor;
+            total.vitamins.b12 += (vitamins.b12 || 0) * factor;
+            total.vitamins.a += (vitamins.a || 0) * factor;
+            total.vitamins.c += (vitamins.c || 0) * factor;
+            total.vitamins.d += (vitamins.d || 0) * factor;
+            total.vitamins.e += (vitamins.e || 0) * factor;
+            total.vitamins.k += (vitamins.k || 0) * factor;
           }
 
           if (minerals) {
-            total.minerals.calcium += (minerals.calcium || 0) * item.quantity;
-            total.minerals.copper += (minerals.copper || 0) * item.quantity;
-            total.minerals.iron += (minerals.iron || 0) * item.quantity;
+            total.minerals.calcium += (minerals.calcium || 0) * factor;
+            total.minerals.copper += (minerals.copper || 0) * factor;
+            total.minerals.iron += (minerals.iron || 0) * factor;
             total.minerals.magnesium +=
-              (minerals.magnesium || 0) * item.quantity;
+              (minerals.magnesium || 0) * factor;
             total.minerals.manganese +=
-              (minerals.manganese || 0) * item.quantity;
+              (minerals.manganese || 0) * factor;
             total.minerals.phosphorus +=
-              (minerals.phosphorus || 0) * item.quantity;
+              (minerals.phosphorus || 0) * factor;
             total.minerals.potassium +=
-              (minerals.potassium || 0) * item.quantity;
-            total.minerals.selenium += (minerals.selenium || 0) * item.quantity;
-            total.minerals.sodium += (minerals.sodium || 0) * item.quantity;
-            total.minerals.zinc += (minerals.zinc || 0) * item.quantity;
+              (minerals.potassium || 0) * factor;
+            total.minerals.selenium += (minerals.selenium || 0) * factor;
+            total.minerals.sodium += (minerals.sodium || 0) * factor;
+            total.minerals.zinc += (minerals.zinc || 0) * factor;
           }
         }
       });
@@ -228,10 +243,7 @@ export const activitySlice = createSlice({
       state.current.macros = macroCount(state);
       state.current.totalMicro = microCount(state);
 
-      state.current.total =
-        state.current.macros.protein +
-        state.current.macros.fats +
-        state.current.macros.carbs;
+      state.current.total = state.current.macros.calories;
     },
     updateMeal: (state, action: PayloadAction<Meal[]>) => {
       const newMeal = action.payload;
@@ -241,10 +253,7 @@ export const activitySlice = createSlice({
       state.current.macros = macroCount(state);
       state.current.totalMicro = microCount(state);
 
-      state.current.total =
-        state.current.macros.protein +
-        state.current.macros.fats +
-        state.current.macros.carbs;
+      state.current.total = state.current.macros.calories;
     },
 
     addFood: () => {},

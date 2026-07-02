@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import api, { getApiError } from "../api";
+import type { FoodUnit } from "../nutritionUnits";
 
 export interface Vitamins {
   b1: number;
@@ -35,6 +36,8 @@ export interface Nutrition {
   calories: number;
   protein: number;
   carbs: number;
+  fiber: number;
+  netCarbs: number;
   fats: number;
   vitamins?: Vitamins;
   minerals?: Minerals;
@@ -45,14 +48,16 @@ export interface Food {
   name: string;
   addedBy: string;
   selectedBy: number;
-  unit: string;
+  unit: FoodUnit;
+  nutritionPer: number;
   nutrition: Nutrition;
   approved: boolean;
 }
 
 export interface CreateFoodInput {
   name: string;
-  unit: string;
+  unit: FoodUnit;
+  nutritionPer: number;
   nutrition: Nutrition;
 }
 

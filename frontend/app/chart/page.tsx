@@ -1,13 +1,12 @@
 'use client'
 import React, { useEffect, useState } from 'react';
 import { Download } from 'lucide-react';
-import { Document, Page, Text, View, StyleSheet, pdf } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import dynamic from "next/dynamic";
-import { Macros, Meal, Chart } from '../store/features/activitySlice';
-import { Food } from '../store/features/foodSlice'
-import Meals from '../components/meals';
+import { Meal } from '../store/features/activitySlice';
 import { useAppSelector } from '../store/hooks';
 import { NUTRITION_COLORS } from '../nutritionColors';
+import { NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
 
 
 interface UserProfile {
@@ -35,170 +34,7 @@ const sampleData: UserProfile & { meals: Meal[] } = {
         carbs: 128.52,
         fats: 16.45
     },
-    meals: [
-        {   
-            id: '1',
-            mealType: "Breakfast",
-            list: [
-                
-                {   
-                    foodItem: {
-                        id: '1',
-                        name: 'Apple Regular',
-                        addedBy: 'string',
-                        selectedBy: 99,
-                        unit: 'piece',
-                        approved: true,
-                        nutrition: { calories: 99, protein: 0.0, carbs: 25.0, fats: 0.0 },
-                    },
-                    quantity: 1
-                },
-                {
-                    foodItem: {
-                        id: '2',
-                        name: "yogurt (desi natural) low fats",
-                        addedBy: 'string',
-                        selectedBy: 99,
-                        unit: 'gm',
-                        approved: true,
-                        nutrition: { calories: 99, protein: 4.12, carbs: 10.59, fats: 0.88 },
-                    },
-                    quantity: 100
-                },
-                {
-                    foodItem: {
-                        id: '3',
-                        name: "Dymatize iso 100 hydrolyzed whey protein isolate gourmet vanilla, nutres",
-                        addedBy: 'string',
-                        selectedBy: 99,
-                        unit: 'gm',
-                        approved: true,
-                        nutrition: { calories: 99, protein: 12.5, carbs: 0.5, fats: 0.0 },
-                    },
-                    quantity: 15
-                },
-
-
-            ]
-        },
-{   
-    id: '2',
-    mealType: "Lunch",
-        list: [
-            {
-                foodItem: {
-                    id: '4',
-                    name: "Chicken Breast",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'gm',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 25.9, carbs: 0.0, fats: 3.0 },
-                },
-                quantity: 100
-            },
-            {
-                foodItem: {
-                    id: '5',
-                    name: "Brown Rice",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'gm',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 3.0, carbs: 28.0, fats: 0.0 },
-                },
-                quantity: 100
-            },
-            {
-                foodItem: {
-                    id: '6',
-                    name: "Mixed Vegetables",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'cup',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 2.0, carbs: 11.0, fats: 0.0 },
-                },
-                quantity: 1
-            },
-
-        ]
-},
-{   
-    id: '3',
-    mealType: "Snack",
-        list: [
-            {
-                foodItem: {
-                    id: '7',
-                    name: "Cashew/Walnut / peanut / almonds / pista",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'gm',
-                    approved: true,
-                    nutrition: { calories:99, protein: 1.6, carbs: 1.1, fats: 6.4 },
-                },
-                quantity: 10
-            },
-            {
-                foodItem: {
-                    id: '8',
-                    name: "Kiwi Fruit /Chinese Gooseberry Frsh Raw",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'gm',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 0.0, carbs: 14.0, fats: 0.0 },
-                },
-                quantity: 100
-            },
-            {
-                foodItem: {
-                    id: '9',
-                    name: "Apple Regular",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'piece',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 0.0, carbs: 25.0, fats: 0.0 },
-                },
-                quantity: 1
-            },
-        
-        ]
-},
-{   
-    id: '4',
-    mealType: "Dinner",
-        list: [
-            {
-                foodItem: {
-                    id: '10',
-                    name: "yogurt",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'gm',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 10.57, carbs: 12.33, fats: 6.17 },
-                },
-                quantity: 200
-            },
-            {
-                foodItem: {
-                    id: '11',
-                    name: "Dymatize iso 100 hydrolyzed whey protein isolate gourmet vanilla, nutres",
-                    addedBy: 'string',
-                    selectedBy: 99,
-                    unit: 'gm',
-                    approved: true,
-                    nutrition: { calories: 99, protein: 25.0, carbs: 1.0, fats: 0.0 },
-                },
-                quantity: 30
-            },
-            
-        ]
-}
-    ]
+    meals: []
 };
 
 // PDF Styles
@@ -333,19 +169,19 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
                 </View>
                 <View style={pdfStyles.headerRight}>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.calories.toFixed(2)}kcl</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.calories.toFixed(2)} {NUTRIENT_UNITS.calories}</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.total]}>Cal</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.protein.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.protein.toFixed(2)} {NUTRIENT_UNITS.protein}</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.protein]}>Protein</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.carbs.toFixed(2)} {NUTRIENT_UNITS.carbs}</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.carbss]}>Carbs</Text>
                     </View>
                     <View style={pdfStyles.goalItem}>
-                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)}g</Text>
+                        <Text style={[pdfStyles.goalValue]}>{data.dailyGoals.fats.toFixed(2)} {NUTRIENT_UNITS.fats}</Text>
                         <Text style={[pdfStyles.goalLabel, pdfStyles.fatss]}>Fats</Text>
                     </View>
                 </View>
@@ -380,10 +216,10 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
                             <View key={foodIndex} style={pdfStyles.tableRow}>
                                 <Text style={[pdfStyles.cell, pdfStyles.col1]}>{food.foodItem ?food.foodItem.name:''}</Text>
                                 <Text style={[pdfStyles.cell, pdfStyles.col2]}>{food.quantity+' '+food.foodItem?.unit}</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ?((food.foodItem.nutrition.protein*4) + (food.foodItem.nutrition.carbs*4) + (food.foodItem.nutrition.fats*9)).toFixed(1):0} kcl</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem?.nutrition.protein.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem?.nutrition.carbs.toFixed(1)} g</Text>
-                                <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem?.nutrition.fats.toFixed(1)} g</Text>
+                                 <Text style={[pdfStyles.cell, pdfStyles.col3]}>{food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.calories, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.calories}</Text>
+                                 <Text style={[pdfStyles.cell, pdfStyles.col4]}>{food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.protein, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.protein}</Text>
+                                 <Text style={[pdfStyles.cell, pdfStyles.col5]}>{food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.carbs, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.carbs}</Text>
+                                 <Text style={[pdfStyles.cell, pdfStyles.col6]}>{food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.fats, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.fats}</Text>
                             </View>
                         ))}
                     </View>
@@ -393,10 +229,10 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
                 <View style={pdfStyles.totalRow}>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col1]}>Total</Text>
                     <Text style={[pdfStyles.cellBold, pdfStyles.col2]}></Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col3]}>{totals.calories} kcl</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col4]}>{totals.protein} g</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>{totals.carbss} g</Text>
-                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>{totals.fatss} g</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col3]}>{totals.calories} {NUTRIENT_UNITS.calories}</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col4]}>{totals.protein} {NUTRIENT_UNITS.protein}</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col5]}>{totals.carbss} {NUTRIENT_UNITS.carbs}</Text>
+                    <Text style={[pdfStyles.cellBold, pdfStyles.col6]}>{totals.fatss} {NUTRIENT_UNITS.fats}</Text>
                 </View>
             </View>
         </Page>
@@ -405,14 +241,14 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
 
 const NutritionChart: React.FC = () => {
     const [data,setData] = useState(sampleData);
-    const store=useAppSelector(store=>store)
+    const meals = useAppSelector((store) => store.activity.current.chart.meals)
 
     //console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',store.activity.current)
 
     useEffect(()=>{
 
-        setData({ ...data, meals: store.activity.current.chart.meals })
-    },[store.activity.current.chart.meals])
+        setData((current) => ({ ...current, meals }))
+    },[meals])
     const PDFDownloadLink = dynamic(
         () => import("@react-pdf/renderer").then(mod => mod.PDFDownloadLink),
         { ssr: false }
@@ -427,10 +263,11 @@ const NutritionChart: React.FC = () => {
 
         data.meals.forEach(meal => {
             meal.list?.forEach(food => {
-                totalCalories += food.foodItem ?((food.foodItem.nutrition.protein*4) + (food.foodItem.nutrition.carbs*4) + (food.foodItem.nutrition.fats*9)):0;
-                totalProtein += food.foodItem ?food.foodItem.nutrition.protein:0;
-                totalcarbss += food.foodItem ?food.foodItem.nutrition.carbs:0;
-                totalfatss += food.foodItem ?food.foodItem.nutrition.fats:0;
+                if (!food.foodItem) return;
+                totalCalories += scaleNutrient(food.foodItem, food.foodItem.nutrition.calories, food.quantity);
+                totalProtein += scaleNutrient(food.foodItem, food.foodItem.nutrition.protein, food.quantity);
+                totalcarbss += scaleNutrient(food.foodItem, food.foodItem.nutrition.carbs, food.quantity);
+                totalfatss += scaleNutrient(food.foodItem, food.foodItem.nutrition.fats, food.quantity);
             });
         });
 
@@ -462,19 +299,19 @@ const NutritionChart: React.FC = () => {
 
                         <div className="grid grid-cols-4 gap-6 text-center">
                             <div>
-                                <div className="text-[14px] font-bold">{data.dailyGoals.calories.toFixed(1)} kcl</div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.calories.toFixed(1)} {NUTRIENT_UNITS.calories}</div>
                                 <div className="text-[12px] font-bold text-calories">Cal</div>
                             </div>
                             <div>
-                                <div className="text-[14px] font-bold">{data.dailyGoals.protein.toFixed(2)} g</div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.protein.toFixed(2)} {NUTRIENT_UNITS.protein}</div>
                                 <div className="text-[12px] font-bold text-protein">Protein</div>
                             </div>
                             <div>
-                                <div className="text-[14px] font-bold">{data.dailyGoals.carbs.toFixed(2)} g</div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.carbs.toFixed(2)} {NUTRIENT_UNITS.carbs}</div>
                                 <div className="text-[12px] font-bold text-carbs">Carbs</div>
                             </div>
                             <div>
-                                <div className="text-[14px] font-bold">{data.dailyGoals.fats.toFixed(2)} g</div>
+                                <div className="text-[14px] font-bold">{data.dailyGoals.fats.toFixed(2)} {NUTRIENT_UNITS.fats}</div>
                                 <div className="text-[12px] font-bold text-fat">Fats</div>
                             </div>
                         </div>
@@ -517,20 +354,18 @@ const NutritionChart: React.FC = () => {
                                                 {food.quantity} {food.foodItem?.unit}
                                             </td>
                                             <td className="px-2 py-2 text-center">
-                                                {food.foodItem
-                                                    ? (food.foodItem.nutrition.protein*4 +
-                                                        food.foodItem.nutrition.carbs*4 +
-                                                        food.foodItem.nutrition.fats*9).toFixed(1)
-                                                    : 0} kcl
+                                                 {food.foodItem
+                                                     ? scaleNutrient(food.foodItem, food.foodItem.nutrition.calories, food.quantity).toFixed(1)
+                                                     : 0} {NUTRIENT_UNITS.calories}
                                             </td>
                                             <td className="px-2 py-2 text-center">
-                                                {food.foodItem?.nutrition.protein.toFixed(1)} g
+                                                 {food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.protein, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.protein}
                                             </td>
                                             <td className="px-2 py-2 text-center">
-                                                {food.foodItem?.nutrition.carbs.toFixed(1)} g
+                                                 {food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.carbs, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.carbs}
                                             </td>
                                             <td className="px-2 py-2 text-center">
-                                                {food.foodItem?.nutrition.fats.toFixed(1)} g
+                                                 {food.foodItem ? scaleNutrient(food.foodItem, food.foodItem.nutrition.fats, food.quantity).toFixed(1) : 0} {NUTRIENT_UNITS.fats}
                                             </td>
                                         </tr>
                                     ))}
@@ -541,10 +376,10 @@ const NutritionChart: React.FC = () => {
                             <tr className="bg-gray-300 font-bold border-t border-gray-400">
                                 <td className="px-2 py-2">Total</td>
                                 <td></td>
-                                <td className="text-center">{totals.calories} kcl</td>
-                                <td className="text-center">{totals.protein} g</td>
-                                <td className="text-center">{totals.carbss} g</td>
-                                <td className="text-center">{totals.fatss} g</td>
+                                <td className="text-center">{totals.calories} {NUTRIENT_UNITS.calories}</td>
+                                <td className="text-center">{totals.protein} {NUTRIENT_UNITS.protein}</td>
+                                <td className="text-center">{totals.carbss} {NUTRIENT_UNITS.carbs}</td>
+                                <td className="text-center">{totals.fatss} {NUTRIENT_UNITS.fats}</td>
                             </tr>
                         </tbody>
                     </table>

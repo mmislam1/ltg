@@ -1,6 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
+export enum FoodUnit {
+  GRAM = 'g',
+  MILLILITER = 'ml',
+  PIECE = 'pc',
+  SLICE = 'slice',
+}
+
 @Schema({ _id: false })
 export class Vitamins {
   @Prop({ required: true, min: 0 }) b1: number;
@@ -42,6 +49,8 @@ export class Nutrition {
   @Prop({ required: true, min: 0 }) calories: number;
   @Prop({ required: true, min: 0 }) protein: number;
   @Prop({ required: true, min: 0 }) carbs: number;
+  @Prop({ required: true, min: 0 }) fiber: number;
+  @Prop({ required: true, min: 0 }) netCarbs: number;
   @Prop({ required: true, min: 0 }) fats: number;
   @Prop({ type: VitaminsSchema }) vitamins?: Vitamins;
   @Prop({ type: MineralsSchema }) minerals?: Minerals;
@@ -60,8 +69,18 @@ export class Food {
   @Prop({ required: true, default: 0, min: 0 })
   selectedBy: number;
 
-  @Prop({ required: true, trim: true, minlength: 1, maxlength: 30 })
-  unit: string;
+  @Prop({ required: true, enum: FoodUnit })
+  unit: FoodUnit;
+
+  // Every nutrition number is measured per this many of `unit`.
+  @Prop({
+    required: true,
+    min: 0.001,
+    default: function (this: Food) {
+      return this.unit === FoodUnit.GRAM || this.unit === FoodUnit.MILLILITER ? 100 : 1;
+    },
+  })
+  nutritionPer: number;
 
   @Prop({ required: true, type: NutritionSchema })
   nutrition: Nutrition;

@@ -1,6 +1,7 @@
 import { Type, Transform } from 'class-transformer';
 import {
   IsNumber,
+  IsEnum,
   IsOptional,
   IsString,
   Max,
@@ -9,6 +10,7 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+import { FoodUnit } from '../schemas/food.schema';
 
 const nutrient = () => IsNumber({ maxDecimalPlaces: 4 });
 
@@ -46,6 +48,8 @@ export class NutritionDto {
   @nutrient() @Min(0) @Max(100_000) calories: number;
   @nutrient() @Min(0) @Max(100_000) protein: number;
   @nutrient() @Min(0) @Max(100_000) carbs: number;
+  @nutrient() @Min(0) @Max(100_000) fiber: number;
+  @nutrient() @Min(0) @Max(100_000) netCarbs: number;
   @nutrient() @Min(0) @Max(100_000) fats: number;
 
   @IsOptional()
@@ -68,13 +72,13 @@ export class CreateFoodDto {
   )
   name: string;
 
-  @IsString()
-  @MinLength(1)
-  @MaxLength(30)
-  @Transform(({ value }: { value: unknown }) =>
-    typeof value === 'string' ? value.trim() : value,
-  )
-  unit: string;
+  @IsEnum(FoodUnit)
+  unit: FoodUnit;
+
+  @IsNumber({ maxDecimalPlaces: 3 })
+  @Min(0.001)
+  @Max(100_000)
+  nutritionPer: number;
 
   @ValidateNested()
   @Type(() => NutritionDto)

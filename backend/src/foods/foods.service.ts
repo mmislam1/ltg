@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../users/schemas/user.schema';
 import { CreateFoodDto } from './dto/create-food.dto';
-import { Food, FoodDocument } from './schemas/food.schema';
+import { Food, FoodDocument, FoodUnit } from './schemas/food.schema';
 
 @Injectable()
 export class FoodsService {
@@ -60,13 +60,26 @@ export class FoodsService {
   }
 
   private toResponse(item: FoodDocument) {
+    const nutritionPer = item.nutritionPer ??
+      (item.unit === FoodUnit.GRAM || item.unit === FoodUnit.MILLILITER ? 100 : 1);
+    const nutrition = {
+      calories: item.nutrition.calories,
+      protein: item.nutrition.protein,
+      carbs: item.nutrition.carbs,
+      fiber: item.nutrition.fiber ?? 0,
+      netCarbs: item.nutrition.netCarbs ?? item.nutrition.carbs,
+      fats: item.nutrition.fats,
+      vitamins: item.nutrition.vitamins,
+      minerals: item.nutrition.minerals,
+    };
     return {
       id: item.id,
       name: item.name,
       addedBy: item.addedBy,
       selectedBy: item.selectedBy,
       unit: item.unit,
-      nutrition: item.nutrition,
+      nutritionPer,
+      nutrition,
       approved: item.approved,
     };
   }

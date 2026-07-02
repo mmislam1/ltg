@@ -1,0 +1,3951 @@
+[
+  {
+    "name": "Broccoli, Raw",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.37,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 2.82,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 6.64,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.6,
+          "unit": "g"
+        },
+        "net": {
+          "value": 4.0,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 34.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.07,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.12,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.64,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.57,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.18,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.95,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 18.7,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 63.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 31.17,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 89.2,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 1.44,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 102.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 47.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.05,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.73,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 21.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.21,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 66.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 316.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 2.5,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 33.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.41,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.148735",
+    "updated_at": "2025-12-27T21:00:53.149024"
+  },
+  {
+    "name": "Spinach, Raw",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.39,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 2.86,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 3.63,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.2,
+          "unit": "g"
+        },
+        "net": {
+          "value": 1.4,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 23.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.08,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.19,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.72,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.07,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.2,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 19.3,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 194.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 468.83,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 28.1,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 1.96,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 482.9,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 99.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.13,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 2.71,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 79.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.9,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 49.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 558.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 1.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 79.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.53,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149073",
+    "updated_at": "2025-12-27T21:00:53.149076"
+  },
+  {
+    "name": "Cucumber, Raw, With Peel",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.11,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.65,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 3.63,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 1.14,
+          "unit": "g"
+        },
+        "net": {
+          "value": 2.4,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 15.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.1,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.26,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 6.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 7.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 5.29,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 2.8,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 16.4,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 16.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.04,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.28,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 13.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.08,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 24.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 147.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.3,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 2.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.2,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149103",
+    "updated_at": "2025-12-27T21:00:53.149105"
+  },
+  {
+    "name": "Banana, Fresh",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.33,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 1.09,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 22.84,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.6,
+          "unit": "g"
+        },
+        "net": {
+          "value": 20.2,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 89.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.07,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.67,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.33,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.37,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.13,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 9.8,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 20.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 3.21,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 8.7,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.13,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.5,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 5.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.08,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.26,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 27.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.27,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 22.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 358.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 1.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.15,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149130",
+    "updated_at": "2025-12-27T21:00:53.149133"
+  },
+  {
+    "name": "Apple, Fresh, With Skin",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.17,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.26,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 13.81,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.4,
+          "unit": "g"
+        },
+        "net": {
+          "value": 10.6,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 52.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.02,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.09,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.06,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 3.4,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 3.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 2.71,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 4.6,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.21,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 2.2,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 6.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.12,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 5.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.04,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 11.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 107.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.04,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149158",
+    "updated_at": "2025-12-27T21:00:53.149160"
+  },
+  {
+    "name": "Orange, Fresh",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.12,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.94,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 11.75,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.35,
+          "unit": "g"
+        },
+        "net": {
+          "value": 9.1,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 47.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.09,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.28,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.25,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.06,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.05,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 8.4,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 30.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 11.21,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 53.2,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.25,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 40.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.05,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.1,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 10.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 14.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 181.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.5,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.07,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149182",
+    "updated_at": "2025-12-27T21:00:53.149184"
+  },
+  {
+    "name": "Avocado Hass",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 15.41,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 1.96,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 8.64,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 6.8,
+          "unit": "g"
+        },
+        "net": {
+          "value": 1.8,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 167.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.08,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.14,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 1.91,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 1.46,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.29,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 14.2,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 89.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 7.38,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 8.8,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 1.93,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 21.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 13.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.17,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.61,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 29.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.15,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 54.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 507.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.4,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 8.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.68,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149204",
+    "updated_at": "2025-12-27T21:00:53.149206"
+  },
+  {
+    "name": "Peanut Butter, Regular, Salted",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 49.66,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 24.35,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 21.26,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 8.4,
+          "unit": "g"
+        },
+        "net": {
+          "value": 12.7,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 587.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.15,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.2,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 14.36,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 1.01,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.47,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 64.6,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 97.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 4.93,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 58.19,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.43,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 1.58,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 178.01,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 1.79,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 363.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 634.06,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 9.3,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 312.43,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 2.77,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149228",
+    "updated_at": "2025-12-27T21:00:53.149230"
+  },
+  {
+    "name": "Almonds, Raw",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 49.93,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 21.15,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 21.55,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 12.5,
+          "unit": "g"
+        },
+        "net": {
+          "value": 8.8,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 579.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.21,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 1.14,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 3.62,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.47,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.14,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 52.1,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 44.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.08,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 25.63,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 269.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 1.03,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 3.71,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 270.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 2.18,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 481.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 733.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 4.1,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 3.12,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149250",
+    "updated_at": "2025-12-27T21:00:53.149252"
+  },
+  {
+    "name": "Chia Seeds",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 30.74,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 16.54,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 42.12,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 34.4,
+          "unit": "g"
+        },
+        "net": {
+          "value": 6.2,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 486.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.18,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 6.13,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.6,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 1.39,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 65.5,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 49.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 2.2,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 1.6,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.5,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 708.9,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 631.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.92,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 16.4,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 390.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 2.72,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 860.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 407.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 55.2,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 16.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 4.58,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149273",
+    "updated_at": "2025-12-27T21:00:53.149275"
+  },
+  {
+    "name": "Full-Fat Milk",
+    "quantity": {
+      "value": 100.0,
+      "unit": "ml"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 3.25,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 3.15,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 4.8,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 4.8,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 61.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.05,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.17,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.9,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.37,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.09,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 14.3,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 5.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.45,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 45.58,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 51.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.07,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.3,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 113.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 10.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 84.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 132.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 3.7,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 43.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.37,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149295",
+    "updated_at": "2025-12-27T21:00:53.149297"
+  },
+  {
+    "name": "Yogurt, Plain Whole Milk",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 3.25,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 3.47,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 4.66,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 4.66,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 61.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.14,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.08,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.39,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.08,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 15.2,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 7.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.37,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 27.42,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 2.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.06,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.21,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 121.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.05,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 12.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 95.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 155.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 2.2,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 46.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.59,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149389",
+    "updated_at": "2025-12-27T21:00:53.149391"
+  },
+  {
+    "name": "Cheese Slice, Cheddar",
+    "quantity": {
+      "value": 1.0,
+      "unit": "slice"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 6.43,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 4.61,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.4,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.4,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 77.9,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.08,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.09,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 3.14,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 5.13,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.17,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 49.97,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 7.79,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.15,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.46,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 135.09,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 5.13,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 87.4,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 14.44,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 5.38,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 122.36,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.71,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149414",
+    "updated_at": "2025-12-27T21:00:53.149416"
+  },
+  {
+    "name": "Raw Egg",
+    "quantity": {
+      "value": 1.0,
+      "unit": "piece"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 4.76,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 6.28,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.36,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.36,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 71.5,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.02,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.23,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.77,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.09,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 146.9,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 23.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.45,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 80.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 41.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.53,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.15,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 28.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.04,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.88,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 6.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 99.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 69.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 15.35,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 71.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.65,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149438",
+    "updated_at": "2025-12-27T21:00:53.149440"
+  },
+  {
+    "name": "Egg Whites Only",
+    "quantity": {
+      "value": 1.0,
+      "unit": "piece"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.6,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 3.64,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.24,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.24,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 17.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.15,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.06,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.37,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 1.34,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.03,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 2.34,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.03,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 3.67,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 5.01,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 54.44,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 6.68,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 55.44,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.01,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149460",
+    "updated_at": "2025-12-27T21:00:53.149463"
+  },
+  {
+    "name": "Chicken/Fish",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 4.51,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 30.91,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.0,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 173.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.07,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.12,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 12.42,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.97,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.6,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 84.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 4.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.34,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 9.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 5.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.27,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.3,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 15.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.05,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 1.06,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 27.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.02,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 216.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 247.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 24.4,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 77.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 1.23,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149497",
+    "updated_at": "2025-12-27T21:00:53.149499"
+  },
+  {
+    "name": "Beef Lean with fat boneless",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 15.11,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 26.72,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.0,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 250.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.08,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.14,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 6.98,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.53,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.59,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 101.8,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 8.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 1.38,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 28.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.45,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 1.6,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 22.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.07,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 1.63,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 23.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 213.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 340.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 28.8,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 57.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 4.85,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149886",
+    "updated_at": "2025-12-27T21:00:53.149895"
+  },
+  {
+    "name": "Butter, Salted",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 81.11,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.85,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.6,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.6,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 717.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.03,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.04,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.11,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 18.8,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 3.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.17,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 684.17,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 10.28,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 2.32,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 7.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 24.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.02,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 2.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 24.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 24.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 1.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 643.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.09,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149945",
+    "updated_at": "2025-12-27T21:00:53.149947"
+  },
+  {
+    "name": "Extra Virgin Olive Oil",
+    "quantity": {
+      "value": 100.0,
+      "unit": "ml"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 100.0,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.0,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.0,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 884.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.3,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 0.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 14.35,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 60.2,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.56,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 2.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.0,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149969",
+    "updated_at": "2025-12-27T21:00:53.149971"
+  },
+  {
+    "name": "Ispaghula or Psyllium Seeds",
+    "quantity": {
+      "value": 3.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.01,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.13,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.16,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.0,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 5.58,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 0.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 8.21,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 3.49,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.0,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.149991",
+    "updated_at": "2025-12-27T21:00:53.149994"
+  },
+  {
+    "name": "Multivitamin A-Z",
+    "quantity": {
+      "value": 1.0,
+      "unit": "piece"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.0,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.0,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.0,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 0.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 1.5,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 1.7,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 20.0,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 10.0,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 2.0,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 30.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 400.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 6.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 1050.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 60.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 400.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 13.3,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 25.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 162.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 2.0,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 18.0,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 100.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 2.0,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 109.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 80.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 20.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 15.0,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150016",
+    "updated_at": "2025-12-27T21:00:53.150018"
+  },
+  {
+    "name": "Fish Oil",
+    "quantity": {
+      "value": 1.0,
+      "unit": "piece"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 1.0,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.0,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 0.1,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 0.1,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 10.2,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 0.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 15.0,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.0,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150039",
+    "updated_at": "2025-12-27T21:00:53.150042"
+  },
+  {
+    "name": "White Rice, Steamed",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.28,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 2.69,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 28.17,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.34,
+          "unit": "g"
+        },
+        "net": {
+          "value": 27.83,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 130.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.16,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.01,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 1.48,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.39,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.09,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 2.1,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 42.8,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.04,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 10.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.07,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 1.2,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 12.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.47,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 43.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 35.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 7.5,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.49,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150061",
+    "updated_at": "2025-12-27T21:00:53.150063"
+  },
+  {
+    "name": "Biscuit Rusk Cracker",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 7.28,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 11.82,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 72.43,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 2.78,
+          "unit": "g"
+        },
+        "net": {
+          "value": 69.6,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 408.87,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.75,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.56,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 5.35,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.74,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.07,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 70.62,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 198.38,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.23,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 31.21,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 18.2,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.77,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 1.52,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 23.81,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.13,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 4.3,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 21.51,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.6,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 133.09,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 124.27,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 35.98,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 252.72,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.87,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150085",
+    "updated_at": "2025-12-27T21:00:53.150087"
+  },
+  {
+    "name": "Oatmeal, Regular or Quick, Dry",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 6.52,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 13.15,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 67.7,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 10.1,
+          "unit": "g"
+        },
+        "net": {
+          "value": 57.6,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 379.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.46,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.16,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 1.13,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 1.12,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.1,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.19,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 40.4,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 32.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.42,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 2.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 52.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.39,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 4.25,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 138.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 3.63,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 410.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 362.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 28.9,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 6.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 3.64,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150107",
+    "updated_at": "2025-12-27T21:00:53.150109"
+  },
+  {
+    "name": "Roti (Flatbread)",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 9.2,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 8.47,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 46.13,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 6.86,
+          "unit": "g"
+        },
+        "net": {
+          "value": 39.3,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 285.12,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.32,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.11,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 3.18,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.39,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.26,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 20.1,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 28.2,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.27,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 1.08,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 15.19,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 22.51,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.26,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 2.31,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 87.95,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 2.61,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 228.84,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 232.74,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 43.1,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 297.94,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 1.67,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150139",
+    "updated_at": "2025-12-27T21:00:53.150141"
+  },
+  {
+    "name": "Lentil Red/Pink Raw",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 2.17,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 23.91,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 63.1,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 10.8,
+          "unit": "g"
+        },
+        "net": {
+          "value": 52.3,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 358.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.51,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.11,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 1.5,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.35,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.4,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 204.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 3.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 1.7,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 48.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 1.3,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 7.39,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 59.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 1.72,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 294.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 668.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 7.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 3.6,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150163",
+    "updated_at": "2025-12-27T21:00:53.150165"
+  },
+  {
+    "name": "Cheeni (Sugar)",
+    "quantity": {
+      "value": 100.0,
+      "unit": "g"
+    },
+    "macronutrients": {
+      "fat": {
+        "value": 0.0,
+        "unit": "g"
+      },
+      "protein": {
+        "value": 0.0,
+        "unit": "g"
+      },
+      "carbohydrates": {
+        "total": {
+          "value": 99.98,
+          "unit": "g"
+        },
+        "fiber": {
+          "value": 0.0,
+          "unit": "g"
+        },
+        "net": {
+          "value": 99.98,
+          "unit": "g"
+        }
+      },
+      "calories": {
+        "value": 387.0,
+        "unit": "kcal"
+      }
+    },
+    "vitamins": {
+      "b_complex": {
+        "b1": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b2": {
+          "value": 0.02,
+          "unit": "mg"
+        },
+        "b3": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b5": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b6": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b7": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b8": {
+          "value": 0.0,
+          "unit": "mg"
+        },
+        "b9": {
+          "value": 0.0,
+          "unit": "μg"
+        },
+        "b12": {
+          "value": 0.0,
+          "unit": "μg"
+        }
+      },
+      "vitamin_a": {
+        "value": 0.0,
+        "unit": "μg"
+      },
+      "vitamin_c": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_d": {
+        "value": 0.0,
+        "unit": "IU"
+      },
+      "vitamin_e": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "vitamin_k": {
+        "value": 0.0,
+        "unit": "μg"
+      }
+    },
+    "minerals": {
+      "calcium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "copper": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "iron": {
+        "value": 0.05,
+        "unit": "mg"
+      },
+      "magnesium": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "manganese": {
+        "value": 0.01,
+        "unit": "mg"
+      },
+      "phosphorus": {
+        "value": 0.0,
+        "unit": "mg"
+      },
+      "potassium": {
+        "value": 2.0,
+        "unit": "mg"
+      },
+      "selenium": {
+        "value": 0.6,
+        "unit": "μg"
+      },
+      "sodium": {
+        "value": 1.0,
+        "unit": "mg"
+      },
+      "zinc": {
+        "value": 0.01,
+        "unit": "mg"
+      }
+    },
+    "added_by": "admin",
+    "is_approved": false,
+    "created_at": "2025-12-27T21:00:53.150223",
+    "updated_at": "2025-12-27T21:00:53.150225"
+  }
+]
+
