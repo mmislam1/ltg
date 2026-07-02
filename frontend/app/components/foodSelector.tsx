@@ -149,8 +149,8 @@ export default function FoodSelector({
                     </button>
                   </div>
 
-                  <span className="truncate text-right text-xs font-bold tabular-nums" style={{ color: NUTRITION_COLORS.calories }}>
-                    Total {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
+                  <span className="truncate text-right text-base font-bold text-ink tabular-nums">
+                    {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
                   </span>
                 </div>
 
