@@ -1,24 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setSelectedDate } from '../store/features/activitySlice';
+import { fetchMealActivity } from '../store/features/activitySlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const dateKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const dateFromKey = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number);
+    return year && month && day ? new Date(year, month - 1, day) : new Date();
+};
 
 export default function DatePicker() {
     const dispatch = useAppDispatch();
     const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
+    const loading = useAppSelector((state) => state.activity.loading);
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarDate, setCalendarDate] = useState(new Date());
 
-    const dateObj = selectedDate ? new Date(selectedDate) : new Date();
-
-    useEffect(() => {
-        if (!selectedDate) {
-            const today = new Date().toISOString().split('T')[0];
-            dispatch(setSelectedDate(today));
-        }
-    }, [dispatch, selectedDate]);
+    const dateObj = dateFromKey(selectedDate || dateKey(new Date()));
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('en-GB', {
@@ -31,19 +33,19 @@ export default function DatePicker() {
     const handlePrevDay = () => {
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() - 1);
-        dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
+        dispatch(fetchMealActivity(dateKey(newDate)));
     };
 
     const handleNextDay = () => {
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() + 1);
-        dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
+        dispatch(fetchMealActivity(dateKey(newDate)));
     };
 
     const handleDateSelect = (day: number) => {
         const newDate = new Date(calendarDate);
         newDate.setDate(day);
-        dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
+        dispatch(fetchMealActivity(dateKey(newDate)));
         setShowCalendar(false);
     };
 
@@ -74,6 +76,7 @@ export default function DatePicker() {
                 <button
                     type="button"
                     onClick={handlePrevDay}
+                    disabled={loading}
                     className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
                     aria-label="Previous day"
                 >
@@ -82,17 +85,21 @@ export default function DatePicker() {
 
                 <button
                     type="button"
-                    onClick={() => setShowCalendar(!showCalendar)}
+                    onClick={() => {
+                        setCalendarDate(dateObj);
+                        setShowCalendar(!showCalendar);
+                    }}
                     className="btn btn-ghost min-h-8 px-1 text-[0.7rem] sm:min-h-11 sm:px-2 sm:text-sm"
                     aria-expanded={showCalendar}
                     aria-haspopup="dialog"
                 >
-                    {formatDate(dateObj)}
+                    {loading ? 'Loading...' : formatDate(dateObj)}
                 </button>
 
                 <button
                     type="button"
                     onClick={handleNextDay}
+                    disabled={loading}
                     className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
                     aria-label="Next day"
                 >

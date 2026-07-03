@@ -19,6 +19,7 @@ export interface User {
   weightUnit: "kg" | "lb";
   height: number;
   heightUnit: "cm" | "ft";
+  timezone: string;
   dailyGoals: {
     targetCalories: number;
     targetProtein: number;
@@ -37,6 +38,7 @@ interface ApiUser {
   weight_unit: "kg" | "lb";
   height: number;
   height_unit: "cm" | "ft";
+  timezone: string;
   daily_goals: {
     target_calories: number;
     target_protein: number;
@@ -59,6 +61,7 @@ export interface SignUpData {
   weight_unit: "kg" | "lb";
   height: number;
   height_unit: "cm" | "ft";
+  timezone?: string;
   password: string;
   password_confirm: string;
 }
@@ -70,11 +73,14 @@ export interface UpdateProfileData {
   weight_unit: "kg" | "lb";
   height: number;
   height_unit: "cm" | "ft";
+  timezone?: string;
   target_calories: number;
   target_protein: number;
   target_carbs: number;
   target_fat: number;
 }
+
+type UpdateProfileInput = Partial<UpdateProfileData>;
 
 export interface AuthError {
   message: string;
@@ -113,6 +119,7 @@ const mapUser = (user: ApiUser): User => ({
   weightUnit: user.weight_unit,
   height: Number(user.height),
   heightUnit: user.height_unit,
+  timezone: user.timezone || "Asia/Dhaka",
   dailyGoals: {
     targetCalories: user.daily_goals.target_calories,
     targetProtein: user.daily_goals.target_protein,
@@ -183,7 +190,7 @@ export const logoutUser = createAsyncThunk("auth/logout", async () => {
 
 export const updateProfile = createAsyncThunk<
   User,
-  UpdateProfileData,
+  UpdateProfileInput,
   { rejectValue: AuthError }
 >("auth/updateProfile", async (profile, { rejectWithValue }) => {
   try {

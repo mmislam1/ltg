@@ -1,5 +1,17 @@
 import { Transform } from 'class-transformer';
-import { IsEmail, IsEnum, IsInt, IsNumber, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsTimeZone,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { HeightUnit, WeightUnit } from '../../users/schemas/user.schema';
 
 export class SignUpDto {
@@ -37,6 +49,11 @@ export class SignUpDto {
 
   @IsEnum(HeightUnit)
   height_unit: HeightUnit;
+
+  @IsOptional()
+  @IsTimeZone()
+  @MaxLength(100)
+  timezone?: string;
 
   @IsString()
   @MinLength(8)

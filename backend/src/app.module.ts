@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { HealthController } from './health.controller';
 import { UsersModule } from './users/users.module';
 import { FoodsModule } from './foods/foods.module';
+import { MealActivitiesModule } from './meal-activities/meal-activities.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { FoodsModule } from './foods/foods.module';
     UsersModule,
     AuthModule,
     FoodsModule,
+    MealActivitiesModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

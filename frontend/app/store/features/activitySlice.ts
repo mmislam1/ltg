@@ -1,11 +1,15 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Food } from "./foodSlice";
 import { nutritionMultiplier } from "../nutritionUnits";
+import api, { getApiError } from "../api";
 
 export interface ListItems {
   foodItem: Food | undefined;
   quantity: number;
 }
+
+export const MEAL_TYPES = ["Breakfast", "Lunch", "Dinner", "Snack"] as const;
+export type MealType = (typeof MEAL_TYPES)[number];
 
 export interface Macros {
   calories: number;
@@ -18,9 +22,16 @@ export interface Macros {
 
 export interface Meal {
   id: string;
-  mealType: "Breakfast" | "Lunch" | "Dinner" | "Snack" | undefined;
+  mealType: MealType | undefined;
   list: ListItems[] | [];
 }
+
+const defaultMeals = (): Meal[] =>
+  MEAL_TYPES.map((mealType) => ({
+    id: mealType.toLowerCase(),
+    mealType,
+    list: [],
+  }));
 
 export interface Chart {
   //id: string;
@@ -73,19 +84,24 @@ export interface ActivityState {
 export interface ActivitiesState {
   activities: ActivityState[];
   current: ActivityState;
+  loading: boolean;
+  saving: number;
+  error: string | null;
+  persistedMealTypes: MealType[];
+  loadRequestId: string | null;
 }
 
-export const initialState: ActivitiesState = {
+const createInitialState = (): ActivitiesState => ({
   activities: [],
   current: {
     chart: {
-      meals: [],
+      meals: defaultMeals(),
     },
     macros: { calories: 0, protein: 0, carbs: 0, fiber: 0, netCarbs: 0, fats: 0 },
     water: 0,
     burnt: 0,
     total: 0,
-    selectedDate: new Date().toDateString(),
+    selectedDate: "",
     completed: false,
     totalMicro: {
       vitamins: {
@@ -118,7 +134,14 @@ export const initialState: ActivitiesState = {
       },
     },
   },
-};
+  loading: false,
+  saving: 0,
+  error: null,
+  persistedMealTypes: [],
+  loadRequestId: null,
+});
+
+export const initialState: ActivitiesState = createInitialState();
 
 export const macroCount = (state: ActivitiesState): Macros => {
   return state.current.chart.meals.reduce(
@@ -231,29 +254,134 @@ export const microCount = (state: ActivitiesState) => {
   );
 };
 
+interface ApiMealActivity {
+  id: string;
+  date: string;
+  timezone: string;
+  meals: Array<{
+    mealType: MealType;
+    list: Array<{ foodId: string; quantity: number }>;
+  }>;
+}
+
+interface ActivityStoreState {
+  activity: ActivitiesState;
+  foods: { list: Food[] };
+}
+
+interface SaveMealArgs {
+  meal: Meal;
+  date: string;
+}
+
+const mealsFromApi = (record: ApiMealActivity, foods: Food[]): Meal[] => {
+  const foodsById = new Map(foods.map((food) => [food.id, food]));
+  const mealsByType = new Map(record.meals.map((meal) => [meal.mealType, meal]));
+  return MEAL_TYPES.map((mealType) => {
+    const savedMeal = mealsByType.get(mealType);
+    return {
+      id: mealType.toLowerCase(),
+      mealType,
+      list: (savedMeal?.list ?? []).map((item) => ({
+        foodItem: foodsById.get(item.foodId),
+        quantity: item.quantity,
+      })),
+    };
+  });
+};
+
+const mealRequest = (meal: Meal) => ({
+  list: meal.list.flatMap((item) =>
+    item.foodItem
+      ? [{ foodId: item.foodItem.id, quantity: item.quantity }]
+      : [],
+  ),
+});
+
+export const fetchMealActivity = createAsyncThunk<
+  { record: ApiMealActivity; foods: Food[] },
+  string | undefined,
+  { state: ActivityStoreState; rejectValue: string }
+>("activity/fetchForDate", async (date, { getState, rejectWithValue }) => {
+  try {
+    const { data } = await api.get<ApiMealActivity>("/meal-activities", {
+      params: date ? { date } : undefined,
+    });
+    return { record: data, foods: getState().foods.list };
+  } catch (error) {
+    return rejectWithValue(getApiError(error, "Unable to load meal activity."));
+  }
+});
+
+export const saveMealActivity = createAsyncThunk<
+  ApiMealActivity,
+  SaveMealArgs,
+  { state: ActivityStoreState; rejectValue: string }
+>("activity/saveMeal", async ({ meal, date }, { getState, rejectWithValue }) => {
+  if (!meal.mealType) return rejectWithValue("A valid meal type is required.");
+
+  const params = date ? { date } : undefined;
+  const body = mealRequest(meal);
+  const path = `/meal-activities/meals/${encodeURIComponent(meal.mealType)}`;
+  const exists = getState().activity.persistedMealTypes.includes(meal.mealType);
+
+  try {
+    if (exists) {
+      const { data } = await api.patch<ApiMealActivity>(path, body, { params });
+      return data;
+    }
+
+    try {
+      const { data } = await api.post<ApiMealActivity>(
+        "/meal-activities/meals",
+        { mealType: meal.mealType, ...body },
+        { params },
+      );
+      return data;
+    } catch (error) {
+      if ((error as { response?: { status?: number } }).response?.status !== 409) throw error;
+      const { data } = await api.patch<ApiMealActivity>(path, body, { params });
+      return data;
+    }
+  } catch (error) {
+    return rejectWithValue(getApiError(error, "Unable to save meal activity."));
+  }
+});
+
+const recalculate = (state: ActivitiesState) => {
+  state.current.macros = macroCount(state);
+  state.current.totalMicro = microCount(state);
+  state.current.total = state.current.macros.calories;
+};
+
 export const activitySlice = createSlice({
   name: "activity",
   initialState,
   reducers: {
-    addMeal: (state, action: PayloadAction<Meal>) => {
-      const newMeal = action.payload;
+    upsertMeal: (state, action: PayloadAction<Meal>) => {
+      const nextMeal = action.payload;
+      const existingIndex = state.current.chart.meals.findIndex(
+        (meal) => meal.mealType === nextMeal.mealType,
+      );
 
-      state.current.chart.meals.push(newMeal);
+      if (existingIndex === -1) {
+        state.current.chart.meals.push(nextMeal);
+      } else {
+        const existingMeal = state.current.chart.meals[existingIndex];
+        state.current.chart.meals[existingIndex] = {
+          ...nextMeal,
+          id: existingMeal.id,
+        };
+      }
 
-      state.current.macros = macroCount(state);
-      state.current.totalMicro = microCount(state);
-
-      state.current.total = state.current.macros.calories;
+      recalculate(state);
     },
     updateMeal: (state, action: PayloadAction<Meal[]>) => {
       const newMeal = action.payload;
 
       state.current.chart.meals = newMeal
 
-      state.current.macros = macroCount(state);
-      state.current.totalMicro = microCount(state);
-
-      state.current.total = state.current.macros.calories;
+      recalculate(state);
     },
 
     addFood: () => {},
@@ -264,9 +392,67 @@ export const activitySlice = createSlice({
     incrementGlass: (state) => {
       state.current.water += 1;
     },
+    resetActivity: () => createInitialState(),
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchMealActivity.pending, (state, action) => {
+        state.loading = true;
+        state.error = null;
+        state.loadRequestId = action.meta.requestId;
+        if (action.meta.arg && action.meta.arg !== state.current.selectedDate) {
+          state.current.selectedDate = action.meta.arg;
+          state.current.chart.meals = defaultMeals();
+          state.persistedMealTypes = [];
+          recalculate(state);
+        }
+      })
+      .addCase(fetchMealActivity.fulfilled, (state, action) => {
+        if (state.loadRequestId !== action.meta.requestId) return;
+        state.loading = false;
+        state.loadRequestId = null;
+        state.current.selectedDate = action.payload.record.date;
+        state.current.chart.meals = mealsFromApi(
+          action.payload.record,
+          action.payload.foods,
+        );
+        state.persistedMealTypes = action.payload.record.meals.map(
+          (meal) => meal.mealType,
+        );
+        recalculate(state);
+      })
+      .addCase(fetchMealActivity.rejected, (state, action) => {
+        if (state.loadRequestId !== action.meta.requestId) return;
+        state.loading = false;
+        state.loadRequestId = null;
+        state.error = action.payload || "Unable to load meal activity.";
+      })
+      .addCase(saveMealActivity.pending, (state) => {
+        state.saving += 1;
+        state.error = null;
+      })
+      .addCase(saveMealActivity.fulfilled, (state, action) => {
+        state.saving = Math.max(0, state.saving - 1);
+        if (action.payload.date !== state.current.selectedDate) return;
+        state.persistedMealTypes = action.payload.meals.map(
+          (meal) => meal.mealType,
+        );
+      })
+      .addCase(saveMealActivity.rejected, (state, action) => {
+        state.saving = Math.max(0, state.saving - 1);
+        if (action.meta.arg.date === state.current.selectedDate) {
+          state.error = action.payload || "Unable to save meal activity.";
+        }
+      });
   },
 });
 
-export const { addMeal, setSelectedDate, incrementGlass, updateMeal} =
+export const {
+  upsertMeal,
+  setSelectedDate,
+  incrementGlass,
+  updateMeal,
+  resetActivity,
+} =
   activitySlice.actions;
 export default activitySlice.reducer;

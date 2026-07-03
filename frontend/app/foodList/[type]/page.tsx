@@ -1,20 +1,22 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 import FoodSelector from "../../components/foodSelector";
-import { addMeal, type Meal } from "../../store/features/activitySlice";
+import {
+  type Meal,
+  type MealType,
+  saveMealActivity,
+  upsertMeal,
+} from "../../store/features/activitySlice";
 import type { Food } from "../../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
-
-type MealType = "Breakfast" | "Lunch" | "Dinner" | "Snack";
 
 const isMealType = (value: unknown): value is MealType =>
   typeof value === "string" &&
   ["Breakfast", "Lunch", "Dinner", "Snack"].includes(value);
 
 const newMeal = (mealType?: MealType): Meal => ({
-  id: crypto.randomUUID(),
+  id: mealType?.toLowerCase() ?? "meal",
   mealType,
   list: [],
 });
@@ -24,35 +26,42 @@ export default function FoodList() {
   const params = useParams();
   const foods = useAppSelector((state) => state.foods.list);
   const dispatch = useAppDispatch();
+  const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
+  const saving = useAppSelector((state) => state.activity.saving);
+  const activityError = useAppSelector((state) => state.activity.error);
   const mealType = isMealType(params.type) ? params.type : undefined;
-  const [meal, setMeal] = useState<Meal>(() => newMeal(mealType));
+  const savedMeal = useAppSelector((state) =>
+    state.activity.current.chart.meals.find((meal) => meal.mealType === mealType),
+  );
+  const meal = savedMeal ?? newMeal(mealType);
 
   const toggleFood = (food: Food, quantity: number) => {
-    setMeal((current) => {
-      const selected = current.list.some((item) => item.foodItem?.id === food.id);
-      return {
-        ...current,
-        list: selected
-          ? current.list.filter((item) => item.foodItem?.id !== food.id)
-          : [...current.list, { foodItem: food, quantity }],
-      };
-    });
+    const selected = meal.list.some((item) => item.foodItem?.id === food.id);
+    dispatch(upsertMeal({
+      ...meal,
+      list: selected
+        ? meal.list.filter((item) => item.foodItem?.id !== food.id)
+        : [...meal.list, { foodItem: food, quantity }],
+    }));
   };
 
   const updateQuantity = (foodId: string, quantity: number) => {
-    setMeal((current) => ({
-      ...current,
-      list: current.list.map((item) =>
+    dispatch(upsertMeal({
+      ...meal,
+      list: meal.list.map((item) =>
         item.foodItem?.id === foodId ? { ...item, quantity } : item,
       ),
     }));
   };
 
-  const handleSubmit = () => {
-    if (meal.list.length === 0) return;
-    dispatch(addMeal(meal));
-    router.replace("/chart");
-    setMeal(newMeal(mealType));
+  const handleSubmit = async () => {
+    if (!mealType || !selectedDate) return;
+    try {
+      await dispatch(saveMealActivity({ meal, date: selectedDate })).unwrap();
+      router.replace("/chart");
+    } catch {
+      // The shared activity error is shown below.
+    }
   };
 
   return (
@@ -83,13 +92,19 @@ export default function FoodList() {
         className="px-3 py-4 md:max-w-4xl"
       />
 
+      {activityError && (
+        <div role="alert" className="mx-3 mb-20 w-[calc(100%-1.5rem)] max-w-4xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
+          {activityError}
+        </div>
+      )}
+
       <button
         type="button"
         onClick={handleSubmit}
-        disabled={meal.list.length === 0}
+        disabled={saving > 0 || !selectedDate}
         className="btn btn-primary fixed bottom-18 left-1/2 z-50 w-77 -translate-x-1/2 rounded-full shadow-xl md:max-w-2xl"
       >
-        Done ({meal.list.length})
+        {saving > 0 ? "Saving..." : `Done (${meal.list.length})`}
       </button>
     </div>
   );

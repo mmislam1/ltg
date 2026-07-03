@@ -4,7 +4,11 @@ import { JwtService } from '@nestjs/jwt';
 import { compare, hash } from 'bcryptjs';
 import { createHash, randomUUID } from 'node:crypto';
 import type { SignOptions } from 'jsonwebtoken';
-import { UserDocument, UserRole } from '../users/schemas/user.schema';
+import {
+  DEFAULT_TIMEZONE,
+  UserDocument,
+  UserRole,
+} from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -44,6 +48,7 @@ export class AuthService {
         weightUnit: dto.weight_unit,
         height: dto.height,
         heightUnit: dto.height_unit,
+        ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
         passwordHash: await hash(dto.password, 12),
       });
     } catch (error) {
@@ -114,6 +119,7 @@ export class AuthService {
       ...(dto.target_protein !== undefined ? { targetProtein: dto.target_protein } : {}),
       ...(dto.target_carbs !== undefined ? { targetCarbs: dto.target_carbs } : {}),
       ...(dto.target_fat !== undefined ? { targetFat: dto.target_fat } : {}),
+      ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
     });
     if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');
     return this.userResponse(user);
@@ -164,6 +170,7 @@ export class AuthService {
       weight_unit: user.weightUnit,
       height: user.height,
       height_unit: user.heightUnit,
+      timezone: user.timezone || DEFAULT_TIMEZONE,
       daily_goals: {
         target_calories: user.targetCalories,
         target_protein: user.targetProtein,

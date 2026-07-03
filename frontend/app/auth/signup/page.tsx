@@ -41,7 +41,15 @@ export default function SignUpPage() {
     event.preventDefault();
     if (!validate()) return;
     try {
-      await dispatch(registerUser({ ...form, name: form.name.trim(), email: form.email.trim().toLowerCase(), age: Number(form.age), weight: Number(form.weight), height: Number(form.height) })).unwrap();
+      await dispatch(registerUser({
+        ...form,
+        name: form.name.trim(),
+        email: form.email.trim().toLowerCase(),
+        age: Number(form.age),
+        weight: Number(form.weight),
+        height: Number(form.height),
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || undefined,
+      })).unwrap();
       router.replace("/");
     } catch (reason) {
       const fields = (reason as AuthError).fields || {};

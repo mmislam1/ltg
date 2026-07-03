@@ -16,6 +16,8 @@ export enum UserRole {
   ADMIN = 'admin',
 }
 
+export const DEFAULT_TIMEZONE = 'Asia/Dhaka';
+
 @Schema({ timestamps: true, versionKey: false, collection: 'users' })
 export class User {
   @Prop({ required: true, trim: true, minlength: 2, maxlength: 120 })
@@ -50,6 +52,9 @@ export class User {
 
   @Prop({ default: 65, min: 0, max: 1000 })
   targetFat: number;
+
+  @Prop({ required: true, default: DEFAULT_TIMEZONE, trim: true, maxlength: 100 })
+  timezone: string;
 
   @Prop({ required: true, select: false })
   passwordHash: string;

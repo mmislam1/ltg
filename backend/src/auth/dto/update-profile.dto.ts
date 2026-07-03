@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsTimeZone,
   Max,
   MaxLength,
   Min,
@@ -71,4 +72,9 @@ export class UpdateProfileDto {
   @Min(0)
   @Max(1000)
   target_fat?: number;
+
+  @IsOptional()
+  @IsTimeZone()
+  @MaxLength(100)
+  timezone?: string;
 }

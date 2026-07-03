@@ -41,6 +41,26 @@ New accounts have the `user` role. Promote an account through MongoDB when an ad
 db.users.updateOne({ email: "admin@example.com" }, { $set: { role: "admin" } })
 ```
 
+## Meal activity endpoints
+
+All meal activity endpoints require a Bearer access token. They use the user's IANA
+`timezone` profile value (default: `Asia/Dhaka`) to determine the current local date.
+Passing `?date=YYYY-MM-DD` selects a historical or future local date explicitly.
+
+- `GET /api/meal-activities` — get or create the activity for the selected date
+- `POST /api/meal-activities/meals` — add one Breakfast, Lunch, Dinner, or Snack
+- `PATCH /api/meal-activities/meals/:mealType` — replace an existing meal's food list
+
+Meal bodies use `list: [{ "foodId": "<Mongo ObjectId>", "quantity": 100 }]`.
+Only approved foods and the authenticated user's own pending foods may be selected.
+Each user can have only one meal of each type per date.
+
+When production runs with automatic index creation disabled, create the activity key once:
+
+```javascript
+db.meal_activities.createIndex({ userId: 1, date: 1 }, { unique: true })
+```
+
 ## Food unit contract
 
 `unit` is restricted to `g`, `ml`, `pc`, or `slice` (`piece` is normalized to `pc`). `nutritionPer` states how many of that unit the nutrition object describes. For example, `unit: "g"` with `nutritionPer: 100` means every nutrition value is per 100 g; meal quantities are scaled by `quantity / nutritionPer`.

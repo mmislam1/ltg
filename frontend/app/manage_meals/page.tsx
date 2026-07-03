@@ -1,45 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Plus, X } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { updateMeal, type Meal } from '../store/features/activitySlice';
+import {
+    saveMealActivity,
+    updateMeal,
+    type Meal,
+} from '../store/features/activitySlice';
 import type { Food } from '../store/features/foodSlice';
 import { NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
 import FoodSelector from '../components/foodSelector';
 
 export default function MealsPage() {
 
-    const currentMeals = useAppSelector((state) => state.activity.current.chart.meals)
-
-    const [meals, setMeals] = useState<Meal[]>(currentMeals.length===0?[
-        {
-            id: '1',
-            mealType: 'Breakfast',
-            list: [],
-        },
-        {
-            id: '2',
-            mealType: 'Lunch',
-            list: [],
-        },
-        {
-            id: '3',
-            mealType: 'Dinner',
-            list: [],
-        },
-        {
-            id: '4',
-            mealType: 'Snack',
-            list: [],
-        },
-    ]:currentMeals);
+    const meals = useAppSelector((state) => state.activity.current.chart.meals)
+    const selectedDate = useAppSelector((state) => state.activity.current.selectedDate)
+    const loading = useAppSelector((state) => state.activity.loading)
+    const saving = useAppSelector((state) => state.activity.saving)
+    const activityError = useAppSelector((state) => state.activity.error)
 
     const foods = useAppSelector((state) => state.foods.list)
 
     const [showFoodSelector, setShowFoodSelector] = useState<string | null>(null);
 
     const dispatch=useAppDispatch()
+
+    const commitMeal = (nextMeal: Meal) => {
+        if (!selectedDate) return;
+        dispatch(updateMeal(
+            meals.map((meal) => meal.id === nextMeal.id ? nextMeal : meal)
+        ));
+        void dispatch(saveMealActivity({ meal: nextMeal, date: selectedDate }));
+    };
 
     // Calculate total calories for a meal
     const calculateMealCalories = (meal: Meal): number => {
@@ -56,33 +49,25 @@ export default function MealsPage() {
     };
 
     const toggleFoodForMeal = (mealId: string, food: Food, quantity: number) => {
-        setMeals((prevMeals) =>
-            prevMeals.map((meal) => {
-                if (meal.id !== mealId) return meal;
-                const selected = meal.list.some((item) => item.foodItem?.id === food.id);
-                return {
-                    ...meal,
-                    list: selected
-                        ? meal.list.filter((item) => item.foodItem?.id !== food.id)
-                        : [...meal.list, { foodItem: food, quantity }],
-                };
-            })
-        );
+        const meal = meals.find((item) => item.id === mealId);
+        if (!meal) return;
+        const selected = meal.list.some((item) => item.foodItem?.id === food.id);
+        commitMeal({
+            ...meal,
+            list: selected
+                ? meal.list.filter((item) => item.foodItem?.id !== food.id)
+                : [...meal.list, { foodItem: food, quantity }],
+        });
     };
 
     // Remove food from meal
     const removeFoodFromMeal = (mealId: string, foodId: string) => {
-        setMeals((prevMeals) =>
-            prevMeals.map((meal) => {
-                if (meal.id === mealId) {
-                    return {
-                        ...meal,
-                        list: meal.list.filter((item) => item.foodItem?.id !== foodId),
-                    };
-                }
-                return meal;
-            })
-        );
+        const meal = meals.find((item) => item.id === mealId);
+        if (!meal) return;
+        commitMeal({
+            ...meal,
+            list: meal.list.filter((item) => item.foodItem?.id !== foodId),
+        });
     };
 
     // Update quantity
@@ -92,32 +77,35 @@ export default function MealsPage() {
             return;
         }
 
-        setMeals((prevMeals) =>
-            prevMeals.map((meal) => {
-                if (meal.id === mealId) {
-                    return {
-                        ...meal,
-                        list: meal.list.map((item) =>
-                            item.foodItem?.id === foodId
-                                ? { ...item, quantity: newQuantity }
-                                : item
-                        ),
-                    };
-                }
-                return meal;
-            })
-        );
+        const meal = meals.find((item) => item.id === mealId);
+        if (!meal) return;
+        commitMeal({
+            ...meal,
+            list: meal.list.map((item) =>
+                item.foodItem?.id === foodId
+                    ? { ...item, quantity: newQuantity }
+                    : item
+            ),
+        });
     };
-
-    useEffect(()=>{
-        dispatch(updateMeal(meals))
-        /*setMeals()*/
-    },[dispatch, meals])
 
     return (
         <div className="min-h-screen bg-canvas py-4 md:py-8">
             <div className="max-w-4xl mx-auto px-2 md:px-4">
-                <h1 className="mb-3 text-xl font-bold text-ink md:text-3xl">My Meals</h1>
+                <div className="mb-3 flex items-end justify-between gap-3">
+                    <div>
+                        <h1 className="text-xl font-bold text-ink md:text-3xl">My Meals</h1>
+                        {selectedDate && <p className="mt-1 text-sm text-muted">{selectedDate}</p>}
+                    </div>
+                    <span className="text-xs font-semibold text-muted">
+                        {loading ? 'Loading record...' : saving > 0 ? 'Saving...' : 'Saved'}
+                    </span>
+                </div>
+                {activityError && (
+                    <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
+                        {activityError}
+                    </div>
+                )}
 
                 <div className="space-y-6">
                     {meals.map((meal) => (

@@ -11,6 +11,7 @@ import { NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
 
 interface UserProfile {
     name: string;
+    date: string;
     weight: string;
     height: string;
     age: number;
@@ -24,15 +25,16 @@ interface UserProfile {
 
 // Sample data matching the image
 const sampleData: UserProfile & { meals: Meal[] } = {
-    name: "Sajedur Rahman",
-    weight: "82 kg",
-    height: "178 cms",
-    age: 26,
+    name: "Meal record",
+    date: "",
+    weight: "-",
+    height: "-",
+    age: 0,
     dailyGoals: {
-        calories: 1003.3,
-        protein: 83.79,
-        carbs: 128.52,
-        fats: 16.45
+        calories: 0,
+        protein: 0,
+        carbs: 0,
+        fats: 0
     },
     meals: []
 };
@@ -156,13 +158,14 @@ interface NutritionTotals {
     fatss: string;
 }
 
-const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals }> = ({ data, totals }) => (
+export const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals }> = ({ data, totals }) => (
     <Document>
         <Page size="A4" style={pdfStyles.page}>
             {/* Header */}
             <View style={pdfStyles.header}>
                 <View style={pdfStyles.headerLeft}>
                     <Text style={pdfStyles.name}>{data.name}</Text>
+                    <Text style={pdfStyles.info}>Date: {data.date}</Text>
                     <Text style={pdfStyles.info}>Weight: {data.weight}</Text>
                     <Text style={pdfStyles.info}>Height: {data.height}</Text>
                     <Text style={pdfStyles.info}>Age: {data.age} years</Text>
@@ -200,7 +203,7 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
                 </View>
 
                 {/* Table Body */}
-                {data.meals.map((meal, mealIndex) => (
+                {data.meals.filter((meal) => meal.list.length > 0).map((meal, mealIndex) => (
                     <View key={mealIndex}>
                         {/* Meal Header */}
                         <View style={pdfStyles.mealHeaderRow}>
@@ -242,13 +245,30 @@ const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals 
 const NutritionChart: React.FC = () => {
     const [data,setData] = useState(sampleData);
     const meals = useAppSelector((store) => store.activity.current.chart.meals)
+    const selectedDate = useAppSelector((store) => store.activity.current.selectedDate)
+    const loading = useAppSelector((store) => store.activity.loading)
+    const activityError = useAppSelector((store) => store.activity.error)
+    const user = useAppSelector((store) => store.auth.user)
 
     //console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',store.activity.current)
 
     useEffect(()=>{
 
-        setData((current) => ({ ...current, meals }))
-    },[meals])
+        setData({
+            name: user?.name || "Meal record",
+            date: selectedDate,
+            weight: user ? `${user.weight} ${user.weightUnit}` : "-",
+            height: user ? `${user.height} ${user.heightUnit}` : "-",
+            age: user?.age || 0,
+            dailyGoals: {
+                calories: user?.dailyGoals.targetCalories || 0,
+                protein: user?.dailyGoals.targetProtein || 0,
+                carbs: user?.dailyGoals.targetCarb || 0,
+                fats: user?.dailyGoals.targetFat || 0,
+            },
+            meals,
+        })
+    },[meals, selectedDate, user])
     const PDFDownloadLink = dynamic(
         () => import("@react-pdf/renderer").then(mod => mod.PDFDownloadLink),
         { ssr: false }
@@ -283,6 +303,11 @@ const NutritionChart: React.FC = () => {
 
     return (
         <div className="w-full bg-canvas py-4">
+            {activityError && (
+                <div role="alert" className="mx-auto mb-4 max-w-4xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
+                    {activityError}
+                </div>
+            )}
             {/* Scroll container (mobile behaves like PDF viewer) */}
             <div className="overflow-x-auto">
                 {/* Fixed-width A4 layout */}
@@ -292,6 +317,7 @@ const NutritionChart: React.FC = () => {
                     <div className="flex justify-between items-start mb-6 pb-3 border-b-2 border-gray-800">
                         <div>
                             <h1 className="text-[18px] font-bold mb-2">{data.name}</h1>
+                            <p className="text-[12px] text-gray-600">Date: {data.date}</p>
                             <p className="text-[12px] text-gray-600">Weight: {data.weight}</p>
                             <p className="text-[12px] text-gray-600">Height: {data.height}</p>
                             <p className="text-[12px] text-gray-600">Age: {data.age} years</p>
@@ -388,9 +414,9 @@ const NutritionChart: React.FC = () => {
                 </div>
             </div>{/* Download Button */}
                     <div className="fc justify-end mt-6">
-                        <PDFDownloadLink
+                        {!loading && data.date ? <PDFDownloadLink
                             document={<NutritionPDF data={data} totals={totals} />}
-                            fileName={`nutrition-chart-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
+                            fileName={`nutrition-chart-${data.date}-${data.name.replace(/\s+/g, '-').toLowerCase()}.pdf`}
                             className="btn btn-primary"
                         >
                             {({ loading }) => (
@@ -399,7 +425,11 @@ const NutritionChart: React.FC = () => {
                                     {loading ? 'Generating PDF...' : 'Download PDF'}
                                 </>
                             )}
-                        </PDFDownloadLink>
+                        </PDFDownloadLink> : (
+                            <button type="button" className="btn btn-primary" disabled>
+                                <Download size={16} /> Loading record...
+                            </button>
+                        )}
                     </div>
 
         </div>
