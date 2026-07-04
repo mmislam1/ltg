@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
 import FoodSelector from "../../components/foodSelector";
 import {
   type Meal,
@@ -35,10 +34,6 @@ export default function FoodList() {
     state.activity.current.chart.meals.find((meal) => meal.mealType === mealType),
   );
   const meal = savedMeal ?? newMeal(mealType);
-  const [foodView, setFoodView] = useState<"All" | "Recipes">("All");
-  const visibleFoods = foodView === "Recipes"
-    ? foods.filter((food) => food.kind === "recipe")
-    : foods;
 
   const toggleFood = (food: Food, quantity: number) => {
     const selected = meal.list.some((item) => item.foodItem?.id === food.id);
@@ -82,12 +77,7 @@ export default function FoodList() {
           <button
             key={label}
             type="button"
-            onClick={() => {
-              if (label === "Create") router.push("/custom_recipe");
-              if (label === "All" || label === "Recipes") setFoodView(label);
-            }}
-            className={`btn w-1/4 rounded-none text-xs text-on-brand hover:bg-brand-soft hover:text-brand-active md:text-base ${foodView === label ? "bg-brand-active" : ""}`}
-            aria-pressed={foodView === label}
+            className="btn w-1/4 rounded-none text-xs text-on-brand hover:bg-brand-soft hover:text-brand-active md:text-base"
           >
             {label}
           </button>
@@ -95,7 +85,7 @@ export default function FoodList() {
       </div>
 
       <FoodSelector
-        foods={visibleFoods}
+        foods={foods}
         selectedItems={meal.list}
         onToggle={toggleFood}
         onQuantityChange={updateQuantity}
