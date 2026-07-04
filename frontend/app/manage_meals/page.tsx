@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import Link from 'next/link';
+import { ChevronDown, Pencil } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     saveMealActivity,
@@ -20,11 +20,9 @@ export default function MealsPage() {
     const saving = useAppSelector((state) => state.activity.saving)
     const activityError = useAppSelector((state) => state.activity.error)
 
-    const foods = useAppSelector((state) => state.foods.list)
-
-    const [showFoodSelector, setShowFoodSelector] = useState<string | null>(null);
-
     const dispatch=useAppDispatch()
+
+    const addedMeals = meals.filter((meal) => meal.list.length > 0);
 
     const commitMeal = (nextMeal: Meal) => {
         if (!selectedDate) return;
@@ -108,79 +106,62 @@ export default function MealsPage() {
                 )}
 
                 <div className="space-y-6">
-                    {meals.map((meal) => (
-                        <div
+                    {addedMeals.map((meal) => (
+                        <details
                             key={meal.id}
-                            className="card overflow-hidden"
+                            className="card group overflow-hidden"
                         >
                             {/* Meal Header */}
-                            <div className="flex items-center justify-between border-b border-line px-3 py-3 md:px-6 md:py-4">
-                                <h2 className="text-md font-semibold text-ink md:text-2xl">
-                                    {meal.mealType}
-                                </h2>
-                                <div className="flex items-center gap-4">
+                            <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-3 marker:content-none md:px-6 md:py-4">
+                                <div>
+                                    <h2 className="text-md font-semibold text-ink md:text-2xl">
+                                        {meal.mealType}
+                                    </h2>
+                                    <span className="mt-1 block text-xs font-medium text-muted">
+                                        {meal.list.length} {meal.list.length === 1 ? 'food' : 'foods'}
+                                    </span>
+                                </div>
+                                <div className="flex items-center gap-3 md:gap-4">
                                     <span className="text-md font-semibold text-ink md:text-2xl">
                                         {calculateMealCalories(meal).toFixed(1)} {NUTRIENT_UNITS.calories}
                                     </span>
-                                    {/* 
-                                    <button className="text-gray-400 hover:text-gray-600">
-                                        <MoreVertical size={20} />
-                                    </button>
-                                    */}
-                                </div>
-                            </div>
-
-                            {/* Food List */}
-                            <div className="divide-y divide-line">
-                                {showFoodSelector !== meal.id && meal.list.length > 0 && (
-                                    <FoodSelector
-                                        foods={meal.list.flatMap((item) => item.foodItem ? [item.foodItem] : [])}
-                                        selectedItems={meal.list}
-                                        onToggle={(food, quantity) => toggleFoodForMeal(meal.id, food, quantity)}
-                                        onQuantityChange={(foodId, quantity) => updateQuantity(meal.id, foodId, quantity)}
-                                        showSearch={false}
-                                    />
-                                )}
-
-                                {/* Add Food Button */}
-                                <div className="px-2 py-4">
-                                    {showFoodSelector === meal.id ? (
-                                        <div className="selection-panel space-y-3 p-3">
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="text-sm font-medium text-ink">
-                                                    Select Food
-                                                </h3>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => setShowFoodSelector(null)}
-                                                    className="btn btn-danger btn-icon"
-                                                    aria-label="Close food selector"
-                                                >
-                                                    <X/>
-                                                </button>
-                                            </div>
-                                            <FoodSelector
-                                                foods={foods}
-                                                selectedItems={meal.list}
-                                                onToggle={(food, quantity) => toggleFoodForMeal(meal.id, food, quantity)}
-                                                onQuantityChange={(foodId, quantity) => updateQuantity(meal.id, foodId, quantity)}
-                                                maxHeight="32rem"
-                                            />
-                                        </div>
-                                    ) : (
-                                        <button
-                                            type="button"
-                                            onClick={() => setShowFoodSelector(meal.id)}
-                                            className="btn btn-secondary btn-sm"
+                                    {meal.mealType && (
+                                        <Link
+                                            href={`/foodList/${meal.mealType}`}
+                                            onClick={(event) => event.stopPropagation()}
+                                            className="btn btn-secondary btn-sm px-2 sm:px-3"
+                                            aria-label={`Edit ${meal.mealType}`}
                                         >
-                                            <Plus size={16} />
-                                            ADD FOOD
-                                        </button>
+                                            <Pencil size={15} aria-hidden="true" />
+                                            <span className="hidden sm:inline">Edit</span>
+                                        </Link>
                                     )}
+                                    <ChevronDown
+                                        className="shrink-0 text-muted transition-transform group-open:rotate-180"
+                                        size={20}
+                                        aria-hidden="true"
+                                    />
                                 </div>
+                            </summary>
+
+                            {/* Food dropdown */}
+                            <div className="border-t border-line p-2 md:p-3">
+                                <FoodSelector
+                                    foods={meal.list.flatMap((item) => item.foodItem ? [item.foodItem] : [])}
+                                    selectedItems={meal.list}
+                                    onToggle={(food, quantity) => toggleFoodForMeal(meal.id, food, quantity)}
+                                    onQuantityChange={(foodId, quantity) => updateQuantity(meal.id, foodId, quantity)}
+                                    showSearch={false}
+                                />
                             </div>
-                        </div>
+                        </details>
                     ))}
+
+                    {!loading && addedMeals.length === 0 && (
+                        <div className="card px-6 py-10 text-center text-sm text-muted">
+                            No meals added for this date yet.
+                        </div>
+                    )}
                 </div>
 
                 {/* Summary */}
