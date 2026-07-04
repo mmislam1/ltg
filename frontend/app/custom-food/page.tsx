@@ -14,6 +14,7 @@ import {
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Back from "../components/back";
+import NutritionProfile from "../components/nutritionProfile";
 import {
   approveFood,
   clearFoodError,
@@ -177,6 +178,12 @@ export default function CustomFoodPage() {
       Object.entries(values).map(([key, value]) => [key, Number(value)]),
     ) as Record<Key, number>;
 
+  const nutritionPreview: Nutrition = {
+    ...setNumericValues(core),
+    vitamins: setNumericValues(vitamins),
+    minerals: setNumericValues(minerals),
+  };
+
   const resetForm = () => {
     setName("");
     setNutritionPer(unit === "g" || unit === "ml" ? "100" : "1");
@@ -242,7 +249,7 @@ export default function CustomFoodPage() {
 
   return (
     <div className="w-full px-4 py-5 sm:px-6 sm:py-8">
-      <div className="mx-auto max-w-5xl">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-6 flex items-start gap-3">
           <Back />
           <div>
@@ -410,6 +417,14 @@ export default function CustomFoodPage() {
             </section>
           </aside>
         </div>
+
+        <section className="mt-8">
+          <div className="mb-4">
+            <h2 className="text-xl font-bold text-ink">Nutrition preview</h2>
+            <p className="mt-1 text-sm text-muted">Your entered values use the same display and daily comparisons as the app’s Nutrition screen.</p>
+          </div>
+          <NutritionProfile nutrition={nutritionPreview} />
+        </section>
 
         {user.role === "admin" && (
           <section className="card mt-6 overflow-hidden">
