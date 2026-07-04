@@ -119,20 +119,15 @@ export default function CustomRecipePage() {
   };
 
   if (!initialized || !user) {
-    return <div className="flex min-h-[50vh] items-center justify-center text-sm text-muted">Loading recipe builder…</div>;
+    return <div className="flex min-h-[50vh] items-center justify-center text-sm text-muted">Loading…</div>;
   }
 
   return (
     <div className="w-full bg-canvas pb-24">
       <div className="mx-auto w-full max-w-6xl px-3 py-6 sm:px-6">
-        <Back />
-        <header className="mb-6 mt-4 flex items-start gap-4">
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-soft text-brand"><ChefHat size={25} /></span>
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand">Recipe builder</p>
-            <h1 className="mt-1 text-2xl font-bold text-ink sm:text-3xl">Create a custom recipe</h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted">Choose foods exactly as you do when adding a meal. The finished nutrition is calculated per serving.</p>
-          </div>
+        <header className="mb-6 flex items-center gap-3">
+          <Back />
+          <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom recipe</h1>
         </header>
 
         <form onSubmit={handleSubmit} className="space-y-8">

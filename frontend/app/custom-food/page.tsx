@@ -250,15 +250,9 @@ export default function CustomFoodPage() {
   return (
     <div className="w-full px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex items-start gap-3">
+        <div className="mb-6 flex items-center gap-3">
           <Back />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand">Food library</p>
-            <h1 className="mt-1 text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-muted">
-              Add the nutrition shown on your package. Your food stays private to you until an admin approves it.
-            </p>
-          </div>
+          <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
         </div>
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
