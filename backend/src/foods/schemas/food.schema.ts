@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum FoodUnit {
   GRAM = 'g',
@@ -7,6 +7,22 @@ export enum FoodUnit {
   PIECE = 'pc',
   SLICE = 'slice',
 }
+
+export enum FoodKind {
+  FOOD = 'food',
+  RECIPE = 'recipe',
+}
+
+@Schema({ _id: false })
+export class RecipeIngredient {
+  @Prop({ required: true, type: MongooseSchema.Types.ObjectId, ref: 'Food' })
+  foodId: Types.ObjectId;
+
+  @Prop({ required: true, min: 0.001, max: 1_000_000 })
+  quantity: number;
+}
+
+const RecipeIngredientSchema = SchemaFactory.createForClass(RecipeIngredient);
 
 @Schema({ _id: false })
 export class Vitamins {
@@ -69,6 +85,9 @@ export class Food {
   @Prop({ required: true, default: 0, min: 0 })
   selectedBy: number;
 
+  @Prop({ required: true, enum: FoodKind, default: FoodKind.FOOD, index: true })
+  kind: FoodKind;
+
   @Prop({ required: true, enum: FoodUnit })
   unit: FoodUnit;
 
@@ -84,6 +103,13 @@ export class Food {
 
   @Prop({ required: true, type: NutritionSchema })
   nutrition: Nutrition;
+
+  // Recipes are stored as foods whose nutrition represents one serving.
+  @Prop({ min: 1, max: 10_000 })
+  recipeServings?: number;
+
+  @Prop({ type: [RecipeIngredientSchema], default: undefined })
+  ingredients?: RecipeIngredient[];
 
   @Prop({ required: true, default: false, index: true })
   approved: boolean;

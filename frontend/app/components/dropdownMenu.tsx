@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckIcon,
+  CookingPot,
   CopyIcon,
   File,
   List,
@@ -12,6 +13,7 @@ import {
   MoreVertical,
   NotebookTabs,
   PlusCircleIcon,
+  Salad,
   Send,
   Trash2,
   UserRoundPen,
@@ -123,6 +125,24 @@ export default function DropdownMenu() {
           </div>
 
           <div className="py-1">
+            <button
+              type="button"
+              onClick={() => navigate("/custom_recipe")}
+              className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm"
+              role="menuitem"
+            >
+              <CookingPot size={18} className="text-muted" />
+              <span>Create custom recipe</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate("/custom-food")}
+              className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm"
+              role="menuitem"
+            >
+              <Salad size={18} className="text-muted" />
+              <span>Create custom food</span>
+            </button>
             {items.map(({ label, icon: Icon, href }) => (
               <button
                 type="button"

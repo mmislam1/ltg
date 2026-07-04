@@ -16,12 +16,16 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { UserRole } from '../users/schemas/user.schema';
+import { CustomFoodsService } from '../custom-foods/custom-foods.service';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { FoodsService } from './foods.service';
 
 @Controller('foods')
 export class FoodsController {
-  constructor(private readonly foodsService: FoodsService) {}
+  constructor(
+    private readonly foodsService: FoodsService,
+    private readonly customFoodsService: CustomFoodsService,
+  ) {}
 
   @Get()
   @UseGuards(OptionalJwtAuthGuard)
@@ -39,7 +43,7 @@ export class FoodsController {
   @Post()
   @UseGuards(JwtAuthGuard)
   create(@CurrentUser() user: AuthenticatedUser, @Body() dto: CreateFoodDto) {
-    return this.foodsService.create(user.id, dto);
+    return this.customFoodsService.createFood(user.id, dto);
   }
 
   @Patch(':id/approve')

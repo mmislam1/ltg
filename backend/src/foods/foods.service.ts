@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import type { AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { UserRole } from '../users/schemas/user.schema';
-import { CreateFoodDto } from './dto/create-food.dto';
-import { Food, FoodDocument, FoodUnit } from './schemas/food.schema';
+import { foodToResponse } from './food-response';
+import { Food } from './schemas/food.schema';
 
 @Injectable()
 export class FoodsService {
@@ -18,29 +18,19 @@ export class FoodsService {
       .find(visibility)
       .sort({ name: 1 })
       .exec();
-    return items.map((item) => this.toResponse(item));
+    return items.map(foodToResponse);
   }
 
   async findPending() {
     const items = await this.foods.find({ approved: false }).sort({ createdAt: 1 }).exec();
-    return items.map((item) => this.toResponse(item));
-  }
-
-  async create(userId: string, dto: CreateFoodDto) {
-    const item = await this.foods.create({
-      ...dto,
-      addedBy: userId,
-      selectedBy: 0,
-      approved: false,
-    });
-    return this.toResponse(item);
+    return items.map(foodToResponse);
   }
 
   async approve(id: string) {
     const item = await this.findById(id);
     item.approved = true;
     await item.save();
-    return this.toResponse(item);
+    return foodToResponse(item);
   }
 
   async remove(id: string, user: AuthenticatedUser) {
@@ -57,30 +47,5 @@ export class FoodsService {
     const item = await this.foods.findById(id).exec();
     if (!item) throw new NotFoundException('Food item not found.');
     return item;
-  }
-
-  private toResponse(item: FoodDocument) {
-    const nutritionPer = item.nutritionPer ??
-      (item.unit === FoodUnit.GRAM || item.unit === FoodUnit.MILLILITER ? 100 : 1);
-    const nutrition = {
-      calories: item.nutrition.calories,
-      protein: item.nutrition.protein,
-      carbs: item.nutrition.carbs,
-      fiber: item.nutrition.fiber ?? 0,
-      netCarbs: item.nutrition.netCarbs ?? item.nutrition.carbs,
-      fats: item.nutrition.fats,
-      vitamins: item.nutrition.vitamins,
-      minerals: item.nutrition.minerals,
-    };
-    return {
-      id: item.id,
-      name: item.name,
-      addedBy: item.addedBy,
-      selectedBy: item.selectedBy,
-      unit: item.unit,
-      nutritionPer,
-      nutrition,
-      approved: item.approved,
-    };
   }
 }

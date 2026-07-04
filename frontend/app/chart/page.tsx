@@ -158,7 +158,7 @@ interface NutritionTotals {
     fatss: string;
 }
 
-export const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals }> = ({ data, totals }) => (
+const NutritionPDF: React.FC<{ data: typeof sampleData; totals: NutritionTotals }> = ({ data, totals }) => (
     <Document>
         <Page size="A4" style={pdfStyles.page}>
             {/* Header */}

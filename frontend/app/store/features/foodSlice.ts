@@ -48,10 +48,18 @@ export interface Food {
   name: string;
   addedBy: string;
   selectedBy: number;
+  kind: "food" | "recipe";
   unit: FoodUnit;
   nutritionPer: number;
   nutrition: Nutrition;
+  recipeServings?: number;
+  ingredients?: RecipeIngredient[];
   approved: boolean;
+}
+
+export interface RecipeIngredient {
+  foodId: string;
+  quantity: number;
 }
 
 export interface CreateFoodInput {
@@ -61,12 +69,19 @@ export interface CreateFoodInput {
   nutrition: Nutrition;
 }
 
+export interface CreateRecipeInput {
+  name: string;
+  servings: number;
+  ingredients: RecipeIngredient[];
+}
+
 export interface FoodsState {
   list: Food[];
   pending: Food[];
   loading: boolean;
   pendingLoading: boolean;
   creating: boolean;
+  creatingRecipe: boolean;
   deletingIds: string[];
   approvingIds: string[];
   error: string | null;
@@ -79,6 +94,7 @@ const initialState: FoodsState = {
   loading: false,
   pendingLoading: false,
   creating: false,
+  creatingRecipe: false,
   deletingIds: [],
   approvingIds: [],
   error: null,
@@ -103,10 +119,22 @@ export const createFood = createAsyncThunk<Food, CreateFoodInput, { rejectValue:
   "foods/create",
   async (food, { rejectWithValue }) => {
     try {
-      const { data } = await api.post<Food>("/foods", food);
+      const { data } = await api.post<Food>("/custom/foods", food);
       return data;
     } catch (error) {
       return rejectWithValue(reject(error, "Unable to create the food item."));
+    }
+  },
+);
+
+export const createRecipe = createAsyncThunk<Food, CreateRecipeInput, { rejectValue: string }>(
+  "foods/createRecipe",
+  async (recipe, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post<Food>("/custom/recipes", recipe);
+      return data;
+    } catch (error) {
+      return rejectWithValue(reject(error, "Unable to create the recipe."));
     }
   },
 );
@@ -188,6 +216,18 @@ export const foodSlice = createSlice({
       .addCase(createFood.rejected, (state, action) => {
         state.creating = false;
         state.error = action.payload || "Unable to create the food item.";
+      })
+      .addCase(createRecipe.pending, (state) => {
+        state.creatingRecipe = true;
+        state.error = null;
+      })
+      .addCase(createRecipe.fulfilled, (state, action) => {
+        state.creatingRecipe = false;
+        upsert(state.list, action.payload);
+      })
+      .addCase(createRecipe.rejected, (state, action) => {
+        state.creatingRecipe = false;
+        state.error = action.payload || "Unable to create the recipe.";
       })
       .addCase(fetchPendingFoods.pending, (state) => {
         state.pendingLoading = true;
