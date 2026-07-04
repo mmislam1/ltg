@@ -1,0 +1,45 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import * as Joi from 'joi';
+import { AuthModule } from './auth/auth.module';
+import { HealthController } from './health.controller';
+import { UsersModule } from './users/users.module';
+import { FoodsModule } from './foods/foods.module';
+import { MealActivitiesModule } from './meal-activities/meal-activities.module';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      validationSchema: Joi.object({
+        NODE_ENV: Joi.string().valid('development', 'test', 'production').default('development'),
+        PORT: Joi.number().port().default(8000),
+        MONGODB_URI: Joi.string().required(),
+        CORS_ORIGINS: Joi.string().default('http://localhost:3000'),
+        JWT_ACCESS_SECRET: Joi.string().min(32).required(),
+        JWT_REFRESH_SECRET: Joi.string().min(32).required().invalid(Joi.ref('JWT_ACCESS_SECRET')),
+        JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m'),
+        JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+      }),
+    }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        uri: config.getOrThrow<string>('MONGODB_URI'),
+        autoIndex: config.get<string>('NODE_ENV') !== 'production',
+      }),
+    }),
+    ThrottlerModule.forRoot([{ name: 'default', ttl: 60_000, limit: 100 }]),
+    UsersModule,
+    AuthModule,
+    FoodsModule,
+    MealActivitiesModule,
+  ],
+  controllers: [HealthController],
+  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],
+})
+export class AppModule {}

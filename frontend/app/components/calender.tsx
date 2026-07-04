@@ -2,21 +2,25 @@
 
 import { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { setSelectedDate } from '../store/features/activitySlice';
+import { fetchMealActivity } from '../store/features/activitySlice';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+const dateKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const dateFromKey = (value: string) => {
+    const [year, month, day] = value.split('-').map(Number);
+    return year && month && day ? new Date(year, month - 1, day) : new Date();
+};
 
 export default function DatePicker() {
     const dispatch = useAppDispatch();
     const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
+    const loading = useAppSelector((state) => state.activity.loading);
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarDate, setCalendarDate] = useState(new Date());
 
-    const dateObj = selectedDate ? new Date(selectedDate) : new Date();
-
-    if (!selectedDate) {
-        const today = new Date().toISOString().split('T')[0];
-        dispatch(setSelectedDate(today));
-    }
+    const dateObj = dateFromKey(selectedDate || dateKey(new Date()));
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('en-GB', {
@@ -29,20 +33,19 @@ export default function DatePicker() {
     const handlePrevDay = () => {
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() - 1);
-        console.log(newDate.toISOString())
-        dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
+        dispatch(fetchMealActivity(dateKey(newDate)));
     };
 
     const handleNextDay = () => {
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() + 1);
-        dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
+        dispatch(fetchMealActivity(dateKey(newDate)));
     };
 
     const handleDateSelect = (day: number) => {
         const newDate = new Date(calendarDate);
         newDate.setDate(day);
-        dispatch(setSelectedDate(newDate.toISOString().split('T')[0]));
+        dispatch(fetchMealActivity(dateKey(newDate)));
         setShowCalendar(false);
     };
 
@@ -69,33 +72,45 @@ export default function DatePicker() {
 
     return (
         <div className="relative inline-block">
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0 sm:gap-1">
                 <button
+                    type="button"
                     onClick={handlePrevDay}
-                    className="p-1 hover:bg-gray-200 rounded text-gray-500"
+                    disabled={loading}
+                    className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
+                    aria-label="Previous day"
                 >
-                    <ChevronLeft size={30} />
+                    <ChevronLeft className="h-5 w-5 sm:h-7 sm:w-7" />
                 </button>
 
                 <button
-                    onClick={() => setShowCalendar(!showCalendar)}
-                    className="px-1 py-2 rounded hover:bg-gray-100 text-gray-500 font-bold text-xs md:text-md"
+                    type="button"
+                    onClick={() => {
+                        setCalendarDate(dateObj);
+                        setShowCalendar(!showCalendar);
+                    }}
+                    className="btn btn-ghost min-h-8 px-1 text-[0.7rem] sm:min-h-11 sm:px-2 sm:text-sm"
+                    aria-expanded={showCalendar}
+                    aria-haspopup="dialog"
                 >
-                    {formatDate(dateObj)}
+                    {loading ? 'Loading...' : formatDate(dateObj)}
                 </button>
 
                 <button
+                    type="button"
                     onClick={handleNextDay}
-                    className="p-1 hover:bg-gray-200 rounded text-gray-500"
+                    disabled={loading}
+                    className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
+                    aria-label="Next day"
                 >
-                    <ChevronRight size={30} />
+                    <ChevronRight className="h-5 w-5 sm:h-7 sm:w-7" />
                 </button>
             </div>
 
             {showCalendar && (
-                <div className="absolute top-full mt-2 bg-white border border-gray-300 rounded-lg shadow-md shadow-gray-400 p-3 z-10 w-75 left-1/3 -translate-x-1/2">
+                <div className="card absolute top-full left-1/2 z-10 mt-2 w-[min(18.75rem,calc(100vw-1rem))] -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
                     <div className="flex items-center justify-between mb-4">
-                        <button onClick={handlePrevMonth} className="p-1 hover:bg-gray-200 rounded text-gray-500">
+                        <button type="button" onClick={handlePrevMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Previous month">
                             <ChevronLeft size={20} />
                         </button>
                         <div className="text-center font-bold min-w-[150px]">
@@ -104,14 +119,14 @@ export default function DatePicker() {
                                 year: 'numeric',
                             })}
                         </div>
-                        <button onClick={handleNextMonth} className="p-1 hover:bg-gray-200 rounded text-gray-500">
+                        <button type="button" onClick={handleNextMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Next month">
                             <ChevronRight size={20} />
                         </button>
                     </div>
 
                     <div className="grid grid-cols-7 gap-2 mb-2">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                            <div key={day} className="w-10 h-10 flex items-center justify-center text-sm lg:text-md font-semibold text-gray-500">
+                            <div key={day} className="flex h-10 w-10 items-center justify-center text-sm font-semibold text-muted">
                                 {day}
                             </div>
                         ))}
@@ -123,11 +138,12 @@ export default function DatePicker() {
                         ))}
                         {days.map((day) => (
                             <button
+                                type="button"
                                 key={day}
                                 onClick={() => handleDateSelect(day)}
-                                className={`w-10 h-10 flex items-center justify-center rounded text-sm font-semibold text-gray-500 ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
-                                    ? 'bg-blue-500 text-white'
-                                    : 'hover:bg-gray-200'
+                                className={`btn btn-icon btn-icon-sm text-sm ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
+                                    ? 'btn-primary'
+                                    : 'btn-ghost'
                                     }`}
                             >
                                 {day}

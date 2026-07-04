@@ -4,6 +4,7 @@ export interface IdealNutritionState {
   macros: {
     protein: number; // grams
     carbs: number; // grams
+    fiber: number; // grams
     fats: number; // grams
     energy: number; // kcal
   };
@@ -14,10 +15,10 @@ export interface IdealNutritionState {
     b5: number; // mg (Pantothenic Acid)
     b6: number; // mg (Pyridoxine)
     b7: number; // μg (Biotin)
-    b8: number; // mg (Inositol - not officially established RDA)
+    b8: number; // mg (Choline)
     b9: number; // μg (Folate)
     b12: number; // μg (Cobalamin)
-    a: number; // IU (International Units)
+    a: number; // μg RAE
     c: number; // mg
     d: number; // IU
     e: number; // mg
@@ -41,6 +42,7 @@ export const IDEAL_NUTRITION: IdealNutritionState = {
   macros: {
     protein: 112.3, // g (general recommendation: 0.8-1g per kg body weight)
     carbs: 202.1, // g (45-65% of total calories)
+    fiber: 30.0, // g
     fats: 59.9, // g (20-35% of total calories)
     energy: 1796.0, // kcal (average for adult males)
   },
@@ -51,10 +53,10 @@ export const IDEAL_NUTRITION: IdealNutritionState = {
     b5: 5.0, // mg
     b6: 1.3, // mg
     b7: 30.0, // μg
-    b8: 500.0, // mg (no established RDA, this is a common supplemental amount)
+    b8: 550.0, // mg (adult male adequate intake for choline)
     b9: 400.0, // μg
     b12: 2.4, // μg
-    a: 3000.0, // IU
+    a: 900.0, // μg RAE
     c: 90.0, // mg
     d: 600.0, // IU
     e: 15.0, // mg

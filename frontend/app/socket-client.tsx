@@ -27,13 +27,13 @@ export const SocketProvider = ({
     });
 
    
-    setSocket(socketInstance);
-
     socketInstance.on("connect", () => {
+      setSocket(socketInstance);
       console.log("✅ Connected to socket server:", socketInstance.id);
     });
 
     socketInstance.on("disconnect", () => {
+      setSocket(null);
       console.log("❌ Disconnected from socket server");
     });
 

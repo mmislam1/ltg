@@ -1,41 +1,54 @@
-"use client";
-import React, { useState } from "react";
+import {
+  useId,
+  type ChangeEvent,
+  type InputHTMLAttributes,
+} from "react";
 
-interface InputElementProps {
+interface InputElementProps
+  extends Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange"> {
   label: string;
-  type?: string;
   value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
-const InputElement: React.FC<InputElementProps> = ({
+const InputElement = ({
   label,
   type = "text",
   value,
   onChange,
-}) => {
-  const [isFocused, setIsFocused] = useState(false);
+  error,
+  id,
+  className = "",
+  required,
+  ...props
+}: InputElementProps) => {
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
+  const errorId = `${inputId}-error`;
 
   return (
-    <div className="relative w-full">
+    <div className="form-field">
+      <label className="form-label" htmlFor={inputId}>
+        {label}
+        {required && <span aria-hidden="true"> *</span>}
+      </label>
       <input
+        {...props}
+        id={inputId}
         type={type}
         value={value}
         onChange={onChange}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(value !== "")} 
-        className="peer w-full border border-gray-300 rounded-md px-3 pt-5 pb-2 text-base text-gray-900 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 outline-none"
-        placeholder=" " 
+        required={required}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? errorId : props["aria-describedby"]}
+        className={`form-control ${className}`}
       />
-      <label
-        className={`absolute left-3 text-gray-500 transition-all duration-200 
-          ${isFocused || value
-            ? "text-xs -top-1.5 bg-white px-1 text-yellow-600"
-            : "text-base top-2.5"
-          }`}
-      >
-        {label}
-      </label>
+      {error && (
+        <p className="form-error" id={errorId} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 };
