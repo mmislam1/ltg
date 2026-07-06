@@ -55,6 +55,17 @@ Meal bodies use `list: [{ "foodId": "<Mongo ObjectId>", "quantity": 100 }]`.
 Only approved foods and the authenticated user's own pending foods may be selected.
 Each user can have only one meal of each type per date.
 
+## Diet chart email export
+
+`POST /api/diet-chart-exports/email?date=YYYY-MM-DD` generates a modern diet chart PDF
+on the backend and emails it to the authenticated user's account. The date is optional
+and follows the same timezone-aware behavior as meal activities. Delivery is limited to
+three requests per minute per client.
+
+Configure SMTP with `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`,
+`MAIL_PASSWORD`, and `MAIL_FROM`. `MAIL_USER` and `MAIL_PASSWORD` may both be omitted
+for an SMTP relay that does not require authentication.
+
 When production runs with automatic index creation disabled, create the activity key once:
 
 ```javascript

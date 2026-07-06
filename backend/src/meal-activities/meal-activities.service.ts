@@ -56,6 +56,41 @@ export class MealActivitiesService {
     return this.toResponse(activity);
   }
 
+  async copyToToday(userId: string, sourceDate?: string) {
+    const sourceResolved = await this.resolveDate(userId, sourceDate);
+    const todayResolved = await this.resolveDate(userId);
+    const source = await this.getOrCreateActivity(
+      userId,
+      sourceResolved.date,
+      sourceResolved.timezone,
+    );
+
+    if (sourceResolved.date === todayResolved.date) return this.toResponse(source);
+
+    const meals = source.meals.map((meal) => ({
+      mealType: meal.mealType,
+      list: meal.list.map((item) => ({
+        foodId: item.foodId,
+        quantity: item.quantity,
+      })),
+    }));
+    const destination = await this.activities
+      .findOneAndUpdate(
+        { userId: new Types.ObjectId(userId), date: todayResolved.date },
+        {
+          $set: { meals, timezone: todayResolved.timezone },
+          $setOnInsert: {
+            userId: new Types.ObjectId(userId),
+            date: todayResolved.date,
+          },
+        },
+        { new: true, upsert: true, runValidators: true },
+      )
+      .exec();
+
+    return this.toResponse(destination);
+  }
+
   async updateMeal(
     userId: string,
     mealType: MealType,

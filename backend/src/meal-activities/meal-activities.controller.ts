@@ -40,6 +40,15 @@ export class MealActivitiesController {
     return this.mealActivities.addMeal(user.id, dto, query.date);
   }
 
+  @Post('copy-to-today')
+  @HttpCode(HttpStatus.OK)
+  copyToToday(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: ActivityDateQueryDto,
+  ) {
+    return this.mealActivities.copyToToday(user.id, query.date);
+  }
+
   @Patch('meals/:mealType')
   @HttpCode(HttpStatus.OK)
   updateMeal(

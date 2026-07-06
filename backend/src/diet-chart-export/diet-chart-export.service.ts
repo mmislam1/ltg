@@ -1,0 +1,252 @@
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Food } from '../foods/schemas/food.schema';
+import { MealActivitiesService } from '../meal-activities/meal-activities.service';
+import { UsersService } from '../users/users.service';
+import { DietChartMailService } from './diet-chart-mail.service';
+import { DietChartPdfService } from './diet-chart-pdf.service';
+import {
+  DietChartExportRequest,
+  DietChartExportRequestStatus,
+} from './schemas/diet-chart-export-request.schema';
+import {
+  DietChartDocument,
+  DietChartMacroValues,
+  DietChartMeal,
+} from './diet-chart.types';
+
+@Injectable()
+export class DietChartExportService {
+  constructor(
+    @InjectModel(Food.name) private readonly foods: Model<Food>,
+    @InjectModel(DietChartExportRequest.name)
+    private readonly requests: Model<DietChartExportRequest>,
+    private readonly activities: MealActivitiesService,
+    private readonly users: UsersService,
+    private readonly pdf: DietChartPdfService,
+    private readonly mail: DietChartMailService,
+  ) {}
+
+  async requestChart(userId: string, requestedDate?: string) {
+    const user = await this.users.findById(userId);
+    if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');
+    if (!this.isProfileComplete(user)) {
+      throw new BadRequestException(
+        'Complete your profile before requesting a diet chart PDF.',
+      );
+    }
+
+    const activity = await this.activities.findForDate(userId, requestedDate);
+    const existing = await this.requests
+      .findOne({
+        userId: new Types.ObjectId(userId),
+        date: activity.date,
+      })
+      .exec();
+    if (existing) {
+      return this.requestResponse(existing);
+    }
+
+    try {
+      const request = await this.requests.create({
+        userId: new Types.ObjectId(userId),
+        date: activity.date,
+        status: DietChartExportRequestStatus.PENDING,
+      });
+      return this.requestResponse(request);
+    } catch (error) {
+      if ((error as { code?: number }).code !== 11000) throw error;
+      const request = await this.requests
+        .findOne({ userId: new Types.ObjectId(userId), date: activity.date })
+        .exec();
+      if (!request) throw error;
+      return this.requestResponse(request);
+    }
+  }
+
+  listPendingRequests() {
+    return this.requests
+      .find({ status: DietChartExportRequestStatus.PENDING })
+      .sort({ createdAt: 1 })
+      .lean()
+      .exec();
+  }
+
+  async approveRequest(requestId: string, adminId: string) {
+    if (!Types.ObjectId.isValid(requestId)) {
+      throw new NotFoundException('PDF request was not found.');
+    }
+    const request = await this.requests
+      .findOneAndUpdate(
+        {
+          _id: new Types.ObjectId(requestId),
+          status: DietChartExportRequestStatus.PENDING,
+        },
+        { $set: { status: DietChartExportRequestStatus.PROCESSING } },
+        { new: true },
+      )
+      .exec();
+    if (!request) {
+      const existing = await this.requests.findById(requestId).lean().exec();
+      if (!existing) throw new NotFoundException('PDF request was not found.');
+      throw new ConflictException('This PDF request has already been processed.');
+    }
+
+    try {
+      const delivery = await this.emailChart(request.userId.toString(), request.date);
+      request.status = DietChartExportRequestStatus.APPROVED;
+      request.approvedBy = new Types.ObjectId(adminId);
+      request.approvedAt = new Date();
+      await request.save();
+      return { ...this.requestResponse(request), ...delivery };
+    } catch (error) {
+      await this.requests.updateOne(
+        { _id: request._id, status: DietChartExportRequestStatus.PROCESSING },
+        { $set: { status: DietChartExportRequestStatus.PENDING } },
+      );
+      throw error;
+    }
+  }
+
+  private async emailChart(userId: string, requestedDate: string) {
+    const user = await this.users.findById(userId);
+    if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');
+
+    const activity = await this.activities.findForDate(userId, requestedDate);
+    const foodIds = [
+      ...new Set(activity.meals.flatMap((meal) => meal.list.map((item) => item.foodId))),
+    ];
+    const foods = foodIds.length
+      ? await this.foods.find({ _id: { $in: foodIds.map((id) => new Types.ObjectId(id)) } }).exec()
+      : [];
+    const foodsById = new Map(foods.map((food) => [food.id, food]));
+    const totals = this.emptyMacros();
+
+    const meals: DietChartMeal[] = activity.meals.map((meal) => ({
+      name: meal.mealType,
+      items: meal.list.map((entry) => {
+        const food = foodsById.get(entry.foodId);
+        const factor = food ? entry.quantity / food.nutritionPer : 0;
+        const macros = {
+          calories: (food?.nutrition.calories ?? 0) * factor,
+          protein: (food?.nutrition.protein ?? 0) * factor,
+          carbs: (food?.nutrition.carbs ?? 0) * factor,
+          fats: (food?.nutrition.fats ?? 0) * factor,
+        };
+        this.addMacros(totals, macros);
+        return {
+          name: food?.name ?? 'Unavailable food',
+          quantity: entry.quantity,
+          unit: food?.unit ?? 'serving',
+          macros,
+        };
+      }),
+    }));
+
+    const chart: DietChartDocument = {
+      user: {
+        name: user.name,
+        email: user.email,
+        age: user.age,
+        weight: user.weight,
+        weightUnit: user.weightUnit,
+        height: user.height,
+        heightUnit: user.heightUnit,
+      },
+      date: activity.date,
+      timezone: activity.timezone,
+      goals: {
+        calories: user.targetCalories,
+        protein: user.targetProtein,
+        carbs: user.targetCarbs,
+        fats: user.targetFat,
+      },
+      totals,
+      meals,
+      generatedAt: new Date(),
+    };
+    const filename = `diet-chart-${activity.date}.pdf`;
+    const pdf = await this.pdf.render(chart);
+
+    await this.mail.send({
+      recipient: user.email,
+      recipientName: user.name,
+      date: activity.date,
+      filename,
+      pdf,
+    });
+
+    return {
+      message: 'PDF request approved and diet chart emailed successfully.',
+      sentTo: user.email,
+      date: activity.date,
+    };
+  }
+
+  private isProfileComplete(user: {
+    name?: string;
+    email?: string;
+    age?: number;
+    weight?: number;
+    height?: number;
+    targetCalories?: number;
+    targetProtein?: number;
+    targetCarbs?: number;
+    targetFat?: number;
+  }) {
+    const numbers = [
+      user.age,
+      user.weight,
+      user.height,
+      user.targetCalories,
+      user.targetProtein,
+      user.targetCarbs,
+      user.targetFat,
+    ];
+    return Boolean(
+      user.name?.trim() &&
+        user.email?.trim() &&
+        numbers.every((value) => typeof value === 'number' && Number.isFinite(value)) &&
+        (user.age ?? 0) > 0 &&
+        (user.weight ?? 0) > 0 &&
+        (user.height ?? 0) > 0 &&
+        (user.targetCalories ?? 0) > 0,
+    );
+  }
+
+  private requestResponse(request: {
+    id: string;
+    date: string;
+    status: DietChartExportRequestStatus;
+    approvedAt?: Date;
+  }) {
+    return {
+      id: request.id,
+      date: request.date,
+      status: request.status,
+      approvedAt: request.approvedAt,
+      message:
+        request.status === DietChartExportRequestStatus.APPROVED
+          ? 'Diet chart PDF emailed.'
+          : 'PDF request saved. You will receive an email after an admin approves it.',
+    };
+  }
+
+  private emptyMacros(): DietChartMacroValues {
+    return { calories: 0, protein: 0, carbs: 0, fats: 0 };
+  }
+
+  private addMacros(total: DietChartMacroValues, value: DietChartMacroValues) {
+    total.calories += value.calories;
+    total.protein += value.protein;
+    total.carbs += value.carbs;
+    total.fats += value.fats;
+  }
+}

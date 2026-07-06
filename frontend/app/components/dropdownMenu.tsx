@@ -4,28 +4,36 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   CheckIcon,
+  CheckCircle2,
   CookingPot,
   CopyIcon,
   File,
   List,
   LogOut,
+  LoaderCircle,
+  Mail,
   MenuIcon,
   MoreVertical,
   NotebookTabs,
   PlusCircleIcon,
   Salad,
-  Send,
   Trash2,
   UserRoundPen,
 } from "lucide-react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/features/authSlice";
+import api, { getApiError } from "../store/api";
+
+type ExportNotice = { kind: "success" | "error"; message: string } | null;
 
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [exportNotice, setExportNotice] = useState<ExportNotice>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const user = useAppSelector((state) => state.auth.user);
+  const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -74,6 +82,27 @@ export default function DropdownMenu() {
     router.push("/auth/signin");
   };
 
+  const exportChart = async () => {
+    setIsOpen(false);
+    setExportNotice(null);
+    setExporting(true);
+    try {
+      const { data } = await api.post<{ message: string }>(
+        "/diet-chart-exports/email",
+        null,
+        { params: selectedDate ? { date: selectedDate } : undefined },
+      );
+      setExportNotice({ kind: "success", message: data.message });
+    } catch (error) {
+      setExportNotice({
+        kind: "error",
+        message: getApiError(error, "Unable to email the diet chart."),
+      });
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const items = [
     { label: "Mark Day as Complete", icon: CheckIcon, href: "/" },
     { label: "Daily Report", icon: List, href: "/" },
@@ -82,12 +111,34 @@ export default function DropdownMenu() {
     { label: "Copy Previous Day", icon: File, href: "/" },
     { label: "Clear All Serving Sizes", icon: MenuIcon, href: "/" },
     { label: "Delete All Diary Entries", icon: Trash2, href: "/" },
-    { label: "Export Chart", icon: Send, href: "/chart" },
     { label: "Manage meals", icon: NotebookTabs, href: "/manage_meals" },
   ];
 
   return (
     <div className="relative inline-block">
+      {exportNotice && (
+        <div
+          role={exportNotice.kind === "error" ? "alert" : "status"}
+          className={`fixed right-4 top-20 z-[70] flex max-w-sm items-start gap-2 rounded-xl border px-4 py-3 text-sm shadow-lg ${
+            exportNotice.kind === "success"
+              ? "border-brand/25 bg-brand-soft text-brand-active"
+              : "border-red-200 bg-red-50 text-danger"
+          }`}
+        >
+          {exportNotice.kind === "success" ? (
+            <CheckCircle2 className="mt-0.5 shrink-0" size={17} />
+          ) : null}
+          <span>{exportNotice.message}</span>
+          <button
+            type="button"
+            onClick={() => setExportNotice(null)}
+            className="ml-2 font-bold"
+            aria-label="Dismiss notification"
+          >
+            x
+          </button>
+        </div>
+      )}
       <button
         type="button"
         ref={buttonRef}
@@ -142,6 +193,20 @@ export default function DropdownMenu() {
             >
               <Salad size={18} className="text-muted" />
               <span>Create custom food</span>
+            </button>
+            <button
+              type="button"
+              onClick={exportChart}
+              disabled={exporting}
+              className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm"
+              role="menuitem"
+            >
+              {exporting ? (
+                <LoaderCircle size={18} className="animate-spin text-muted" />
+              ) : (
+                <Mail size={18} className="text-muted" />
+              )}
+              <span>{exporting ? "Emailing chart..." : "Export Chart"}</span>
             </button>
             {items.map(({ label, icon: Icon, href }) => (
               <button

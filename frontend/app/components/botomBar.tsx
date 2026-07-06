@@ -19,7 +19,7 @@ interface NavigationItem {
 
 const navigationItems: NavigationItem[] = [
   { href: "/", label: "Home", icon: Home },
-  { href: "/manage_meals", label: "Diary", icon: NotebookTabs },
+  { href: "/diary", label: "Diary", icon: NotebookTabs },
   { href: "/chart", label: "Progress", icon: ChartNoAxesColumnIncreasing },
   { href: "/nutritionDashboard", label: "Nutrition", icon: Salad },
 ];

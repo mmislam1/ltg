@@ -6,7 +6,6 @@ import Logo from "../../components/logo";
 import { useDeviceType } from "../hooks/useDeviceType";
 import { useAppSelector } from "../store/hooks";
 import DropdownMenu from "./dropdownMenu";
-import DatePicker from "./calender";
 const Navbar = () => {
 
   const user = useAppSelector((store)=>store.auth.user)
@@ -28,11 +27,7 @@ const Navbar = () => {
           <Logo/>
         </Link>
 
-        {user ? (
-          <div className="col-start-2 row-start-1 min-w-0 justify-self-center sm:absolute sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2">
-            <DatePicker />
-          </div>
-        ) : (
+        {!user && (
           !isMobile && <div className="absolute left-1/2 hidden -translate-x-1/2 text-muted xl:flex">
             {navLinks.map((link) => (
               <Link

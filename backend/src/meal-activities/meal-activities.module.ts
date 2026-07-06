@@ -21,5 +21,6 @@ import {
   ],
   controllers: [MealActivitiesController],
   providers: [MealActivitiesService],
+  exports: [MealActivitiesService],
 })
 export class MealActivitiesModule {}

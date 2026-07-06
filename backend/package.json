@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
     "@nestjs/common": "11.1.27",
     "@nestjs/config": "4.0.4",
     "@nestjs/core": "11.1.27",
@@ -28,8 +29,10 @@
     "joi": "18.2.3",
     "jsonwebtoken": "9.0.3",
     "mongoose": "9.7.3",
+    "nodemailer": "^9.0.3",
     "passport": "0.7.0",
     "passport-jwt": "4.0.1",
+    "pdfkit": "^0.19.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2"
   },
@@ -37,7 +40,9 @@
     "@nestjs/cli": "11.0.23",
     "@types/express": "5.0.6",
     "@types/node": "24.10.1",
+    "@types/nodemailer": "^8.0.1",
     "@types/passport-jwt": "4.0.1",
+    "@types/pdfkit": "^0.17.6",
     "typescript": "5.9.3"
   },
   "overrides": {

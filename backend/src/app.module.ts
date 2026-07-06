@@ -9,6 +9,7 @@ import { HealthController } from './health.controller';
 import { UsersModule } from './users/users.module';
 import { FoodsModule } from './foods/foods.module';
 import { MealActivitiesModule } from './meal-activities/meal-activities.module';
+import { DietChartExportModule } from './diet-chart-export/diet-chart-export.module';
 
 @Module({
   imports: [
@@ -24,6 +25,12 @@ import { MealActivitiesModule } from './meal-activities/meal-activities.module';
         JWT_REFRESH_SECRET: Joi.string().min(32).required().invalid(Joi.ref('JWT_ACCESS_SECRET')),
         JWT_ACCESS_EXPIRES_IN: Joi.string().default('15m'),
         JWT_REFRESH_EXPIRES_IN: Joi.string().default('7d'),
+        MAIL_HOST: Joi.string().hostname().optional(),
+        MAIL_PORT: Joi.number().port().default(587),
+        MAIL_SECURE: Joi.boolean().truthy('true').falsy('false').default(false),
+        MAIL_USER: Joi.string().optional(),
+        MAIL_PASSWORD: Joi.string().optional(),
+        MAIL_FROM: Joi.string().default('Lose To Gain <no-reply@losetogain.app>'),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -38,6 +45,7 @@ import { MealActivitiesModule } from './meal-activities/meal-activities.module';
     AuthModule,
     FoodsModule,
     MealActivitiesModule,
+    DietChartExportModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

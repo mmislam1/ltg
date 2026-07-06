@@ -124,24 +124,24 @@ export default function DatePicker() {
                         </button>
                     </div>
 
-                    <div className="grid grid-cols-7 gap-2 mb-2">
+                    <div className="mb-2 grid grid-cols-7 gap-1">
                         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                            <div key={day} className="flex h-10 w-10 items-center justify-center text-sm font-semibold text-muted">
+                            <div key={day} className="flex h-8 items-center justify-center text-xs font-semibold text-muted">
                                 {day}
                             </div>
                         ))}
                     </div>
 
-                    <div className="grid grid-cols-7 gap-2">
+                    <div className="grid grid-cols-7 gap-1">
                         {emptyDays.map((_, i) => (
-                            <div key={`empty-${i}`} className="w-10 h-10" />
+                            <div key={`empty-${i}`} className="h-9" />
                         ))}
                         {days.map((day) => (
                             <button
                                 type="button"
                                 key={day}
                                 onClick={() => handleDateSelect(day)}
-                                className={`btn btn-icon btn-icon-sm text-sm ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
+                                className={`btn min-h-9 w-full rounded-full p-0 text-sm ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
                                     ? 'btn-primary'
                                     : 'btn-ghost'
                                     }`}
