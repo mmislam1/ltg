@@ -6,6 +6,7 @@ import {
   DietChartMacroValues,
   DietChartNutritionTotals,
 } from './diet-chart.types';
+import { DIET_CHART_LOGO } from './diet-chart-logo';
 
 const COLORS = {
   ink: '#172B2A',
@@ -110,19 +111,22 @@ export class DietChartPdfService {
     document.circle(534, 20, 70).fill('#147A72');
     document.circle(566, 116, 48).fill('#0D514D');
 
+    document.roundedRect(PAGE.margin, 25, 112, 35, 7).fill(COLORS.paper);
+    document.image(DIET_CHART_LOGO, PAGE.margin + 9, 30, {
+      fit: [94, 25],
+      align: 'center',
+      valign: 'center',
+    });
     document
       .fillColor(COLORS.paper)
       .font('Inter-Bold')
-      .fontSize(10)
-      .text('LOSE TO GAIN', PAGE.margin, 34, { characterSpacing: 1.7 });
-    document
       .fontSize(27)
-      .text('Your daily diet chart', PAGE.margin, 53, { lineBreak: false });
+      .text('Your daily diet chart', PAGE.margin, 65, { lineBreak: false });
     document
       .fillColor('#CDE9E5')
       .font('Inter')
       .fontSize(10)
-      .text(this.displayDate(chart.date), PAGE.margin, 91, { lineBreak: false });
+      .text(this.displayDate(chart.date), PAGE.margin, 101, { lineBreak: false });
 
     const details = [
       chart.user.name,
@@ -130,7 +134,7 @@ export class DietChartPdfService {
       `${this.compact(chart.user.height)} ${chart.user.heightUnit}`,
       `${chart.user.age} years`,
     ].join('  |  ');
-    document.text(details, PAGE.margin, 108, { lineBreak: false });
+    document.text(details, PAGE.margin, 117, { lineBreak: false });
   }
 
   private drawMacroCards(

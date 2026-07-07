@@ -13,14 +13,30 @@ const dateFromKey = (value: string) => {
     return year && month && day ? new Date(year, month - 1, day) : new Date();
 };
 
-export default function DatePicker() {
+const dateKeyInTimezone = (date: Date, timezone?: string) => {
+    if (!timezone) return dateKey(date);
+    const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: timezone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+    }).formatToParts(date);
+    const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value;
+    return `${value('year')}-${value('month')}-${value('day')}`;
+};
+
+export default function DatePicker({ maxDate }: { maxDate?: string } = {}) {
     const dispatch = useAppDispatch();
     const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
     const loading = useAppSelector((state) => state.activity.loading);
+    const userTimezone = useAppSelector((state) => state.auth.user?.timezone);
     const [showCalendar, setShowCalendar] = useState(false);
     const [calendarDate, setCalendarDate] = useState(new Date());
 
-    const dateObj = dateFromKey(selectedDate || dateKey(new Date()));
+    const todayKey = maxDate || dateKeyInTimezone(new Date(), userTimezone);
+    const dateObj = dateFromKey(selectedDate || todayKey);
+    const today = dateFromKey(todayKey);
+    const isTodayOrLater = dateObj >= today;
 
     const formatDate = (date: Date) => {
         return date.toLocaleDateString('en-GB', {
@@ -37,6 +53,7 @@ export default function DatePicker() {
     };
 
     const handleNextDay = () => {
+        if (isTodayOrLater) return;
         const newDate = new Date(dateObj);
         newDate.setDate(newDate.getDate() + 1);
         dispatch(fetchMealActivity(dateKey(newDate)));
@@ -45,6 +62,7 @@ export default function DatePicker() {
     const handleDateSelect = (day: number) => {
         const newDate = new Date(calendarDate);
         newDate.setDate(day);
+        if (newDate > today) return;
         dispatch(fetchMealActivity(dateKey(newDate)));
         setShowCalendar(false);
     };
@@ -54,6 +72,10 @@ export default function DatePicker() {
     };
 
     const handleNextMonth = () => {
+        if (
+            calendarDate.getFullYear() > today.getFullYear() ||
+            (calendarDate.getFullYear() === today.getFullYear() && calendarDate.getMonth() >= today.getMonth())
+        ) return;
         setCalendarDate(new Date(calendarDate.getFullYear(), calendarDate.getMonth() + 1));
     };
 
@@ -99,7 +121,7 @@ export default function DatePicker() {
                 <button
                     type="button"
                     onClick={handleNextDay}
-                    disabled={loading}
+                    disabled={loading || isTodayOrLater}
                     className="btn btn-ghost h-8 min-h-8 w-8 min-w-8 p-0 sm:h-11 sm:min-h-11 sm:w-11 sm:min-w-11"
                     aria-label="Next day"
                 >
@@ -119,7 +141,13 @@ export default function DatePicker() {
                                 year: 'numeric',
                             })}
                         </div>
-                        <button type="button" onClick={handleNextMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Next month">
+                        <button
+                            type="button"
+                            onClick={handleNextMonth}
+                            disabled={calendarDate.getFullYear() > today.getFullYear() || (calendarDate.getFullYear() === today.getFullYear() && calendarDate.getMonth() >= today.getMonth())}
+                            className="btn btn-ghost btn-icon btn-icon-sm"
+                            aria-label="Next month"
+                        >
                             <ChevronRight size={20} />
                         </button>
                     </div>
@@ -141,6 +169,7 @@ export default function DatePicker() {
                                 type="button"
                                 key={day}
                                 onClick={() => handleDateSelect(day)}
+                                disabled={new Date(calendarDate.getFullYear(), calendarDate.getMonth(), day) > today}
                                 className={`btn min-h-9 w-full rounded-full p-0 text-sm ${dateObj.getDate() === day && dateObj.getMonth() === calendarDate.getMonth() && dateObj.getFullYear() === calendarDate.getFullYear()
                                     ? 'btn-primary'
                                     : 'btn-ghost'

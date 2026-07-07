@@ -124,8 +124,12 @@ export class MealActivitiesService {
     const timezone = this.validTimezone(user.timezone)
       ? user.timezone
       : DEFAULT_TIMEZONE;
+    const today = this.localDate(new Date(), timezone);
+    if (requestedDate && requestedDate > today) {
+      throw new BadRequestException('Future dates are not available.');
+    }
     return {
-      date: requestedDate ?? this.localDate(new Date(), timezone),
+      date: requestedDate ?? today,
       timezone,
     };
   }
