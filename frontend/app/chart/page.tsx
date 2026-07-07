@@ -1,66 +1,28 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { Meal } from '../store/features/activitySlice';
+import React from 'react';
 import { useAppSelector } from '../store/hooks';
 import { NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
 
-
-interface UserProfile {
-    name: string;
-    date: string;
-    weight: string;
-    height: string;
-    age: number;
-    dailyGoals: {
-        calories: number;
-        protein: number;
-        carbs: number;
-        fats: number;
-    };
-}
-
-// Sample data matching the image
-const sampleData: UserProfile & { meals: Meal[] } = {
-    name: "Meal record",
-    date: "",
-    weight: "-",
-    height: "-",
-    age: 0,
-    dailyGoals: {
-        calories: 0,
-        protein: 0,
-        carbs: 0,
-        fats: 0
-    },
-    meals: []
-};
-
 const NutritionChart: React.FC = () => {
-    const [data,setData] = useState(sampleData);
     const meals = useAppSelector((store) => store.activity.current.chart.meals)
     const selectedDate = useAppSelector((store) => store.activity.current.selectedDate)
     const activityError = useAppSelector((store) => store.activity.error)
     const user = useAppSelector((store) => store.auth.user)
 
-    //console.log('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',store.activity.current)
-
-    useEffect(()=>{
-
-        setData({
-            name: user?.name || "Meal record",
-            date: selectedDate,
-            weight: user ? `${user.weight} ${user.weightUnit}` : "-",
-            height: user ? `${user.height} ${user.heightUnit}` : "-",
-            age: user?.age || 0,
-            dailyGoals: {
-                calories: user?.dailyGoals.targetCalories || 0,
-                protein: user?.dailyGoals.targetProtein || 0,
-                carbs: user?.dailyGoals.targetCarb || 0,
-                fats: user?.dailyGoals.targetFat || 0,
-            },
-            meals,
-        })
-    },[meals, selectedDate, user])
+    const data = {
+        name: user?.name || "Meal record",
+        date: selectedDate,
+        weight: user ? `${user.weight} ${user.weightUnit}` : "-",
+        height: user ? `${user.height} ${user.heightUnit}` : "-",
+        age: user?.age || 0,
+        dailyGoals: {
+            calories: user?.dailyGoals.targetCalories || 0,
+            protein: user?.dailyGoals.targetProtein || 0,
+            carbs: user?.dailyGoals.targetCarb || 0,
+            fats: user?.dailyGoals.targetFat || 0,
+        },
+        meals,
+    };
     // Calculate totals
     const calculateTotals = () => {
         let totalCalories = 0;

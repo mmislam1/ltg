@@ -18,8 +18,8 @@ import {
 } from './schemas/diet-chart-export-request.schema';
 import {
   DietChartDocument,
-  DietChartMacroValues,
   DietChartMeal,
+  DietChartNutritionTotals,
 } from './diet-chart.types';
 
 @Injectable()
@@ -127,7 +127,7 @@ export class DietChartExportService {
       ? await this.foods.find({ _id: { $in: foodIds.map((id) => new Types.ObjectId(id)) } }).exec()
       : [];
     const foodsById = new Map(foods.map((food) => [food.id, food]));
-    const totals = this.emptyMacros();
+    const totals = this.emptyNutritionTotals();
 
     const meals: DietChartMeal[] = activity.meals.map((meal) => ({
       name: meal.mealType,
@@ -140,7 +140,7 @@ export class DietChartExportService {
           carbs: (food?.nutrition.carbs ?? 0) * factor,
           fats: (food?.nutrition.fats ?? 0) * factor,
         };
-        this.addMacros(totals, macros);
+        this.addNutrition(totals, food?.nutrition, factor);
         return {
           name: food?.name ?? 'Unavailable food',
           quantity: entry.quantity,
@@ -239,14 +239,73 @@ export class DietChartExportService {
     };
   }
 
-  private emptyMacros(): DietChartMacroValues {
-    return { calories: 0, protein: 0, carbs: 0, fats: 0 };
+  private emptyNutritionTotals(): DietChartNutritionTotals {
+    return {
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fats: 0,
+      fiber: 0,
+      netCarbs: 0,
+      vitamins: {
+        b1: 0,
+        b2: 0,
+        b3: 0,
+        b5: 0,
+        b6: 0,
+        b7: 0,
+        b8: 0,
+        b9: 0,
+        b12: 0,
+        a: 0,
+        c: 0,
+        d: 0,
+        e: 0,
+        k: 0,
+      },
+      minerals: {
+        calcium: 0,
+        copper: 0,
+        iron: 0,
+        magnesium: 0,
+        manganese: 0,
+        phosphorus: 0,
+        potassium: 0,
+        selenium: 0,
+        sodium: 0,
+        zinc: 0,
+      },
+    };
   }
 
-  private addMacros(total: DietChartMacroValues, value: DietChartMacroValues) {
-    total.calories += value.calories;
-    total.protein += value.protein;
-    total.carbs += value.carbs;
-    total.fats += value.fats;
+  private addNutrition(
+    total: DietChartNutritionTotals,
+    nutrition:
+      | {
+          calories: number;
+          protein: number;
+          carbs: number;
+          fats: number;
+          fiber: number;
+          netCarbs: number;
+          vitamins?: Partial<DietChartNutritionTotals['vitamins']>;
+          minerals?: Partial<DietChartNutritionTotals['minerals']>;
+        }
+      | undefined,
+    factor: number,
+  ) {
+    if (!nutrition) return;
+    total.calories += nutrition.calories * factor;
+    total.protein += nutrition.protein * factor;
+    total.carbs += nutrition.carbs * factor;
+    total.fats += nutrition.fats * factor;
+    total.fiber += (nutrition.fiber ?? 0) * factor;
+    total.netCarbs += (nutrition.netCarbs ?? nutrition.carbs) * factor;
+    for (const key of Object.keys(total.vitamins) as Array<keyof typeof total.vitamins>) {
+      total.vitamins[key] += (nutrition.vitamins?.[key] ?? 0) * factor;
+    }
+    for (const key of Object.keys(total.minerals) as Array<keyof typeof total.minerals>) {
+      total.minerals[key] += (nutrition.minerals?.[key] ?? 0) * factor;
+    }
   }
 }

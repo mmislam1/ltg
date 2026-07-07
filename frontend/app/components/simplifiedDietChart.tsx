@@ -7,12 +7,19 @@ import { CalendarClock, CheckCircle2, Copy, FileText, Pencil } from "lucide-reac
 import api, { getApiError } from "../store/api";
 import { fetchMealActivity, type ListItems, type Meal } from "../store/features/activitySlice";
 import type { User } from "../store/features/authSlice";
+import type { Minerals, Vitamins } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { NUTRIENT_UNITS, scaleNutrient } from "../store/nutritionUnits";
 import DatePicker from "./calender";
 
 type Notice = { kind: "success" | "error"; text: string } | null;
 type MacroValues = { calories: number; protein: number; carbs: number; fats: number };
+type NutritionTotals = MacroValues & {
+  fiber: number;
+  netCarbs: number;
+  vitamins: Vitamins;
+  minerals: Minerals;
+};
 
 const PDF_COLORS = {
   ink: "#172B2A",
@@ -27,6 +34,36 @@ const PDF_COLORS = {
   carbs: "#8B5CF6",
   fats: "#F97316",
 } as const;
+
+const VITAMIN_ENTRIES = [
+  { key: "a", label: "Vitamin A", unit: NUTRIENT_UNITS.vitamins.a },
+  { key: "b1", label: "Vitamin B1", unit: NUTRIENT_UNITS.vitamins.b1 },
+  { key: "b2", label: "Vitamin B2", unit: NUTRIENT_UNITS.vitamins.b2 },
+  { key: "b3", label: "Vitamin B3", unit: NUTRIENT_UNITS.vitamins.b3 },
+  { key: "b5", label: "Vitamin B5", unit: NUTRIENT_UNITS.vitamins.b5 },
+  { key: "b6", label: "Vitamin B6", unit: NUTRIENT_UNITS.vitamins.b6 },
+  { key: "b7", label: "Vitamin B7", unit: NUTRIENT_UNITS.vitamins.b7 },
+  { key: "b8", label: "Vitamin B8", unit: NUTRIENT_UNITS.vitamins.b8 },
+  { key: "b9", label: "Vitamin B9", unit: NUTRIENT_UNITS.vitamins.b9 },
+  { key: "b12", label: "Vitamin B12", unit: NUTRIENT_UNITS.vitamins.b12 },
+  { key: "c", label: "Vitamin C", unit: NUTRIENT_UNITS.vitamins.c },
+  { key: "d", label: "Vitamin D", unit: NUTRIENT_UNITS.vitamins.d },
+  { key: "e", label: "Vitamin E", unit: NUTRIENT_UNITS.vitamins.e },
+  { key: "k", label: "Vitamin K", unit: NUTRIENT_UNITS.vitamins.k },
+] as const satisfies ReadonlyArray<{ key: keyof Vitamins; label: string; unit: string }>;
+
+const MINERAL_ENTRIES = [
+  { key: "calcium", label: "Calcium", unit: NUTRIENT_UNITS.minerals.calcium },
+  { key: "copper", label: "Copper", unit: NUTRIENT_UNITS.minerals.copper },
+  { key: "iron", label: "Iron", unit: NUTRIENT_UNITS.minerals.iron },
+  { key: "magnesium", label: "Magnesium", unit: NUTRIENT_UNITS.minerals.magnesium },
+  { key: "manganese", label: "Manganese", unit: NUTRIENT_UNITS.minerals.manganese },
+  { key: "phosphorus", label: "Phosphorus", unit: NUTRIENT_UNITS.minerals.phosphorus },
+  { key: "potassium", label: "Potassium", unit: NUTRIENT_UNITS.minerals.potassium },
+  { key: "selenium", label: "Selenium", unit: NUTRIENT_UNITS.minerals.selenium },
+  { key: "sodium", label: "Sodium", unit: NUTRIENT_UNITS.minerals.sodium },
+  { key: "zinc", label: "Zinc", unit: NUTRIENT_UNITS.minerals.zinc },
+] as const satisfies ReadonlyArray<{ key: keyof Minerals; label: string; unit: string }>;
 
 const dateInTimezone = (date: Date, timezone?: string) => {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -73,8 +110,19 @@ const itemMacros = (item: ListItems): MacroValues => ({
     : 0,
 });
 
+const emptyNutritionTotals = (): NutritionTotals => ({
+  calories: 0,
+  protein: 0,
+  carbs: 0,
+  fats: 0,
+  fiber: 0,
+  netCarbs: 0,
+  vitamins: { b1: 0, b2: 0, b3: 0, b5: 0, b6: 0, b7: 0, b8: 0, b9: 0, b12: 0, a: 0, c: 0, d: 0, e: 0, k: 0 },
+  minerals: { calcium: 0, copper: 0, iron: 0, magnesium: 0, manganese: 0, phosphorus: 0, potassium: 0, selenium: 0, sodium: 0, zinc: 0 },
+});
+
 const chartTotals = (meals: Meal[]) =>
-  meals.reduce<MacroValues>(
+  meals.reduce<NutritionTotals>(
     (totals, meal) => {
       meal.list.forEach((item) => {
         const macros = itemMacros(item);
@@ -82,10 +130,20 @@ const chartTotals = (meals: Meal[]) =>
         totals.protein += macros.protein;
         totals.carbs += macros.carbs;
         totals.fats += macros.fats;
+        if (!item.foodItem) return;
+        const nutrition = item.foodItem.nutrition;
+        totals.fiber += scaleNutrient(item.foodItem, nutrition.fiber ?? 0, item.quantity);
+        totals.netCarbs += scaleNutrient(item.foodItem, nutrition.netCarbs ?? nutrition.carbs, item.quantity);
+        VITAMIN_ENTRIES.forEach(({ key }) => {
+          totals.vitamins[key] += scaleNutrient(item.foodItem!, nutrition.vitamins?.[key] ?? 0, item.quantity);
+        });
+        MINERAL_ENTRIES.forEach(({ key }) => {
+          totals.minerals[key] += scaleNutrient(item.foodItem!, nutrition.minerals?.[key] ?? 0, item.quantity);
+        });
       });
       return totals;
     },
-    { calories: 0, protein: 0, carbs: 0, fats: 0 },
+    emptyNutritionTotals(),
   );
 
 const profileIsComplete = (user: User) => {
@@ -125,7 +183,6 @@ export default function SimplifiedDietChart() {
     () => current.chart.meals.filter((meal) => meal.list.length > 0),
     [current.chart.meals],
   );
-  const totals = useMemo(() => chartTotals(meals), [meals]);
 
   const returnToToday = () => {
     setNotice(null);
@@ -222,32 +279,8 @@ export default function SimplifiedDietChart() {
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-line bg-white shadow-sm">
-        <article className="mx-auto min-w-[760px] max-w-[800px] bg-white text-[#172B2A]">
-          <PdfHero user={user} date={selectedDate} />
-          <div className="px-10 py-8">
-            <MacroCards user={user} totals={totals} />
-            <div className="mt-7">
-              {loading ? (
-                <div className="rounded-lg bg-[#F5F8F7] px-5 py-12 text-center text-sm text-[#657473]">Loading chart...</div>
-              ) : meals.length === 0 ? (
-                <div className="rounded-lg bg-[#F5F8F7] px-5 py-8">
-                  <h2 className="font-bold">No meals recorded</h2>
-                  <p className="mt-2 text-sm text-[#657473]">Add meals to your diary and export this chart again.</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {meals.map((meal) => <MealTable key={meal.id} meal={meal} />)}
-                </div>
-              )}
-            </div>
-            <DailyTotal totals={totals} />
-            <NutritionDistribution totals={totals} />
-            <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-[10px] text-[#657473]">
-              <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
-            </div>
-          </div>
-        </article>
+      <div className="overflow-hidden rounded-xl border border-line bg-white shadow-sm">
+        <DiaryPdfPreview user={user} date={selectedDate} meals={meals} loading={loading} />
       </div>
 
       <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3" aria-label="Diary actions">
@@ -264,22 +297,62 @@ export default function SimplifiedDietChart() {
   );
 }
 
+export function DiaryPdfPreview({
+  user,
+  date,
+  meals,
+  loading = false,
+}: {
+  user: User;
+  date: string;
+  meals: Meal[];
+  loading?: boolean;
+}) {
+  const totals = useMemo(() => chartTotals(meals), [meals]);
+  return (
+    <article className="mx-auto w-full max-w-[800px] bg-white text-[#172B2A]">
+      <PdfHero user={user} date={date} />
+      <div className="px-3 py-5 sm:px-10 sm:py-8">
+        <MacroCards user={user} totals={totals} />
+        <div className="mt-7">
+          {loading ? (
+            <div className="rounded-lg bg-[#F5F8F7] px-5 py-12 text-center text-sm text-[#657473]">Loading chart...</div>
+          ) : meals.length === 0 ? (
+            <div className="rounded-lg bg-[#F5F8F7] px-5 py-8">
+              <h2 className="font-bold">No meals recorded</h2>
+              <p className="mt-2 text-sm text-[#657473]">Add meals to your diary and export this chart again.</p>
+            </div>
+          ) : (
+            <div className="space-y-6">{meals.map((meal) => <MealTable key={meal.id} meal={meal} />)}</div>
+          )}
+        </div>
+        <DailyTotal totals={totals} />
+        <NutritionDistribution totals={totals} />
+        <CompleteNutrition totals={totals} />
+        <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-[10px] text-[#657473]">
+          <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
 function PdfHero({ user, date }: { user: User; date: string }) {
   return (
-    <div className="relative h-[176px] overflow-hidden bg-[#115E59] px-10 py-8 text-white">
+    <div className="relative min-h-[176px] overflow-hidden bg-[#115E59] px-5 py-7 text-white sm:px-10 sm:py-8">
       <span className="absolute -right-5 -top-16 h-36 w-36 rounded-full bg-[#147A72]" />
       <span className="absolute -bottom-16 -right-8 h-32 w-32 rounded-full bg-[#0D514D]" />
       <div className="relative">
         <p className="text-[11px] font-bold tracking-[0.18em]">LOSE TO GAIN</p>
-        <h2 className="mt-2 text-[28px] font-bold leading-tight">Your daily diet chart</h2>
+        <h2 className="mt-2 text-[22px] font-bold leading-tight sm:text-[28px]">Your daily diet chart</h2>
         <p className="mt-3 text-[11px] text-[#CDE9E5]">{displayDate(date)}</p>
-        <p className="mt-2 text-[11px] text-[#CDE9E5]">{user.name} &nbsp; | &nbsp; {compact(user.weight)} {user.weightUnit} &nbsp; | &nbsp; {compact(user.height)} {user.heightUnit} &nbsp; | &nbsp; {user.age} years</p>
+        <p className="mt-2 max-w-[85%] text-[11px] leading-5 text-[#CDE9E5]">{user.name} &nbsp; | &nbsp; {compact(user.weight)} {user.weightUnit} &nbsp; | &nbsp; {compact(user.height)} {user.heightUnit} &nbsp; | &nbsp; {user.age} years</p>
       </div>
     </div>
   );
 }
 
-function MacroCards({ user, totals }: { user: User; totals: MacroValues }) {
+function MacroCards({ user, totals }: { user: User; totals: NutritionTotals }) {
   const cards = [
     { label: "CALORIES", key: "calories", goal: user.dailyGoals.targetCalories, unit: "kcal", color: PDF_COLORS.calories },
     { label: "PROTEIN", key: "protein", goal: user.dailyGoals.targetProtein, unit: "g", color: PDF_COLORS.protein },
@@ -288,15 +361,15 @@ function MacroCards({ user, totals }: { user: User; totals: MacroValues }) {
   ] as const;
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
       {cards.map((card) => {
         const consumed = totals[card.key];
         const ratio = card.goal > 0 ? Math.min(consumed / card.goal, 1) : 0;
         return (
-          <div key={card.key} className="rounded-lg bg-[#F5F8F7] p-4">
+          <div key={card.key} className="rounded-lg bg-[#F5F8F7] p-3 sm:p-4">
             <p className="text-[9px] font-bold tracking-[0.1em] text-[#657473]">{card.label}</p>
             <p className="mt-2 text-xl font-bold">{compact(consumed)}</p>
-            <p className="mt-1 text-[10px] text-[#657473]">/ {compact(card.goal)} {card.unit}</p>
+            <p className="mt-2 rounded bg-[#DFF4F0] px-2 py-1.5 text-[9px] font-bold tracking-wide text-[#115E59]">TARGET&nbsp; {compact(card.goal)} {card.unit}</p>
             <div className="mt-3 h-1 overflow-hidden rounded-full bg-[#DDE7E5]"><div className="h-full rounded-full" style={{ width: `${ratio * 100}%`, backgroundColor: card.color }} /></div>
           </div>
         );
@@ -309,7 +382,26 @@ function MealTable({ meal }: { meal: Meal }) {
   return (
     <section>
       <h3 className="rounded-lg bg-[#DFF4F0] px-4 py-3 text-[11px] font-bold tracking-[0.1em] text-[#115E59]">{meal.mealType?.toUpperCase()}</h3>
-      <table className="mt-2 w-full table-fixed border-collapse text-[10px]">
+      <div className="mt-2 sm:hidden">
+        {meal.list.map((item, index) => {
+          const macros = itemMacros(item);
+          return (
+            <div key={`${item.foodItem?.id || "food"}-mobile-${index}`} className={`border-b border-[#DDE7E5] px-3 py-3 ${index % 2 === 1 ? "bg-[#FAFCFB]" : "bg-white"}`}>
+              <div className="flex items-start justify-between gap-3">
+                <p className="min-w-0 text-xs font-bold">{item.foodItem?.name || "Unavailable food"}</p>
+                <p className="shrink-0 text-[10px] text-[#657473]">{compact(item.quantity)} {item.foodItem?.unit || "serving"}</p>
+              </div>
+              <div className="mt-3 grid grid-cols-4 gap-1 text-center">
+                <MobileMacro label="CAL" value={compact(macros.calories)} />
+                <MobileMacro label="PROTEIN" value={`${compact(macros.protein)} g`} />
+                <MobileMacro label="CARBS" value={`${compact(macros.carbs)} g`} />
+                <MobileMacro label="FATS" value={`${compact(macros.fats)} g`} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+      <table className="mt-2 hidden w-full table-fixed border-collapse text-[10px] sm:table">
         <colgroup><col className="w-[36%]" /><col className="w-[14%]" /><col className="w-[11%]" /><col className="w-[13%]" /><col className="w-[13%]" /><col className="w-[13%]" /></colgroup>
         <thead className="bg-[#ECF2F1] text-[9px] font-bold text-[#657473]">
           <tr><th className="px-3 py-2 text-left">FOOD</th><th className="px-3 py-2 text-left">SERVING</th><th className="px-3 py-2 text-right">CAL</th><th className="px-3 py-2 text-right">PROTEIN</th><th className="px-3 py-2 text-right">CARBS</th><th className="px-3 py-2 text-right">FATS</th></tr>
@@ -334,16 +426,20 @@ function MealTable({ meal }: { meal: Meal }) {
   );
 }
 
-function DailyTotal({ totals }: { totals: MacroValues }) {
+function MobileMacro({ label, value }: { label: string; value: string }) {
+  return <div><p className="text-[7px] font-bold text-[#657473]">{label}</p><p className="mt-1 text-[9px] font-semibold">{value}</p></div>;
+}
+
+function DailyTotal({ totals }: { totals: NutritionTotals }) {
   return (
-    <div className="mt-5 flex items-center justify-between rounded-lg bg-[#172B2A] px-5 py-5 text-white">
+    <div className="mt-5 flex flex-col items-start gap-2 rounded-lg bg-[#172B2A] px-4 py-4 text-white sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-5">
       <span className="text-xs font-bold tracking-[0.08em]">DAILY TOTAL</span>
-      <span className="text-[11px]">{compact(totals.calories)} kcal &nbsp; | &nbsp; {compact(totals.protein)} g protein &nbsp; | &nbsp; {compact(totals.carbs)} g carbs &nbsp; | &nbsp; {compact(totals.fats)} g fats</span>
+      <span className="text-[10px] leading-5 sm:text-[11px]">{compact(totals.calories)} kcal &nbsp; | &nbsp; {compact(totals.protein)} g protein &nbsp; | &nbsp; {compact(totals.carbs)} g carbs &nbsp; | &nbsp; {compact(totals.fats)} g fats</span>
     </div>
   );
 }
 
-function NutritionDistribution({ totals }: { totals: MacroValues }) {
+function NutritionDistribution({ totals }: { totals: NutritionTotals }) {
   const entries = [
     { label: "Protein", grams: totals.protein, calories: totals.protein * 4, color: PDF_COLORS.protein },
     { label: "Carbohydrates", grams: totals.carbs, calories: totals.carbs * 4, color: PDF_COLORS.carbs },
@@ -355,7 +451,7 @@ function NutritionDistribution({ totals }: { totals: MacroValues }) {
     <section className="mt-6">
       <h3 className="text-xs font-bold tracking-[0.08em]">NUTRITION DISTRIBUTION</h3>
       <p className="mt-1 text-[10px] text-[#657473]">Share of macro-derived calories</p>
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
         {entries.map((item) => {
           const percent = calorieTotal > 0 ? (item.calories / calorieTotal) * 100 : 0;
           return (
@@ -366,6 +462,53 @@ function NutritionDistribution({ totals }: { totals: MacroValues }) {
             </div>
           );
         })}
+      </div>
+    </section>
+  );
+}
+
+function CompleteNutrition({ totals }: { totals: NutritionTotals }) {
+  return (
+    <section className="mt-7">
+      <h3 className="text-xs font-bold tracking-[0.08em]">COMPLETE NUTRITION TOTALS</h3>
+      <p className="mt-1 text-[10px] text-[#657473]">All nutrients recorded for this day</p>
+
+      <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3">
+        <div className="rounded-lg bg-[#DFF4F0] p-3 sm:p-4">
+          <p className="text-[9px] font-bold tracking-wide text-[#115E59]">DIETARY FIBER</p>
+          <p className="mt-2 text-lg font-bold">{compact(totals.fiber)} {NUTRIENT_UNITS.fiber}</p>
+        </div>
+        <div className="rounded-lg bg-[#DFF4F0] p-3 sm:p-4">
+          <p className="text-[9px] font-bold tracking-wide text-[#115E59]">NET CARBS</p>
+          <p className="mt-2 text-lg font-bold">{compact(totals.netCarbs)} {NUTRIENT_UNITS.netCarbs}</p>
+        </div>
+      </div>
+
+      <NutrientGroup title="VITAMINS" entries={VITAMIN_ENTRIES} values={totals.vitamins} />
+      <NutrientGroup title="MINERALS" entries={MINERAL_ENTRIES} values={totals.minerals} />
+    </section>
+  );
+}
+
+function NutrientGroup<T extends string>({
+  title,
+  entries,
+  values,
+}: {
+  title: string;
+  entries: ReadonlyArray<{ key: T; label: string; unit: string }>;
+  values: Record<T, number>;
+}) {
+  return (
+    <section className="mt-5">
+      <h4 className="text-[10px] font-bold tracking-[0.1em] text-[#115E59]">{title}</h4>
+      <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2">
+        {entries.map((entry, index) => (
+          <div key={entry.key} className={`flex min-w-0 items-center justify-between gap-2 rounded px-2.5 py-2 text-[9px] ${Math.floor(index / 2) % 2 === 1 ? "bg-[#FAFCFB]" : "bg-[#F5F8F7]"}`}>
+            <span className="min-w-0 truncate text-[#657473]">{entry.label}</span>
+            <span className="shrink-0 font-bold">{compact(values[entry.key])} {entry.unit}</span>
+          </div>
+        ))}
       </div>
     </section>
   );
