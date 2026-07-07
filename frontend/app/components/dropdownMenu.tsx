@@ -88,7 +88,7 @@ export default function DropdownMenu() {
     setExporting(true);
     try {
       const { data } = await api.post<{ message: string }>(
-        "/diet-chart-exports/email",
+        "/diet-chart-exports/requests",
         null,
         { params: selectedDate ? { date: selectedDate } : undefined },
       );
@@ -206,7 +206,7 @@ export default function DropdownMenu() {
               ) : (
                 <Mail size={18} className="text-muted" />
               )}
-              <span>{exporting ? "Emailing chart..." : "Export Chart"}</span>
+              <span>{exporting ? "Requesting PDF..." : "Request PDF by email"}</span>
             </button>
             {items.map(({ label, icon: Icon, href }) => (
               <button

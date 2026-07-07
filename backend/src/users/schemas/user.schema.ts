@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 
 export enum WeightUnit {
   KG = 'kg',
@@ -67,6 +67,15 @@ export class User {
 
   @Prop({ required: true, enum: UserRole, default: UserRole.USER, index: true })
   role: UserRole;
+
+  @Prop({ required: true, default: false, index: true })
+  purchased: boolean;
+
+  @Prop()
+  purchasedAt?: Date;
+
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: User.name })
+  purchasedBy?: Types.ObjectId;
 }
 
 export type UserDocument = HydratedDocument<User>;

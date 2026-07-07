@@ -10,6 +10,7 @@ import { UsersModule } from './users/users.module';
 import { FoodsModule } from './foods/foods.module';
 import { MealActivitiesModule } from './meal-activities/meal-activities.module';
 import { DietChartExportModule } from './diet-chart-export/diet-chart-export.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { DietChartExportModule } from './diet-chart-export/diet-chart-export.mod
     FoodsModule,
     MealActivitiesModule,
     DietChartExportModule,
+    AdminModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

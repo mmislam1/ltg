@@ -18,6 +18,11 @@ export class UsersService {
     return includeRefreshToken ? query.select('+refreshTokenHash').exec() : query.exec();
   }
 
+  findByIds(ids: string[]) {
+    const validIds = ids.filter((id) => Types.ObjectId.isValid(id));
+    return this.users.find({ _id: { $in: validIds } }).exec();
+  }
+
   create(data: Partial<User>) {
     return this.users.create(data);
   }

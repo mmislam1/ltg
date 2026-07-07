@@ -71,12 +71,30 @@ export class DietChartExportService {
     }
   }
 
-  listPendingRequests() {
-    return this.requests
+  async listPendingRequests() {
+    const requests = await this.requests
       .find({ status: DietChartExportRequestStatus.PENDING })
       .sort({ createdAt: 1 })
-      .lean()
       .exec();
+    const users = await this.users.findByIds(
+      [...new Set(requests.map((request) => request.userId.toString()))],
+    );
+    const usersById = new Map(
+      users.map((user) => [user.id, user]),
+    );
+
+    return requests.map((request) => {
+      const user = usersById.get(request.userId.toString());
+      return {
+        id: request.id,
+        date: request.date,
+        status: request.status,
+        requestedAt: (request as unknown as { createdAt: Date }).createdAt,
+        user: user
+          ? { id: user.id, name: user.name, email: user.email }
+          : { id: request.userId.toString(), name: 'Unavailable member', email: '' },
+      };
+    });
   }
 
   async approveRequest(requestId: string, adminId: string) {

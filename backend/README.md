@@ -57,10 +57,22 @@ Each user can have only one meal of each type per date.
 
 ## Diet chart email export
 
-`POST /api/diet-chart-exports/email?date=YYYY-MM-DD` generates a modern diet chart PDF
-on the backend and emails it to the authenticated user's account. The date is optional
-and follows the same timezone-aware behavior as meal activities. Delivery is limited to
-three requests per minute per client.
+`POST /api/diet-chart-exports/requests?date=YYYY-MM-DD` creates a PDF email request for
+the authenticated member. The date is optional and follows the same timezone-aware
+behavior as meal activities. Requests are limited to three per minute per client.
+
+Admins can review pending requests with `GET /api/diet-chart-exports/requests` and
+generate and email the chart with
+`PATCH /api/diet-chart-exports/requests/:requestId/approve`.
+
+## Admin dashboard
+
+All admin endpoints require an authenticated account with the `admin` role.
+
+- `GET /api/admin/dashboard` — member totals, purchase totals, pending request counts,
+  member records, and the last 12 months of new account counts
+- `PATCH /api/admin/members/:memberId/purchase` — set or remove the member's manual
+  purchase tag with `{ "purchased": true | false }`
 
 Configure SMTP with `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`,
 `MAIL_PASSWORD`, and `MAIL_FROM`. `MAIL_USER` and `MAIL_PASSWORD` may both be omitted

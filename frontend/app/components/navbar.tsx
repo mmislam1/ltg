@@ -6,6 +6,7 @@ import Logo from "../../components/logo";
 import { useDeviceType } from "../hooks/useDeviceType";
 import { useAppSelector } from "../store/hooks";
 import DropdownMenu from "./dropdownMenu";
+import { ShieldCheck } from "lucide-react";
 const Navbar = () => {
 
   const user = useAppSelector((store)=>store.auth.user)
@@ -45,7 +46,19 @@ const Navbar = () => {
 
         <div className="col-start-3 row-start-1 flex shrink-0 items-center gap-2 justify-self-end">
           {user ? (
-            <DropdownMenu />
+            <>
+              {user.role === "admin" && (
+                <Link
+                  href="/admin"
+                  aria-current={pathname.startsWith("/admin") ? "page" : undefined}
+                  className={`btn btn-sm gap-2 ${pathname.startsWith("/admin") ? "btn-primary" : "btn-secondary"}`}
+                >
+                  <ShieldCheck size={17} />
+                  <span className="hidden sm:inline">Admin</span>
+                </Link>
+              )}
+              <DropdownMenu />
+            </>
           ) : (
             <div className="flex items-center gap-2 sm:gap-4">
               <Link href="/auth/signin" className="btn btn-secondary">Login</Link>
