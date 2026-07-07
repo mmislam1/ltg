@@ -68,7 +68,8 @@ export class DietChartPdfService {
     let y = 172;
     y = this.drawMacroCards(document, chart, y);
     y = this.drawMeals(document, chart, y + 22);
-    this.drawTotalBar(document, chart.totals, y + 12);
+    y = this.drawTotalBar(document, chart.totals, y + 12);
+    this.drawNutritionDistribution(document, chart.totals, y + 14);
     this.drawFooters(document);
   }
 
@@ -287,6 +288,62 @@ export class DietChartPdfService {
         align: 'right',
         lineBreak: false,
       });
+    return y + 50;
+  }
+
+  private drawNutritionDistribution(
+    document: PDFKit.PDFDocument,
+    totals: DietChartMacroValues,
+    requestedY: number,
+  ) {
+    const y = this.ensureSpace(document, requestedY, 116);
+    const distribution = this.macroDistribution(totals);
+
+    document
+      .fillColor(COLORS.ink)
+      .font('Inter-Bold')
+      .fontSize(11)
+      .text('NUTRITION DISTRIBUTION', PAGE.margin, y, {
+        characterSpacing: 0.8,
+        lineBreak: false,
+      });
+    document
+      .fillColor(COLORS.muted)
+      .font('Inter')
+      .fontSize(7.5)
+      .text('Share of macro-derived calories', PAGE.margin, y + 17, {
+        lineBreak: false,
+      });
+
+    const gap = 10;
+    const cardY = y + 38;
+    const width = (PAGE.width - PAGE.margin * 2 - gap * 2) / 3;
+    distribution.forEach((item, index) => {
+      const x = PAGE.margin + index * (width + gap);
+      document.roundedRect(x, cardY, width, 68, 8).fill(COLORS.canvas);
+      document
+        .fillColor(item.color)
+        .font('Inter-Bold')
+        .fontSize(16)
+        .text(`${this.compact(item.percent)}%`, x + 12, cardY + 11, {
+          lineBreak: false,
+        });
+      document
+        .fillColor(COLORS.ink)
+        .fontSize(8)
+        .text(item.label.toUpperCase(), x + 12, cardY + 33, {
+          characterSpacing: 0.5,
+          lineBreak: false,
+        });
+      document
+        .fillColor(COLORS.muted)
+        .font('Inter')
+        .fontSize(7.5)
+        .text(`${this.compact(item.calories)} kcal from ${this.compact(item.grams)} g`, x + 12, cardY + 49, {
+          width: width - 24,
+          lineBreak: false,
+        });
+    });
   }
 
   private drawFooters(document: PDFKit.PDFDocument) {
@@ -345,6 +402,19 @@ export class DietChartPdfService {
   private compact(value: number) {
     if (!Number.isFinite(value)) return '0';
     return value.toLocaleString('en-US', { maximumFractionDigits: 1 });
+  }
+
+  private macroDistribution(totals: DietChartMacroValues) {
+    const values = [
+      { label: 'Protein', grams: totals.protein, calories: totals.protein * 4, color: COLORS.protein },
+      { label: 'Carbohydrates', grams: totals.carbs, calories: totals.carbs * 4, color: COLORS.carbs },
+      { label: 'Fats', grams: totals.fats, calories: totals.fats * 9, color: COLORS.fats },
+    ];
+    const total = values.reduce((sum, item) => sum + item.calories, 0);
+    return values.map((item) => ({
+      ...item,
+      percent: total > 0 ? (item.calories / total) * 100 : 0,
+    }));
   }
 
   private displayDate(date: string) {

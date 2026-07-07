@@ -108,7 +108,7 @@ export default function DatePicker() {
             </div>
 
             {showCalendar && (
-                <div className="card absolute top-full left-1/2 z-10 mt-2 w-[min(18.75rem,calc(100vw-1rem))] -translate-x-1/2 p-3" role="dialog" aria-label="Choose a date">
+                <div className="card absolute top-full left-0 z-10 mt-2 w-[min(18.75rem,calc(100vw-1rem))] p-3 sm:left-1/2 sm:-translate-x-1/2" role="dialog" aria-label="Choose a date">
                     <div className="flex items-center justify-between mb-4">
                         <button type="button" onClick={handlePrevMonth} className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Previous month">
                             <ChevronLeft size={20} />
