@@ -1,15 +1,17 @@
 "use client";
 
 import {
+  Camera,
   Check,
   ChevronRight,
   Clock3,
-  ImagePlus,
+  ImageUp,
   Plus,
   ScanLine,
   ShieldCheck,
   Trash2,
   Utensils,
+  X,
 } from "lucide-react";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -21,6 +23,7 @@ import {
   createFood,
   deleteFood,
   fetchPendingFoods,
+  scanNutritionLabel,
   type CreateFoodInput,
   type Minerals,
   type Nutrition,
@@ -141,9 +144,10 @@ function NutrientGrid<Key extends string>({
 export default function CustomFoodPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const { user, initialized } = useAppSelector((state) => state.auth);
-  const { list, pending, creating, deletingIds, approvingIds, error, pendingError } =
+  const { list, pending, creating, scanningLabel, deletingIds, approvingIds, error, pendingError } =
     useAppSelector((state) => state.foods);
 
   const [name, setName] = useState("");
@@ -154,7 +158,7 @@ export default function CustomFoodPage() {
   const [minerals, setMinerals] = useState(emptyValues(mineralFields));
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-  const [scanFile, setScanFile] = useState<string | null>(null);
+  const [scanModalOpen, setScanModalOpen] = useState(false);
 
   useEffect(() => {
     if (initialized && !user) router.replace("/auth/signin");
@@ -184,14 +188,34 @@ export default function CustomFoodPage() {
     minerals: setNumericValues(minerals),
   };
 
+  const formatScannedNumber = (value: number | undefined) =>
+    Number.isFinite(Number(value)) ? String(Number(value)) : "0";
+
+  const valuesFromScan = <Key extends string>(
+    fields: NutrientField<Key>[],
+    values: Partial<Record<Key, number>> | undefined,
+  ) =>
+    Object.fromEntries(
+      fields.map(({ key }) => [key, formatScannedNumber(values?.[key])]),
+    ) as Record<Key, string>;
+
+  const fillFromScan = (food: CreateFoodInput) => {
+    if (food.name.trim()) setName(food.name.trim());
+    setUnit(food.unit);
+    setNutritionPer(formatScannedNumber(food.nutritionPer));
+    setCore(valuesFromScan(coreFields, food.nutrition));
+    setVitamins(valuesFromScan(vitaminFields, food.nutrition.vitamins));
+    setMinerals(valuesFromScan(mineralFields, food.nutrition.minerals));
+  };
+
   const resetForm = () => {
     setName("");
     setNutritionPer(unit === "g" || unit === "ml" ? "100" : "1");
     setCore(emptyValues(coreFields));
     setVitamins(emptyValues(vitaminFields));
     setMinerals(emptyValues(mineralFields));
-    setScanFile(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+    if (photoInputRef.current) photoInputRef.current.value = "";
   };
 
   const handleUnitChange = (nextUnit: FoodUnit) => {
@@ -239,8 +263,22 @@ export default function CustomFoodPage() {
     }
   };
 
-  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-    setScanFile(event.target.files?.[0]?.name ?? null);
+  const handleScanImage = async (event: ChangeEvent<HTMLInputElement>) => {
+    const image = event.target.files?.[0];
+    event.target.value = "";
+    if (!image) return;
+
+    setScanModalOpen(false);
+    setFormError(null);
+    setSuccess(null);
+    dispatch(clearFoodError());
+
+    try {
+      const scannedFood = await dispatch(scanNutritionLabel(image)).unwrap();
+      fillFromScan(scannedFood);
+    } catch {
+      // The API error from the food slice is displayed below.
+    }
   };
 
   if (!initialized || !user) {
@@ -250,46 +288,47 @@ export default function CustomFoodPage() {
   return (
     <div className="w-full px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex items-center gap-3">
-          <Back />
-          <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Back />
+            <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
+          </div>
+          {SCAN_ENABLED && (
+            <button
+              type="button"
+              className="btn btn-secondary shrink-0"
+              disabled={scanningLabel}
+              onClick={() => setScanModalOpen(true)}
+            >
+              <ScanLine size={18} /> {scanningLabel ? "Scanning..." : "Scan"}
+            </button>
+          )}
         </div>
+
+        {SCAN_ENABLED && (
+          <>
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleScanImage}
+              className="sr-only"
+              aria-hidden="true"
+            />
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleScanImage}
+              className="sr-only"
+              aria-hidden="true"
+            />
+          </>
+        )}
 
         <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_19rem]">
           <form onSubmit={handleSubmit} className="card overflow-hidden">
-            {SCAN_ENABLED && (
-              <section className="border-b border-line bg-brand-soft/45 p-5 sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex gap-3">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand text-on-brand">
-                      <ScanLine size={22} />
-                    </span>
-                    <div>
-                      <h2 className="font-bold text-ink">Scan a nutrition label</h2>
-                      <p className="mt-1 text-sm text-muted">Upload a clear photo to prepare it for automatic extraction.</p>
-                    </div>
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handleFile}
-                    className="sr-only"
-                    id="nutrition-label-image"
-                  />
-                  <button type="button" className="btn btn-secondary shrink-0" onClick={() => fileInputRef.current?.click()}>
-                    <ImagePlus size={18} /> {scanFile ? "Change photo" : "Choose photo"}
-                  </button>
-                </div>
-                {scanFile && (
-                  <p className="mt-3 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-muted">
-                    <strong className="text-ink">{scanFile}</strong> selected. OCR extraction can be connected here without changing the form flow.
-                  </p>
-                )}
-              </section>
-            )}
-
             <section className="space-y-5 p-5 sm:p-6">
               <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_11rem]">
                 <label className="form-field">
@@ -453,6 +492,39 @@ export default function CustomFoodPage() {
               {pending.length === 0 && !pendingError && <p className="px-5 py-10 text-center text-sm text-muted">No foods are waiting for approval.</p>}
             </div>
           </section>
+        )}
+
+        {SCAN_ENABLED && scanModalOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-ink/45 p-4" role="dialog" aria-modal="true" aria-label="Scan">
+            <div className="card w-full max-w-sm overflow-hidden p-4">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="text-lg font-bold text-ink">Scan</h2>
+                <button type="button" className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Close" onClick={() => setScanModalOpen(false)}>
+                  <X size={18} />
+                </button>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <button
+                  type="button"
+                  className="btn btn-secondary min-h-24 flex-col"
+                  disabled={scanningLabel}
+                  onClick={() => cameraInputRef.current?.click()}
+                >
+                  <Camera size={24} />
+                  Camera
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary min-h-24 flex-col"
+                  disabled={scanningLabel}
+                  onClick={() => photoInputRef.current?.click()}
+                >
+                  <ImageUp size={24} />
+                  Photo
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

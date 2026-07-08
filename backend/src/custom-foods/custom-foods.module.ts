@@ -4,6 +4,7 @@ import { AuthModule } from '../auth/auth.module';
 import { Food, FoodSchema } from '../foods/schemas/food.schema';
 import { CustomFoodsController } from './custom-foods.controller';
 import { CustomFoodsService } from './custom-foods.service';
+import { NutritionLabelScannerService } from './nutrition-label-scanner.service';
 
 @Module({
   imports: [
@@ -11,7 +12,7 @@ import { CustomFoodsService } from './custom-foods.service';
     AuthModule,
   ],
   controllers: [CustomFoodsController],
-  providers: [CustomFoodsService],
+  providers: [CustomFoodsService, NutritionLabelScannerService],
   exports: [CustomFoodsService],
 })
 export class CustomFoodsModule {}

@@ -32,6 +32,9 @@ import { AdminModule } from './admin/admin.module';
         MAIL_USER: Joi.string().optional(),
         MAIL_PASSWORD: Joi.string().optional(),
         MAIL_FROM: Joi.string().default('Lose To Gain <no-reply@losetogain.app>'),
+        NUTRITION_LABEL_SCAN_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
+        GEMINI_API_KEY: Joi.string().allow('').optional(),
+        GEMINI_NUTRITION_MODEL: Joi.string().default('gemini-2.5-flash'),
       }),
     }),
     MongooseModule.forRootAsync({

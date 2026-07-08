@@ -82,6 +82,7 @@ export interface FoodsState {
   pendingLoading: boolean;
   creating: boolean;
   creatingRecipe: boolean;
+  scanningLabel: boolean;
   deletingIds: string[];
   approvingIds: string[];
   error: string | null;
@@ -95,6 +96,7 @@ const initialState: FoodsState = {
   pendingLoading: false,
   creating: false,
   creatingRecipe: false,
+  scanningLabel: false,
   deletingIds: [],
   approvingIds: [],
   error: null,
@@ -123,6 +125,23 @@ export const createFood = createAsyncThunk<Food, CreateFoodInput, { rejectValue:
       return data;
     } catch (error) {
       return rejectWithValue(reject(error, "Unable to create the food item."));
+    }
+  },
+);
+
+export const scanNutritionLabel = createAsyncThunk<CreateFoodInput, File, { rejectValue: string }>(
+  "foods/scanNutritionLabel",
+  async (image, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      const { data } = await api.post<CreateFoodInput>("/custom/foods/scan-label", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 60_000,
+      });
+      return data;
+    } catch (error) {
+      return rejectWithValue(reject(error, "Unable to scan the image."));
     }
   },
 );
@@ -216,6 +235,17 @@ export const foodSlice = createSlice({
       .addCase(createFood.rejected, (state, action) => {
         state.creating = false;
         state.error = action.payload || "Unable to create the food item.";
+      })
+      .addCase(scanNutritionLabel.pending, (state) => {
+        state.scanningLabel = true;
+        state.error = null;
+      })
+      .addCase(scanNutritionLabel.fulfilled, (state) => {
+        state.scanningLabel = false;
+      })
+      .addCase(scanNutritionLabel.rejected, (state, action) => {
+        state.scanningLabel = false;
+        state.error = action.payload || "Unable to scan the image.";
       })
       .addCase(createRecipe.pending, (state) => {
         state.creatingRecipe = true;
