@@ -97,11 +97,9 @@ export class DietChartPdfService {
 
   private drawDocument(document: PDFKit.PDFDocument, chart: DietChartDocument) {
     this.drawHero(document, chart);
-    let y = 172;
-    y = this.drawMacroCards(document, chart, y);
+    let y = 166;
+    y = this.drawMacroOverview(document, chart, y);
     y = this.drawMeals(document, chart, y + 22);
-    y = this.drawTotalBar(document, chart.totals, y + 12);
-    y = this.drawNutritionDistribution(document, chart.totals, y + 14);
     this.drawCompleteNutrition(document, chart.totals, y + 18);
     this.drawPageFooter(document, document.bufferedPageRange().count);
   }
@@ -137,7 +135,7 @@ export class DietChartPdfService {
     document.text(details, PAGE.margin, 117, { lineBreak: false });
   }
 
-  private drawMacroCards(
+  private drawMacroOverview(
     document: PDFKit.PDFDocument,
     chart: DietChartDocument,
     y: number,
@@ -148,43 +146,92 @@ export class DietChartPdfService {
       { label: 'CARBS', unit: 'g', key: 'carbs', color: COLORS.carbs },
       { label: 'FATS', unit: 'g', key: 'fats', color: COLORS.fats },
     ] as const;
-    const gap = 8;
-    const width = (PAGE.width - PAGE.margin * 2 - gap * 3) / 4;
+    const macroDistribution = this.macroDistribution(chart.totals);
+    const distributionByKey: Partial<Record<keyof DietChartMacroValues, number>> = {
+      protein: macroDistribution.find((item) => item.key === 'protein')?.percent ?? 0,
+      carbs: macroDistribution.find((item) => item.key === 'carbs')?.percent ?? 0,
+      fats: macroDistribution.find((item) => item.key === 'fats')?.percent ?? 0,
+    };
+    const sectionY = this.ensureSpace(document, y, 246);
+    const gap = 10;
+    const width = (PAGE.width - PAGE.margin * 2 - gap) / 2;
+    const height = 96;
+
+    document
+      .fillColor(COLORS.ink)
+      .font('Inter-Bold')
+      .fontSize(11)
+      .text('MACRO OVERVIEW', PAGE.margin, sectionY, {
+        characterSpacing: 0.8,
+        lineBreak: false,
+      });
+    document
+      .fillColor(COLORS.muted)
+      .font('Inter')
+      .fontSize(7.5)
+      .text('Amounts, targets, target progress, and distribution are combined here.', PAGE.margin, sectionY + 17, {
+        lineBreak: false,
+      });
 
     cards.forEach((card, index) => {
-      const x = PAGE.margin + index * (width + gap);
+      const row = Math.floor(index / 2);
+      const column = index % 2;
+      const x = PAGE.margin + column * (width + gap);
+      const cardY = sectionY + 40 + row * (height + gap);
       const consumed = chart.totals[card.key];
       const goal = chart.goals[card.key];
-      const ratio = goal > 0 ? Math.min(consumed / goal, 1) : 0;
+      const percentOfTarget = goal > 0 ? (consumed / goal) * 100 : 0;
+      const ratio = Math.min(Math.max(percentOfTarget / 100, 0), 1);
+      const distributionText =
+        card.key === 'calories'
+          ? 'Daily energy total'
+          : `${this.compact(distributionByKey[card.key] ?? 0)}% of macro calories`;
 
-      document.roundedRect(x, y, width, 78, 8).fill(COLORS.canvas);
+      document.roundedRect(x, cardY, width, height, 8).fill(COLORS.canvas);
       document
         .fillColor(COLORS.muted)
         .font('Inter-Bold')
         .fontSize(7.5)
-        .text(card.label, x + 12, y + 12, { characterSpacing: 0.7 });
+        .text(card.label, x + 12, cardY + 12, { characterSpacing: 0.7 });
       document
         .fillColor(COLORS.ink)
         .fontSize(15)
-        .text(this.compact(consumed), x + 12, y + 28, { lineBreak: false });
-      document.roundedRect(x + 10, y + 43, width - 20, 16, 4).fill(COLORS.brandSoft);
+        .text(`${this.compact(consumed)} ${card.unit}`, x + 12, cardY + 29, { lineBreak: false });
+      document.roundedRect(x + 10, cardY + 52, 112, 16, 4).fill(COLORS.brandSoft);
       document
         .fillColor(COLORS.brandDark)
         .font('Inter-Bold')
         .fontSize(7)
-        .text(`TARGET  ${this.compact(goal)} ${card.unit}`, x + 14, y + 48, {
-          width: width - 28,
+        .text(`TARGET  ${this.compact(goal)} ${card.unit}`, x + 14, cardY + 57, {
+          width: 104,
           lineBreak: false,
         });
-      document.roundedRect(x + 12, y + 63, width - 24, 4, 2).fill(COLORS.line);
+      document
+        .fillColor(card.color)
+        .font('Inter-Bold')
+        .fontSize(9)
+        .text(`${this.compact(percentOfTarget)}%`, x + width - 64, cardY + 56, {
+          width: 48,
+          align: 'right',
+          lineBreak: false,
+        });
+      document.roundedRect(x + 12, cardY + 74, width - 24, 5, 2.5).fill(COLORS.line);
       if (ratio > 0) {
         document
-          .roundedRect(x + 12, y + 63, (width - 24) * ratio, 4, 2)
+          .roundedRect(x + 12, cardY + 74, (width - 24) * ratio, 5, 2.5)
           .fill(card.color);
       }
+      document
+        .fillColor(COLORS.muted)
+        .font('Inter')
+        .fontSize(7.2)
+        .text(distributionText, x + 12, cardY + 84, {
+          width: width - 24,
+          lineBreak: false,
+        });
     });
 
-    return y + 78;
+    return sectionY + 40 + height * 2 + gap;
   }
 
   private drawMeals(document: PDFKit.PDFDocument, chart: DietChartDocument, y: number) {
@@ -299,92 +346,6 @@ export class DietChartPdfService {
       .stroke();
   }
 
-  private drawTotalBar(
-    document: PDFKit.PDFDocument,
-    totals: DietChartMacroValues,
-    requestedY: number,
-  ) {
-    const y = this.ensureSpace(document, requestedY, 58);
-    document.roundedRect(PAGE.margin, y, PAGE.width - PAGE.margin * 2, 50, 8).fill(COLORS.ink);
-    document
-      .fillColor(COLORS.paper)
-      .font('Inter-Bold')
-      .fontSize(10)
-      .text('DAILY TOTAL', PAGE.margin + 15, y + 20, { lineBreak: false });
-
-    const summary = [
-      `${this.compact(totals.calories)} kcal`,
-      `${this.compact(totals.protein)} g protein`,
-      `${this.compact(totals.carbs)} g carbs`,
-      `${this.compact(totals.fats)} g fats`,
-    ].join('   |   ');
-    document
-      .font('Inter')
-      .fontSize(8.5)
-      .text(summary, 165, y + 21, {
-        width: PAGE.width - PAGE.margin - 180,
-        align: 'right',
-        lineBreak: false,
-      });
-    return y + 50;
-  }
-
-  private drawNutritionDistribution(
-    document: PDFKit.PDFDocument,
-    totals: DietChartMacroValues,
-    requestedY: number,
-  ) {
-    const y = this.ensureSpace(document, requestedY, 116);
-    const distribution = this.macroDistribution(totals);
-
-    document
-      .fillColor(COLORS.ink)
-      .font('Inter-Bold')
-      .fontSize(11)
-      .text('NUTRITION DISTRIBUTION', PAGE.margin, y, {
-        characterSpacing: 0.8,
-        lineBreak: false,
-      });
-    document
-      .fillColor(COLORS.muted)
-      .font('Inter')
-      .fontSize(7.5)
-      .text('Share of macro-derived calories', PAGE.margin, y + 17, {
-        lineBreak: false,
-      });
-
-    const gap = 10;
-    const cardY = y + 38;
-    const width = (PAGE.width - PAGE.margin * 2 - gap * 2) / 3;
-    distribution.forEach((item, index) => {
-      const x = PAGE.margin + index * (width + gap);
-      document.roundedRect(x, cardY, width, 68, 8).fill(COLORS.canvas);
-      document
-        .fillColor(item.color)
-        .font('Inter-Bold')
-        .fontSize(16)
-        .text(`${this.compact(item.percent)}%`, x + 12, cardY + 11, {
-          lineBreak: false,
-        });
-      document
-        .fillColor(COLORS.ink)
-        .fontSize(8)
-        .text(item.label.toUpperCase(), x + 12, cardY + 33, {
-          characterSpacing: 0.5,
-          lineBreak: false,
-        });
-      document
-        .fillColor(COLORS.muted)
-        .font('Inter')
-        .fontSize(7.5)
-        .text(`${this.compact(item.calories)} kcal from ${this.compact(item.grams)} g`, x + 12, cardY + 49, {
-          width: width - 24,
-          lineBreak: false,
-        });
-    });
-    return y + 106;
-  }
-
   private drawCompleteNutrition(
     document: PDFKit.PDFDocument,
     totals: DietChartNutritionTotals,
@@ -395,7 +356,7 @@ export class DietChartPdfService {
       .fillColor(COLORS.ink)
       .font('Inter-Bold')
       .fontSize(11)
-      .text('COMPLETE NUTRITION TOTALS', PAGE.margin, y, {
+      .text('OTHER NUTRITION TOTALS', PAGE.margin, y, {
         characterSpacing: 0.8,
         lineBreak: false,
       });
@@ -403,7 +364,7 @@ export class DietChartPdfService {
       .fillColor(COLORS.muted)
       .font('Inter')
       .fontSize(7.5)
-      .text('All nutrients recorded for this day', PAGE.margin, y + 17, {
+      .text('Fiber, net carbs, vitamins, and minerals recorded for this day', PAGE.margin, y + 17, {
         lineBreak: false,
       });
 
@@ -547,9 +508,9 @@ export class DietChartPdfService {
 
   private macroDistribution(totals: DietChartMacroValues) {
     const values = [
-      { label: 'Protein', grams: totals.protein, calories: totals.protein * 4, color: COLORS.protein },
-      { label: 'Carbohydrates', grams: totals.carbs, calories: totals.carbs * 4, color: COLORS.carbs },
-      { label: 'Fats', grams: totals.fats, calories: totals.fats * 9, color: COLORS.fats },
+      { key: 'protein', label: 'Protein', grams: totals.protein, calories: totals.protein * 4, color: COLORS.protein },
+      { key: 'carbs', label: 'Carbohydrates', grams: totals.carbs, calories: totals.carbs * 4, color: COLORS.carbs },
+      { key: 'fats', label: 'Fats', grams: totals.fats, calories: totals.fats * 9, color: COLORS.fats },
     ];
     const total = values.reduce((sum, item) => sum + item.calories, 0);
     return values.map((item) => ({

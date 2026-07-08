@@ -313,7 +313,7 @@ export function DiaryPdfPreview({
     <article className="mx-auto w-full max-w-[800px] bg-white text-[#172B2A]">
       <PdfHero user={user} date={date} />
       <div className="px-3 py-5 sm:px-10 sm:py-8">
-        <MacroCards user={user} totals={totals} />
+        <MacroOverview user={user} totals={totals} />
         <div className="mt-7">
           {loading ? (
             <div className="rounded-lg bg-[#F5F8F7] px-5 py-12 text-center text-sm text-[#657473]">Loading chart...</div>
@@ -326,8 +326,6 @@ export function DiaryPdfPreview({
             <div className="space-y-6">{meals.map((meal) => <MealTable key={meal.id} meal={meal} />)}</div>
           )}
         </div>
-        <DailyTotal totals={totals} />
-        <NutritionDistribution totals={totals} />
         <CompleteNutrition totals={totals} />
         <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-xs text-[#657473] sm:text-[10px]">
           <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
@@ -352,29 +350,67 @@ function PdfHero({ user, date }: { user: User; date: string }) {
   );
 }
 
-function MacroCards({ user, totals }: { user: User; totals: NutritionTotals }) {
+function MacroOverview({ user, totals }: { user: User; totals: NutritionTotals }) {
   const cards = [
     { label: "CALORIES", key: "calories", goal: user.dailyGoals.targetCalories, unit: "kcal", color: PDF_COLORS.calories },
     { label: "PROTEIN", key: "protein", goal: user.dailyGoals.targetProtein, unit: "g", color: PDF_COLORS.protein },
     { label: "CARBS", key: "carbs", goal: user.dailyGoals.targetCarb, unit: "g", color: PDF_COLORS.carbs },
     { label: "FATS", key: "fats", goal: user.dailyGoals.targetFat, unit: "g", color: PDF_COLORS.fats },
   ] as const;
+  const macroCalories = {
+    protein: totals.protein * 4,
+    carbs: totals.carbs * 4,
+    fats: totals.fats * 9,
+  };
+  const macroCalorieTotal = macroCalories.protein + macroCalories.carbs + macroCalories.fats;
 
   return (
-    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-      {cards.map((card) => {
-        const consumed = totals[card.key];
-        const ratio = card.goal > 0 ? Math.min(consumed / card.goal, 1) : 0;
-        return (
-          <div key={card.key} className="rounded-lg bg-[#F5F8F7] p-3 sm:p-4">
-            <p className="text-xs font-bold tracking-[0.1em] text-[#657473] sm:text-[9px]">{card.label}</p>
-            <p className="mt-2 text-xl font-bold">{compact(consumed)}</p>
-            <p className="mt-2 rounded bg-[#DFF4F0] px-2 py-1.5 text-xs font-bold tracking-wide text-[#115E59] sm:text-[9px]">TARGET&nbsp; {compact(card.goal)} {card.unit}</p>
-            <div className="mt-3 h-1 overflow-hidden rounded-full bg-[#DDE7E5]"><div className="h-full rounded-full" style={{ width: `${ratio * 100}%`, backgroundColor: card.color }} /></div>
-          </div>
-        );
-      })}
-    </div>
+    <section>
+      <div className="mb-3">
+        <h3 className="text-sm font-bold tracking-[0.08em] text-[#172B2A] sm:text-[11px]">MACRO OVERVIEW</h3>
+        <p className="mt-1 text-sm leading-5 text-[#657473] sm:text-[10px]">Amounts, targets, target progress, and distribution are combined here.</p>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {cards.map((card) => {
+          const consumed = totals[card.key];
+          const percentOfTarget = card.goal > 0 ? (consumed / card.goal) * 100 : 0;
+          const cappedPercent = Math.min(Math.max(percentOfTarget, 0), 100);
+          const share =
+            card.key === "calories"
+              ? null
+              : macroCalorieTotal > 0
+                ? (macroCalories[card.key] / macroCalorieTotal) * 100
+                : 0;
+
+          return (
+            <div key={card.key} className="rounded-xl border border-[#DDE7E5] bg-[#F5F8F7] p-4">
+              <div className="flex items-center gap-4">
+                <div
+                  className="grid h-20 w-20 shrink-0 place-items-center rounded-full"
+                  style={{ background: `conic-gradient(${card.color} ${cappedPercent * 3.6}deg, #DDE7E5 0deg)` }}
+                  aria-label={`${compact(percentOfTarget)}% of ${card.label.toLowerCase()} target`}
+                >
+                  <div className="grid h-[62px] w-[62px] place-items-center rounded-full bg-white text-center">
+                    <span className="text-sm font-bold text-[#172B2A]">{compact(percentOfTarget)}%</span>
+                  </div>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-bold tracking-[0.1em] text-[#657473] sm:text-[9px]">{card.label}</p>
+                  <p className="mt-1 text-2xl font-bold leading-tight">{compact(consumed)} <span className="text-base text-[#657473]">{card.unit}</span></p>
+                  <p className="mt-2 inline-flex rounded-full bg-[#DFF4F0] px-2.5 py-1 text-xs font-bold text-[#115E59] sm:text-[9px]">Target {compact(card.goal)} {card.unit}</p>
+                  <p className="mt-2 text-sm text-[#657473] sm:text-[10px]">
+                    {share === null ? "Daily energy total" : `${compact(share)}% of macro calories`}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#DDE7E5]">
+                <div className="h-full rounded-full" style={{ width: `${cappedPercent}%`, backgroundColor: card.color }} />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -430,48 +466,11 @@ function MobileMacro({ label, value }: { label: string; value: string }) {
   return <div><p className="text-[11px] font-bold text-[#657473]">{label}</p><p className="mt-1 text-sm font-semibold">{value}</p></div>;
 }
 
-function DailyTotal({ totals }: { totals: NutritionTotals }) {
-  return (
-    <div className="mt-5 flex flex-col items-start gap-2 rounded-lg bg-[#172B2A] px-4 py-4 text-white sm:flex-row sm:items-center sm:justify-between sm:px-5 sm:py-5">
-      <span className="text-xs font-bold tracking-[0.08em]">DAILY TOTAL</span>
-      <span className="text-sm leading-6 sm:text-[11px] sm:leading-5">{compact(totals.calories)} kcal &nbsp; | &nbsp; {compact(totals.protein)} g protein &nbsp; | &nbsp; {compact(totals.carbs)} g carbs &nbsp; | &nbsp; {compact(totals.fats)} g fats</span>
-    </div>
-  );
-}
-
-function NutritionDistribution({ totals }: { totals: NutritionTotals }) {
-  const entries = [
-    { label: "Protein", grams: totals.protein, calories: totals.protein * 4, color: PDF_COLORS.protein },
-    { label: "Carbohydrates", grams: totals.carbs, calories: totals.carbs * 4, color: PDF_COLORS.carbs },
-    { label: "Fats", grams: totals.fats, calories: totals.fats * 9, color: PDF_COLORS.fats },
-  ];
-  const calorieTotal = entries.reduce((sum, item) => sum + item.calories, 0);
-
-  return (
-    <section className="mt-6">
-      <h3 className="text-xs font-bold tracking-[0.08em]">NUTRITION DISTRIBUTION</h3>
-      <p className="mt-1 text-sm text-[#657473] sm:text-[10px]">Share of macro-derived calories</p>
-      <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-3">
-        {entries.map((item) => {
-          const percent = calorieTotal > 0 ? (item.calories / calorieTotal) * 100 : 0;
-          return (
-            <div key={item.label} className="rounded-lg bg-[#F5F8F7] p-4">
-              <p className="text-xl font-bold" style={{ color: item.color }}>{compact(percent)}%</p>
-              <p className="mt-1 text-sm font-bold tracking-[0.06em] sm:text-[10px]">{item.label.toUpperCase()}</p>
-              <p className="mt-2 text-sm text-[#657473] sm:text-[10px]">{compact(item.calories)} kcal from {compact(item.grams)} g</p>
-            </div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 function CompleteNutrition({ totals }: { totals: NutritionTotals }) {
   return (
     <section className="mt-7">
-      <h3 className="text-xs font-bold tracking-[0.08em]">COMPLETE NUTRITION TOTALS</h3>
-      <p className="mt-1 text-sm text-[#657473] sm:text-[10px]">All nutrients recorded for this day</p>
+      <h3 className="text-xs font-bold tracking-[0.08em]">OTHER NUTRITION TOTALS</h3>
+      <p className="mt-1 text-sm text-[#657473] sm:text-[10px]">Fiber, net carbs, vitamins, and minerals recorded for this day</p>
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3">
         <div className="rounded-lg bg-[#DFF4F0] p-3 sm:p-4">
