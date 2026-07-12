@@ -3,11 +3,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
+  ChartNoAxesColumnIncreasing,
   CheckIcon,
   CheckCircle2,
   CookingPot,
   CopyIcon,
   File,
+  Home,
   List,
   LogOut,
   LoaderCircle,
@@ -15,6 +17,7 @@ import {
   MenuIcon,
   MoreVertical,
   NotebookTabs,
+  Plus,
   PlusCircleIcon,
   Salad,
   Trash2,
@@ -103,6 +106,14 @@ export default function DropdownMenu() {
     }
   };
 
+  const menuNavigationItems = [
+    { label: "Home", icon: Home, href: "/" },
+    { label: "Diary", icon: NotebookTabs, href: "/diary" },
+    { label: "Add meal", icon: Plus, href: "/add_meal" },
+    { label: "Progress", icon: ChartNoAxesColumnIncreasing, href: "/chart" },
+    { label: "Nutrition", icon: Salad, href: "/nutritionDashboard" },
+  ];
+
   const items = [
     { label: "Mark Day as Complete", icon: CheckIcon, href: "/" },
     { label: "Daily Report", icon: List, href: "/" },
@@ -176,6 +187,21 @@ export default function DropdownMenu() {
           </div>
 
           <div className="py-1">
+            {menuNavigationItems.map(({ label, icon: Icon, href }) => (
+              <button
+                type="button"
+                key={label}
+                onClick={() => navigate(href)}
+                className="btn btn-ghost min-h-11 w-full justify-start rounded-none px-4 text-left text-sm"
+                role="menuitem"
+              >
+                <Icon size={18} className="text-muted" />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="border-t border-line py-1">
             <button
               type="button"
               onClick={() => navigate("/custom_recipe")}
