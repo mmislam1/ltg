@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   BookOpen,
   Home,
+  Plus,
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
@@ -86,15 +87,35 @@ function NavigationLink({ item }: { item: NavigationItem }) {
 }
 
 export default function BottomBar() {
+  const pathname = usePathname();
+  const addActive = pathname.startsWith("/add_meal");
+
   return (
     <nav
       aria-label="Primary navigation"
       className="bottom-nav safe-area-bottom fixed inset-x-0 bottom-0 z-[100] w-full overflow-visible border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden"
     >
-      <div className="mx-auto grid h-[4.5rem] max-w-lg grid-cols-3 items-center px-2">
-        {navigationItems.map((item) => (
-          <NavigationLink key={item.label} item={item} />
-        ))}
+      <div className="mx-auto grid h-[4.5rem] max-w-lg grid-cols-5 items-center px-2">
+        <NavigationLink item={navigationItems[0]} />
+        <NavigationLink item={navigationItems[1]} />
+
+        <Link
+          href="/add_meal"
+          aria-label="Add meal"
+          aria-current={addActive ? "page" : undefined}
+          className="group relative -mt-4 flex flex-col items-center gap-1 text-brand"
+        >
+          <span
+            className={`flex h-14 w-14 items-center justify-center rounded-full border-4 border-surface bg-brand text-on-brand shadow-[0_8px_20px_rgba(22,101,52,0.3)] transition-all duration-200 group-active:translate-y-0.5 group-active:shadow-md ${
+              addActive ? "ring-4 ring-brand-soft" : "group-hover:bg-brand-hover"
+            }`}
+          >
+            <Plus size={26} strokeWidth={2.6} />
+          </span>
+          <span className="text-[0.65rem] font-bold leading-none text-ink">Add meal</span>
+        </Link>
+
+        <NavigationLink item={navigationItems[2]} />
       </div>
     </nav>
   );
