@@ -92,7 +92,7 @@ export default function DropdownMenu() {
     try {
       const { data } = await api.post<{ message: string }>(
         "/diet-chart-exports/requests",
-        null,
+        {},
         { params: selectedDate ? { date: selectedDate } : undefined },
       );
       setExportNotice({ kind: "success", message: data.message });

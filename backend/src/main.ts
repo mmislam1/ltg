@@ -1,6 +1,7 @@
 import { BadRequestException, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import express from 'express';
 import helmet from 'helmet';
 import type { ValidationError } from 'class-validator';
 import { AppModule } from './app.module';
@@ -23,7 +24,10 @@ function normalizeCorsOrigin(origin: string) {
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: false });
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+    cors: false,
+  });
   const config = app.get(ConfigService);
   const origins = config
     .get<string>('CORS_ORIGINS', 'http://localhost:3000')
@@ -32,6 +36,8 @@ async function bootstrap() {
     .filter(Boolean);
 
   app.use(helmet());
+  app.use(express.json({ strict: false }));
+  app.use(express.urlencoded({ extended: true }));
   app.enableCors({ origin: origins.map(normalizeCorsOrigin), credentials: false });
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new ApiExceptionFilter());

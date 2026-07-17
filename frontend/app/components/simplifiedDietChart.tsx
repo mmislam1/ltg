@@ -204,7 +204,7 @@ export default function SimplifiedDietChart() {
     try {
       const { data } = await api.post<{ message: string }>(
         "/diet-chart-exports/requests",
-        null,
+        {},
         { params: { date: selectedDate } },
       );
       setNotice({ kind: "success", text: data.message });
@@ -224,7 +224,7 @@ export default function SimplifiedDietChart() {
     try {
       const { data } = await api.post<{ date: string }>(
         "/meal-activities/copy-to-today",
-        null,
+        {},
         { params: { date: selectedDate } },
       );
       await dispatch(fetchMealActivity(data.date)).unwrap();
