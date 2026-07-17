@@ -76,9 +76,11 @@ All admin endpoints require an authenticated account with the `admin` role.
 - `PATCH /api/admin/members/:memberId/purchase` — set or remove the member's manual
   purchase tag with `{ "purchased": true | false }`
 
-Configure SMTP with `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`,
-`MAIL_PASSWORD`, and `MAIL_FROM`. `MAIL_USER` and `MAIL_PASSWORD` may both be omitted
-for an SMTP relay that does not require authentication.
+For Render deployments where SMTP ports are blocked, set `RESEND_API_KEY` and a
+verified `MAIL_FROM` address to send through the Resend HTTPS API. Configure SMTP
+with `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`, `MAIL_PASSWORD`, and
+`MAIL_FROM` only when an SMTP relay is reachable. `MAIL_USER` and `MAIL_PASSWORD`
+may both be omitted for an SMTP relay that does not require authentication.
 For Gmail, use a Google App Password; display spaces are removed automatically
 before authentication. Approval only marks a request approved after SMTP accepts
 the member recipient. SMTP connections are opened over IPv4 to avoid hosts that

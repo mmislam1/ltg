@@ -32,6 +32,7 @@ import { AdminModule } from './admin/admin.module';
         MAIL_USER: Joi.string().allow('').optional(),
         MAIL_PASSWORD: Joi.string().allow('').optional(),
         MAIL_FROM: Joi.string().allow('').default('Lose To Gain <no-reply@losetogain.app>'),
+        RESEND_API_KEY: Joi.string().allow('').optional(),
         NUTRITION_LABEL_SCAN_ENABLED: Joi.boolean().truthy('true').falsy('false').default(false),
         GEMINI_API_KEY: Joi.string().allow('').optional(),
         GEMINI_NUTRITION_MODEL: Joi.string().default('gemini-2.5-flash'),

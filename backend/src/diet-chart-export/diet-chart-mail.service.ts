@@ -35,6 +35,19 @@ export class DietChartMailService {
   async send({ recipient, recipientName, date, filename, pdf }: DietChartEmail) {
     const safeName = this.escapeHtml(recipientName);
     const from = this.config.get<string>('MAIL_FROM')?.trim() || 'Lose To Gain <no-reply@losetogain.app>';
+    const content = this.emailContent(recipientName, safeName, date);
+    const resendApiKey = this.config.get<string>('RESEND_API_KEY')?.trim();
+
+    if (resendApiKey) {
+      return this.sendWithResend({
+        apiKey: resendApiKey,
+        from,
+        recipient,
+        filename,
+        pdf,
+        ...content,
+      });
+    }
 
     let lastError: unknown;
     for (const transporter of this.getTransporters()) {
@@ -42,22 +55,7 @@ export class DietChartMailService {
         const delivery = await transporter.sendMail({
           from,
           to: recipient,
-          subject: `Your diet chart for ${date}`,
-          text: `Hello ${recipientName}, your Lose To Gain diet chart for ${date} is attached as a PDF.`,
-          html: `
-          <div style="margin:0;background:#f5f8f7;padding:32px 16px;font-family:Arial,sans-serif;color:#172b2a">
-            <div style="max-width:560px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #dde7e5">
-              <div style="background:#115e59;padding:28px 32px;color:#fff">
-                <div style="font-size:11px;font-weight:700;letter-spacing:1.6px">LOSE TO GAIN</div>
-                <h1 style="font-size:24px;line-height:1.25;margin:12px 0 0">Your diet chart is ready</h1>
-              </div>
-              <div style="padding:28px 32px">
-                <p style="margin:0 0 14px">Hello ${safeName},</p>
-                <p style="margin:0 0 20px;line-height:1.6;color:#657473">Your daily diet chart for <strong style="color:#172b2a">${date}</strong> is attached. It includes your meals, nutrition totals, and progress against your daily goals.</p>
-                <div style="background:#dff4f0;border-radius:10px;padding:14px 16px;color:#115e59;font-size:13px">Open the attached PDF to view or print your chart.</div>
-              </div>
-            </div>
-          </div>`,
+          ...content,
           attachments: [{ filename, content: pdf, contentType: 'application/pdf' }],
         });
         const accepted = this.addressList(delivery.accepted);
@@ -100,6 +98,88 @@ export class DietChartMailService {
     throw new BadGatewayException(
       'The diet chart was created, but the email service could not deliver it. Try again shortly.',
     );
+  }
+
+  private async sendWithResend({
+    apiKey,
+    from,
+    recipient,
+    subject,
+    text,
+    html,
+    filename,
+    pdf,
+  }: {
+    apiKey: string;
+    from: string;
+    recipient: string;
+    subject: string;
+    text: string;
+    html: string;
+    filename: string;
+    pdf: Buffer;
+  }) {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from,
+        to: [recipient],
+        subject,
+        text,
+        html,
+        attachments: [
+          {
+            filename,
+            content: pdf.toString('base64'),
+          },
+        ],
+      }),
+    });
+
+    const payload = (await response.json().catch(() => null)) as
+      | { id?: string; message?: string; name?: string }
+      | null;
+
+    if (!response.ok || !payload?.id) {
+      const message = payload?.message || payload?.name || response.statusText;
+      this.logger.error(`Resend email API rejected the diet chart email: ${message}`);
+      throw new BadGatewayException(
+        `Email API could not deliver the diet chart: ${message}`,
+      );
+    }
+
+    this.logger.log(`Diet chart email queued through Resend for ${recipient}. Message id: ${payload.id}`);
+    return {
+      accepted: [recipient],
+      rejected: [],
+      messageId: payload.id,
+      response: `resend:${response.status}`,
+    } satisfies DietChartEmailDelivery;
+  }
+
+  private emailContent(recipientName: string, safeName: string, date: string) {
+    return {
+      subject: `Your diet chart for ${date}`,
+      text: `Hello ${recipientName}, your Lose To Gain diet chart for ${date} is attached as a PDF.`,
+      html: `
+      <div style="margin:0;background:#f5f8f7;padding:32px 16px;font-family:Arial,sans-serif;color:#172b2a">
+        <div style="max-width:560px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #dde7e5">
+          <div style="background:#115e59;padding:28px 32px;color:#fff">
+            <div style="font-size:11px;font-weight:700;letter-spacing:1.6px">LOSE TO GAIN</div>
+            <h1 style="font-size:24px;line-height:1.25;margin:12px 0 0">Your diet chart is ready</h1>
+          </div>
+          <div style="padding:28px 32px">
+            <p style="margin:0 0 14px">Hello ${safeName},</p>
+            <p style="margin:0 0 20px;line-height:1.6;color:#657473">Your daily diet chart for <strong style="color:#172b2a">${date}</strong> is attached. It includes your meals, nutrition totals, and progress against your daily goals.</p>
+            <div style="background:#dff4f0;border-radius:10px;padding:14px 16px;color:#115e59;font-size:13px">Open the attached PDF to view or print your chart.</div>
+          </div>
+        </div>
+      </div>`,
+    };
   }
 
   private getTransporters() {
