@@ -28,73 +28,82 @@ export interface DietChartEmailDelivery {
 @Injectable()
 export class DietChartMailService {
   private readonly logger = new Logger(DietChartMailService.name);
-  private transporter?: Transporter;
+  private transporters?: Transporter[];
 
   constructor(private readonly config: ConfigService) {}
 
   async send({ recipient, recipientName, date, filename, pdf }: DietChartEmail) {
-    const transporter = this.getTransporter();
     const safeName = this.escapeHtml(recipientName);
     const from = this.config.get<string>('MAIL_FROM')?.trim() || 'Lose To Gain <no-reply@losetogain.app>';
 
-    try {
-      const delivery = await transporter.sendMail({
-        from,
-        to: recipient,
-        subject: `Your diet chart for ${date}`,
-        text: `Hello ${recipientName}, your Lose To Gain diet chart for ${date} is attached as a PDF.`,
-        html: `
-        <div style="margin:0;background:#f5f8f7;padding:32px 16px;font-family:Arial,sans-serif;color:#172b2a">
-          <div style="max-width:560px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #dde7e5">
-            <div style="background:#115e59;padding:28px 32px;color:#fff">
-              <div style="font-size:11px;font-weight:700;letter-spacing:1.6px">LOSE TO GAIN</div>
-              <h1 style="font-size:24px;line-height:1.25;margin:12px 0 0">Your diet chart is ready</h1>
+    let lastError: unknown;
+    for (const transporter of this.getTransporters()) {
+      try {
+        const delivery = await transporter.sendMail({
+          from,
+          to: recipient,
+          subject: `Your diet chart for ${date}`,
+          text: `Hello ${recipientName}, your Lose To Gain diet chart for ${date} is attached as a PDF.`,
+          html: `
+          <div style="margin:0;background:#f5f8f7;padding:32px 16px;font-family:Arial,sans-serif;color:#172b2a">
+            <div style="max-width:560px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #dde7e5">
+              <div style="background:#115e59;padding:28px 32px;color:#fff">
+                <div style="font-size:11px;font-weight:700;letter-spacing:1.6px">LOSE TO GAIN</div>
+                <h1 style="font-size:24px;line-height:1.25;margin:12px 0 0">Your diet chart is ready</h1>
+              </div>
+              <div style="padding:28px 32px">
+                <p style="margin:0 0 14px">Hello ${safeName},</p>
+                <p style="margin:0 0 20px;line-height:1.6;color:#657473">Your daily diet chart for <strong style="color:#172b2a">${date}</strong> is attached. It includes your meals, nutrition totals, and progress against your daily goals.</p>
+                <div style="background:#dff4f0;border-radius:10px;padding:14px 16px;color:#115e59;font-size:13px">Open the attached PDF to view or print your chart.</div>
+              </div>
             </div>
-            <div style="padding:28px 32px">
-              <p style="margin:0 0 14px">Hello ${safeName},</p>
-              <p style="margin:0 0 20px;line-height:1.6;color:#657473">Your daily diet chart for <strong style="color:#172b2a">${date}</strong> is attached. It includes your meals, nutrition totals, and progress against your daily goals.</p>
-              <div style="background:#dff4f0;border-radius:10px;padding:14px 16px;color:#115e59;font-size:13px">Open the attached PDF to view or print your chart.</div>
-            </div>
-          </div>
-        </div>`,
-        attachments: [{ filename, content: pdf, contentType: 'application/pdf' }],
-      });
-      const accepted = this.addressList(delivery.accepted);
-      const rejected = this.addressList(delivery.rejected);
-      if (!accepted.some((address) => address.toLowerCase() === recipient.toLowerCase())) {
-        this.logger.error(
-          `Diet chart email was not accepted by SMTP. Accepted: ${accepted.join(', ') || 'none'}; rejected: ${rejected.join(', ') || 'none'}`,
+          </div>`,
+          attachments: [{ filename, content: pdf, contentType: 'application/pdf' }],
+        });
+        const accepted = this.addressList(delivery.accepted);
+        const rejected = this.addressList(delivery.rejected);
+        if (!accepted.some((address) => address.toLowerCase() === recipient.toLowerCase())) {
+          this.logger.error(
+            `Diet chart email was not accepted by SMTP. Accepted: ${accepted.join(', ') || 'none'}; rejected: ${rejected.join(', ') || 'none'}`,
+          );
+          throw new BadGatewayException(
+            'The email service did not accept the recipient address. Check the member email and SMTP settings.',
+          );
+        }
+        if (rejected.length) {
+          this.logger.warn(`SMTP rejected recipient(s): ${rejected.join(', ')}`);
+        }
+        this.logger.log(
+          `Diet chart email accepted for ${recipient}. Message id: ${delivery.messageId || 'unavailable'}`,
         );
-        throw new BadGatewayException(
-          'The email service did not accept the recipient address. Check the member email and SMTP settings.',
+        return {
+          accepted,
+          rejected,
+          messageId: delivery.messageId,
+          response: delivery.response,
+        } satisfies DietChartEmailDelivery;
+      } catch (error) {
+        if (error instanceof HttpException) throw error;
+        lastError = error;
+        this.logger.warn(
+          `Diet chart email attempt failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
         );
       }
-      if (rejected.length) {
-        this.logger.warn(`SMTP rejected recipient(s): ${rejected.join(', ')}`);
-      }
-      this.logger.log(
-        `Diet chart email accepted for ${recipient}. Message id: ${delivery.messageId || 'unavailable'}`,
-      );
-      return {
-        accepted,
-        rejected,
-        messageId: delivery.messageId,
-        response: delivery.response,
-      } satisfies DietChartEmailDelivery;
-    } catch (error) {
-      if (error instanceof HttpException) throw error;
-      this.logger.error(
-        'Unable to deliver diet chart email.',
-        error instanceof Error ? error.stack : undefined,
-      );
-      throw new BadGatewayException(
-        'The diet chart was created, but the email service could not deliver it. Try again shortly.',
-      );
     }
+
+    this.logger.error(
+      'Unable to deliver diet chart email.',
+      lastError instanceof Error ? lastError.stack : undefined,
+    );
+    throw new BadGatewayException(
+      'The diet chart was created, but the email service could not deliver it. Try again shortly.',
+    );
   }
 
-  private getTransporter() {
-    if (this.transporter) return this.transporter;
+  private getTransporters() {
+    if (this.transporters) return this.transporters;
 
     const host = this.config.get<string>('MAIL_HOST');
     const port = this.config.get<number>('MAIL_PORT', 587);
@@ -115,12 +124,30 @@ export class DietChartMailService {
       );
     }
 
-    this.transporter = nodemailer.createTransport({
+    const transportConfigs = [{ port, secure }];
+    if (host.includes('gmail.com') && port === 587 && !secure) {
+      transportConfigs.push({ port: 465, secure: true });
+    }
+
+    this.transporters = transportConfigs.map((transport) =>
+      this.createTransporter(host, transport.port, transport.secure, user, normalizedPassword),
+    );
+    return this.transporters;
+  }
+
+  private createTransporter(
+    host: string,
+    port: number,
+    secure: boolean,
+    user?: string,
+    password?: string,
+  ) {
+    return nodemailer.createTransport({
       host,
       port,
       secure,
       requireTLS: !secure,
-      ...(user && normalizedPassword ? { auth: { user, pass: normalizedPassword } } : {}),
+      ...(user && password ? { auth: { user, pass: password } } : {}),
       getSocket: (
         _options: unknown,
         callback: (
@@ -143,7 +170,6 @@ export class DietChartMailService {
       greetingTimeout: 10_000,
       socketTimeout: 20_000,
     });
-    return this.transporter;
   }
 
   private async openIpv4Socket(host: string, port: number) {

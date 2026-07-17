@@ -82,7 +82,8 @@ for an SMTP relay that does not require authentication.
 For Gmail, use a Google App Password; display spaces are removed automatically
 before authentication. Approval only marks a request approved after SMTP accepts
 the member recipient. SMTP connections are opened over IPv4 to avoid hosts that
-resolve Gmail to IPv6 addresses on platforms without IPv6 egress.
+resolve Gmail to IPv6 addresses on platforms without IPv6 egress. Gmail on port
+587 automatically falls back to SSL port 465 if the first connection fails.
 
 When production runs with automatic index creation disabled, create the activity key once:
 
