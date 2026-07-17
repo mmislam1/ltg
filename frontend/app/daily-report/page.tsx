@@ -1,5 +1,5 @@
 import DailyReport from "../components/dailyReport";
 
-export default function NutritionDashboard() {
+export default function DailyReportPage() {
   return <DailyReport />;
 }

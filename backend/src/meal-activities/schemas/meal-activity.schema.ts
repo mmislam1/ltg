@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
 import { Food } from '../../foods/schemas/food.schema';
-import { User } from '../../users/schemas/user.schema';
+import { User, WeightUnit } from '../../users/schemas/user.schema';
 
 export enum MealType {
   BREAKFAST = 'Breakfast',
@@ -48,6 +48,12 @@ export class MealActivity {
 
   @Prop({ required: true, min: 0, max: 250_000, default: 0 })
   steps: number;
+
+  @Prop({ min: 20, max: 700 })
+  weight?: number;
+
+  @Prop({ enum: WeightUnit })
+  weightUnit?: WeightUnit;
 
   @Prop({ required: true, type: [MealSchema], default: [] })
   meals: Meal[];

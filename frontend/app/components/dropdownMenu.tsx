@@ -110,13 +110,13 @@ export default function DropdownMenu() {
     { label: "Home", icon: Home, href: "/" },
     { label: "Diary", icon: NotebookTabs, href: "/diary" },
     { label: "Add meal", icon: Plus, href: "/add_meal" },
-    { label: "Progress", icon: ChartNoAxesColumnIncreasing, href: "/chart" },
+    { label: "Progress", icon: ChartNoAxesColumnIncreasing, href: "/progress" },
     { label: "Nutrition", icon: Salad, href: "/nutritionDashboard" },
   ];
 
   const items = [
     { label: "Mark Day as Complete", icon: CheckIcon, href: "/" },
-    { label: "Daily Report", icon: List, href: "/" },
+    { label: "Daily Report", icon: List, href: "/daily-report" },
     { label: "Multi-Select", icon: PlusCircleIcon, href: "/" },
     { label: "Copy Current Day", icon: CopyIcon, href: "/" },
     { label: "Copy Previous Day", icon: File, href: "/" },

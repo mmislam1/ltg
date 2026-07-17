@@ -3,12 +3,14 @@
 import { FormEvent, useState } from 'react';
 import { CheckCircle2, Save, Weight } from 'lucide-react';
 import { updateProfile } from '../store/features/authSlice';
+import { saveDailyActivityMetrics } from '../store/features/activitySlice';
 import type { AuthError } from '../store/features/authSlice';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export default function WeightUpdater() {
   const dispatch = useAppDispatch();
   const { user, profileLoading, profileError } = useAppSelector((state) => state.auth);
+  const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
   const [draft, setDraft] = useState({
     weight: '',
     unit: 'kg' as 'kg' | 'lb',
@@ -39,6 +41,13 @@ export default function WeightUpdater() {
           weight_unit: unit,
         }),
       ).unwrap();
+      void dispatch(
+        saveDailyActivityMetrics({
+          date: selectedDate || undefined,
+          weight: nextWeight,
+          weight_unit: unit,
+        }),
+      );
       setDraft({ weight: String(nextWeight), unit, dirty: false });
       setFieldError('');
       setSaved(true);

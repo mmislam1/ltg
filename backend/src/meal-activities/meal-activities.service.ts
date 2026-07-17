@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Food } from '../foods/schemas/food.schema';
+import { Food, Nutrition } from '../foods/schemas/food.schema';
 import { DEFAULT_TIMEZONE } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { UpdateDailyActivityDto } from './dto/daily-activity.dto';
@@ -32,6 +32,58 @@ export class MealActivitiesService {
     const { date, timezone } = await this.resolveDate(userId, requestedDate);
     const activity = await this.getOrCreateActivity(userId, date, timezone);
     return this.toResponse(activity);
+  }
+
+  async history(userId: string, days = 30) {
+    const resolved = await this.resolveDate(userId);
+    const dates = this.dateRangeEnding(resolved.date, days);
+    const firstDate = dates[0];
+    const records = await this.activities
+      .find({
+        userId: new Types.ObjectId(userId),
+        date: { $gte: firstDate, $lte: resolved.date },
+      })
+      .sort({ date: 1 })
+      .exec();
+    const foodIds = [
+      ...new Set(
+        records.flatMap((record) =>
+          record.meals.flatMap((meal) => meal.list.map((item) => item.foodId.toString())),
+        ),
+      ),
+    ];
+    const foods = foodIds.length
+      ? await this.foods
+          .find({ _id: { $in: foodIds.map((id) => new Types.ObjectId(id)) } })
+          .exec()
+      : [];
+    const foodsById = new Map(foods.map((food) => [food.id, food]));
+    const recordsByDate = new Map(records.map((record) => [record.date, record]));
+
+    return {
+      timezone: resolved.timezone,
+      days,
+      entries: dates.map((date) => {
+        const record = recordsByDate.get(date);
+        const totals = record
+          ? this.activityTotals(record, foodsById)
+          : { calories: 0, protein: 0, carbs: 0, fats: 0 };
+        return {
+          date,
+          water: record?.water ?? 0,
+          steps: record?.steps ?? 0,
+          weight: record?.weight ?? (date === resolved.date ? resolved.weight : null),
+          weight_unit:
+            record?.weightUnit ?? (date === resolved.date ? resolved.weightUnit : null),
+          totals,
+          distributedCalories: {
+            protein: totals.protein * 4,
+            carbs: totals.carbs * 4,
+            fats: totals.fats * 9,
+          },
+        };
+      }),
+    };
   }
 
   async addMeal(userId: string, dto: AddMealDto, requestedDate?: string) {
@@ -85,6 +137,8 @@ export class MealActivitiesService {
             date: todayResolved.date,
             water: 0,
             steps: 0,
+            weight: todayResolved.weight,
+            weightUnit: todayResolved.weightUnit,
           },
         },
         { new: true, upsert: true, runValidators: true },
@@ -102,11 +156,15 @@ export class MealActivitiesService {
     const { date, timezone } = await this.resolveDate(userId, requestedDate);
     await this.getOrCreateActivity(userId, date, timezone);
 
-    const updates: Partial<Pick<MealActivity, 'timezone' | 'water' | 'steps'>> = {
+    const updates: Partial<
+      Pick<MealActivity, 'timezone' | 'water' | 'steps' | 'weight' | 'weightUnit'>
+    > = {
       timezone,
     };
     if (dto.water !== undefined) updates.water = dto.water;
     if (dto.steps !== undefined) updates.steps = dto.steps;
+    if (dto.weight !== undefined) updates.weight = dto.weight;
+    if (dto.weight_unit !== undefined) updates.weightUnit = dto.weight_unit;
 
     const activity = await this.activities
       .findOneAndUpdate(
@@ -160,7 +218,18 @@ export class MealActivitiesService {
     return {
       date: requestedDate ?? today,
       timezone,
+      weight: user.weight,
+      weightUnit: user.weightUnit,
     };
+  }
+
+  private dateRangeEnding(endDate: string, days: number) {
+    const end = new Date(`${endDate}T00:00:00Z`);
+    return Array.from({ length: days }, (_, index) => {
+      const date = new Date(end);
+      date.setUTCDate(end.getUTCDate() - (days - 1 - index));
+      return date.toISOString().slice(0, 10);
+    });
   }
 
   private localDate(now: Date, timezone: string) {
@@ -240,6 +309,35 @@ export class MealActivitiesService {
     }));
   }
 
+  private activityTotals(
+    activity: MealActivityDocument,
+    foodsById: Map<string, Food>,
+  ) {
+    return activity.meals.reduce(
+      (totals, meal) => {
+        meal.list.forEach((item) => {
+          const food = foodsById.get(item.foodId.toString());
+          if (!food) return;
+          const factor = item.quantity / (food.nutritionPer || 1);
+          this.addCoreNutrition(totals, food.nutrition, factor);
+        });
+        return totals;
+      },
+      { calories: 0, protein: 0, carbs: 0, fats: 0 },
+    );
+  }
+
+  private addCoreNutrition(
+    totals: { calories: number; protein: number; carbs: number; fats: number },
+    nutrition: Nutrition,
+    factor: number,
+  ) {
+    totals.calories += nutrition.calories * factor;
+    totals.protein += nutrition.protein * factor;
+    totals.carbs += nutrition.carbs * factor;
+    totals.fats += nutrition.fats * factor;
+  }
+
   private toResponse(activity: MealActivityDocument) {
     return {
       id: activity.id,
@@ -247,6 +345,8 @@ export class MealActivitiesService {
       timezone: activity.timezone,
       water: activity.water ?? 0,
       steps: activity.steps ?? 0,
+      weight: activity.weight ?? null,
+      weight_unit: activity.weightUnit ?? null,
       meals: activity.meals.map((meal) => ({
         mealType: meal.mealType,
         list: meal.list.map((item) => ({

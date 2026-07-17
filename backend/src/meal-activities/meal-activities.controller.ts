@@ -14,6 +14,7 @@ import {
 import { AuthenticatedUser, CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ActivityDateQueryDto } from './dto/activity-date-query.dto';
+import { ActivityHistoryQueryDto } from './dto/activity-history-query.dto';
 import { UpdateDailyActivityDto } from './dto/daily-activity.dto';
 import { AddMealDto, UpdateMealDto } from './dto/meal.dto';
 import { MealActivitiesService } from './meal-activities.service';
@@ -30,6 +31,14 @@ export class MealActivitiesController {
     @Query() query: ActivityDateQueryDto,
   ) {
     return this.mealActivities.findForDate(user.id, query.date);
+  }
+
+  @Get('history')
+  history(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: ActivityHistoryQueryDto,
+  ) {
+    return this.mealActivities.history(user.id, query.days);
   }
 
   @Post('meals')

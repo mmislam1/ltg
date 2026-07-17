@@ -48,7 +48,8 @@ All meal activity endpoints require a Bearer access token. They use the user's I
 Passing `?date=YYYY-MM-DD` selects a historical or future local date explicitly.
 
 - `GET /api/meal-activities` — get or create the activity for the selected date
-- `PATCH /api/meal-activities/daily` — update daily water and step totals
+- `GET /api/meal-activities/history?days=30` — summarize recent calories, steps, water, and weight snapshots
+- `PATCH /api/meal-activities/daily` — update daily water, step, and weight totals
 - `POST /api/meal-activities/meals` — add one Breakfast, Lunch, Dinner, or Snack
 - `PATCH /api/meal-activities/meals/:mealType` — replace an existing meal's food list
 

@@ -45,6 +45,8 @@ export interface ActivityState {
   chart: Chart;
   water: number;
   steps: number;
+  weight: number | null;
+  weightUnit: "kg" | "lb" | null;
   burnt: number;
   macros: Macros;
   total: number;
@@ -101,6 +103,8 @@ const createInitialState = (): ActivitiesState => ({
     macros: { calories: 0, protein: 0, carbs: 0, fiber: 0, netCarbs: 0, fats: 0 },
     water: 0,
     steps: 0,
+    weight: null,
+    weightUnit: null,
     burnt: 0,
     total: 0,
     selectedDate: "",
@@ -262,6 +266,8 @@ interface ApiMealActivity {
   timezone: string;
   water: number;
   steps: number;
+  weight: number | null;
+  weight_unit: "kg" | "lb" | null;
   meals: Array<{
     mealType: MealType;
     list: Array<{ foodId: string; quantity: number }>;
@@ -282,6 +288,8 @@ interface SaveDailyActivityArgs {
   date?: string;
   water?: number;
   steps?: number;
+  weight?: number;
+  weight_unit?: "kg" | "lb";
 }
 
 const mealsFromApi = (record: ApiMealActivity, foods: Food[]): Meal[] => {
@@ -362,8 +370,8 @@ export const saveDailyActivityMetrics = createAsyncThunk<
   ApiMealActivity,
   SaveDailyActivityArgs,
   { state: ActivityStoreState; rejectValue: string }
->("activity/saveDailyMetrics", async ({ date, water, steps }, { rejectWithValue }) => {
-  if (water === undefined && steps === undefined) {
+>("activity/saveDailyMetrics", async ({ date, water, steps, weight, weight_unit }, { rejectWithValue }) => {
+  if (water === undefined && steps === undefined && weight === undefined && weight_unit === undefined) {
     return rejectWithValue("No daily activity change was provided.");
   }
 
@@ -373,6 +381,8 @@ export const saveDailyActivityMetrics = createAsyncThunk<
       {
         ...(water !== undefined ? { water } : {}),
         ...(steps !== undefined ? { steps } : {}),
+        ...(weight !== undefined ? { weight } : {}),
+        ...(weight_unit !== undefined ? { weight_unit } : {}),
       },
       { params: date ? { date } : undefined },
     );
@@ -442,6 +452,8 @@ export const activitySlice = createSlice({
           state.current.chart.meals = defaultMeals();
           state.current.water = 0;
           state.current.steps = 0;
+          state.current.weight = null;
+          state.current.weightUnit = null;
           state.persistedMealTypes = [];
           recalculate(state);
         }
@@ -457,6 +469,8 @@ export const activitySlice = createSlice({
         );
         state.current.water = action.payload.record.water ?? 0;
         state.current.steps = action.payload.record.steps ?? 0;
+        state.current.weight = action.payload.record.weight ?? null;
+        state.current.weightUnit = action.payload.record.weight_unit ?? null;
         state.persistedMealTypes = action.payload.record.meals.map(
           (meal) => meal.mealType,
         );
@@ -494,6 +508,8 @@ export const activitySlice = createSlice({
         if (action.payload.date !== state.current.selectedDate) return;
         state.current.water = action.payload.water ?? 0;
         state.current.steps = action.payload.steps ?? 0;
+        state.current.weight = action.payload.weight ?? null;
+        state.current.weightUnit = action.payload.weight_unit ?? null;
       })
       .addCase(saveDailyActivityMetrics.rejected, (state, action) => {
         state.saving = Math.max(0, state.saving - 1);

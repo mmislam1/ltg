@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   BookOpen,
-  Home,
+  ChartNoAxesColumnIncreasing,
   Plus,
   Sparkles,
   type LucideIcon,
@@ -18,7 +18,7 @@ interface NavigationItem {
 }
 
 const navigationItems: NavigationItem[] = [
-  { href: "/", label: "Home", icon: Home },
+  { href: "/progress", label: "Progress", icon: ChartNoAxesColumnIncreasing },
   { label: "Transformation", icon: Sparkles, disabled: true },
   { label: "Read", icon: BookOpen, disabled: true },
 ];

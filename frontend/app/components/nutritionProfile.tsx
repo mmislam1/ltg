@@ -73,7 +73,13 @@ const minerals: { key: keyof Minerals; label: string; color: string }[] = [
   { key: "zinc", label: "Zinc", color: "from-indigo-400 to-indigo-600" },
 ];
 
-export default function NutritionProfile({ nutrition }: { nutrition: Nutrition }) {
+export default function NutritionProfile({
+  nutrition,
+  waterGlasses = 0,
+}: {
+  nutrition: Nutrition;
+  waterGlasses?: number;
+}) {
   const vitaminValues = nutrition.vitamins;
   const mineralValues = nutrition.minerals;
 
@@ -89,6 +95,7 @@ export default function NutritionProfile({ nutrition }: { nutrition: Nutrition }
           <NutrientBar label="Total Carbs" current={nutrition.carbs} target={IDEAL_NUTRITION.macros.carbs} unit={NUTRIENT_UNITS.carbs} color="bg-carbs" labelColor="text-carbs" />
           <NutrientBar label="Fiber" current={nutrition.fiber} target={IDEAL_NUTRITION.macros.fiber} unit={NUTRIENT_UNITS.fiber} color="bg-carbs" labelColor="text-carbs" />
           <NutrientBar label="Fat" current={nutrition.fats} target={IDEAL_NUTRITION.macros.fats} unit={NUTRIENT_UNITS.fats} color="bg-fat" labelColor="text-fat" />
+          <NutrientBar label="Water" current={waterGlasses} target={8} unit="glasses" color="bg-sky-500" labelColor="text-blue-600" />
         </div>
       </div>
 
