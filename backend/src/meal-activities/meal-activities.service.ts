@@ -10,6 +10,7 @@ import { Model, Types } from 'mongoose';
 import { Food } from '../foods/schemas/food.schema';
 import { DEFAULT_TIMEZONE } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
+import { UpdateDailyActivityDto } from './dto/daily-activity.dto';
 import { AddMealDto, MealItemDto, UpdateMealDto } from './dto/meal.dto';
 import {
   MealActivity,
@@ -82,6 +83,8 @@ export class MealActivitiesService {
           $setOnInsert: {
             userId: new Types.ObjectId(userId),
             date: todayResolved.date,
+            water: 0,
+            steps: 0,
           },
         },
         { new: true, upsert: true, runValidators: true },
@@ -89,6 +92,32 @@ export class MealActivitiesService {
       .exec();
 
     return this.toResponse(destination);
+  }
+
+  async updateDailyActivity(
+    userId: string,
+    dto: UpdateDailyActivityDto,
+    requestedDate?: string,
+  ) {
+    const { date, timezone } = await this.resolveDate(userId, requestedDate);
+    await this.getOrCreateActivity(userId, date, timezone);
+
+    const updates: Partial<Pick<MealActivity, 'timezone' | 'water' | 'steps'>> = {
+      timezone,
+    };
+    if (dto.water !== undefined) updates.water = dto.water;
+    if (dto.steps !== undefined) updates.steps = dto.steps;
+
+    const activity = await this.activities
+      .findOneAndUpdate(
+        { userId: new Types.ObjectId(userId), date },
+        { $set: updates },
+        { new: true, runValidators: true },
+      )
+      .exec();
+
+    if (!activity) throw new NotFoundException(`Activity was not found for ${date}.`);
+    return this.toResponse(activity);
   }
 
   async updateMeal(
@@ -162,7 +191,16 @@ export class MealActivitiesService {
       return await this.activities
         .findOneAndUpdate(
           { userId: objectUserId, date },
-          { $setOnInsert: { userId: objectUserId, date, timezone, meals: [] } },
+          {
+            $setOnInsert: {
+              userId: objectUserId,
+              date,
+              timezone,
+              water: 0,
+              steps: 0,
+              meals: [],
+            },
+          },
           { new: true, upsert: true, runValidators: true },
         )
         .exec();
@@ -207,6 +245,8 @@ export class MealActivitiesService {
       id: activity.id,
       date: activity.date,
       timezone: activity.timezone,
+      water: activity.water ?? 0,
+      steps: activity.steps ?? 0,
       meals: activity.meals.map((meal) => ({
         mealType: meal.mealType,
         list: meal.list.map((item) => ({

@@ -44,6 +44,7 @@ export interface Chart {
 export interface ActivityState {
   chart: Chart;
   water: number;
+  steps: number;
   burnt: number;
   macros: Macros;
   total: number;
@@ -99,6 +100,7 @@ const createInitialState = (): ActivitiesState => ({
     },
     macros: { calories: 0, protein: 0, carbs: 0, fiber: 0, netCarbs: 0, fats: 0 },
     water: 0,
+    steps: 0,
     burnt: 0,
     total: 0,
     selectedDate: "",
@@ -258,6 +260,8 @@ interface ApiMealActivity {
   id: string;
   date: string;
   timezone: string;
+  water: number;
+  steps: number;
   meals: Array<{
     mealType: MealType;
     list: Array<{ foodId: string; quantity: number }>;
@@ -272,6 +276,12 @@ interface ActivityStoreState {
 interface SaveMealArgs {
   meal: Meal;
   date: string;
+}
+
+interface SaveDailyActivityArgs {
+  date?: string;
+  water?: number;
+  steps?: number;
 }
 
 const mealsFromApi = (record: ApiMealActivity, foods: Food[]): Meal[] => {
@@ -348,6 +358,30 @@ export const saveMealActivity = createAsyncThunk<
   }
 });
 
+export const saveDailyActivityMetrics = createAsyncThunk<
+  ApiMealActivity,
+  SaveDailyActivityArgs,
+  { state: ActivityStoreState; rejectValue: string }
+>("activity/saveDailyMetrics", async ({ date, water, steps }, { rejectWithValue }) => {
+  if (water === undefined && steps === undefined) {
+    return rejectWithValue("No daily activity change was provided.");
+  }
+
+  try {
+    const { data } = await api.patch<ApiMealActivity>(
+      "/meal-activities/daily",
+      {
+        ...(water !== undefined ? { water } : {}),
+        ...(steps !== undefined ? { steps } : {}),
+      },
+      { params: date ? { date } : undefined },
+    );
+    return data;
+  } catch (error) {
+    return rejectWithValue(getApiError(error, "Unable to save daily activity."));
+  }
+});
+
 const recalculate = (state: ActivitiesState) => {
   state.current.macros = macroCount(state);
   state.current.totalMicro = microCount(state);
@@ -392,6 +426,9 @@ export const activitySlice = createSlice({
     incrementGlass: (state) => {
       state.current.water += 1;
     },
+    addSteps: (state, action: PayloadAction<number>) => {
+      state.current.steps += action.payload;
+    },
     resetActivity: () => createInitialState(),
   },
   extraReducers: (builder) => {
@@ -403,6 +440,8 @@ export const activitySlice = createSlice({
         if (action.meta.arg && action.meta.arg !== state.current.selectedDate) {
           state.current.selectedDate = action.meta.arg;
           state.current.chart.meals = defaultMeals();
+          state.current.water = 0;
+          state.current.steps = 0;
           state.persistedMealTypes = [];
           recalculate(state);
         }
@@ -416,6 +455,8 @@ export const activitySlice = createSlice({
           action.payload.record,
           action.payload.foods,
         );
+        state.current.water = action.payload.record.water ?? 0;
+        state.current.steps = action.payload.record.steps ?? 0;
         state.persistedMealTypes = action.payload.record.meals.map(
           (meal) => meal.mealType,
         );
@@ -443,6 +484,22 @@ export const activitySlice = createSlice({
         if (action.meta.arg.date === state.current.selectedDate) {
           state.error = action.payload || "Unable to save meal activity.";
         }
+      })
+      .addCase(saveDailyActivityMetrics.pending, (state) => {
+        state.saving += 1;
+        state.error = null;
+      })
+      .addCase(saveDailyActivityMetrics.fulfilled, (state, action) => {
+        state.saving = Math.max(0, state.saving - 1);
+        if (action.payload.date !== state.current.selectedDate) return;
+        state.current.water = action.payload.water ?? 0;
+        state.current.steps = action.payload.steps ?? 0;
+      })
+      .addCase(saveDailyActivityMetrics.rejected, (state, action) => {
+        state.saving = Math.max(0, state.saving - 1);
+        if (!action.meta.arg.date || action.meta.arg.date === state.current.selectedDate) {
+          state.error = action.payload || "Unable to save daily activity.";
+        }
       });
   },
 });
@@ -451,6 +508,7 @@ export const {
   upsertMeal,
   setSelectedDate,
   incrementGlass,
+  addSteps,
   updateMeal,
   resetActivity,
 } =

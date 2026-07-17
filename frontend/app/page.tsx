@@ -17,6 +17,8 @@ import Water from "./components/water";
 import NutritionChart from "./chart/page";
 import NutritionDashboard from "./nutritionDashboard/page";
 import BottomBar from "./components/botomBar";
+import StepCounter from "./components/stepCounter";
+import WeightUpdater from "./components/weightUpdater";
 
 export default function Home() {
 
@@ -44,6 +46,8 @@ export default function Home() {
       */}
       <NutritionDashboard/>
       <Water></Water>
+      <StepCounter />
+      <WeightUpdater />
       <RingChart></RingChart>
 
     </div>

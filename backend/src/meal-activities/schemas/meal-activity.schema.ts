@@ -43,6 +43,12 @@ export class MealActivity {
   @Prop({ required: true, trim: true })
   timezone: string;
 
+  @Prop({ required: true, min: 0, max: 100, default: 0 })
+  water: number;
+
+  @Prop({ required: true, min: 0, max: 250_000, default: 0 })
+  steps: number;
+
   @Prop({ required: true, type: [MealSchema], default: [] })
   meals: Meal[];
 }

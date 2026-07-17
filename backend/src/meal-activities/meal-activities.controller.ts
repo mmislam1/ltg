@@ -14,6 +14,7 @@ import {
 import { AuthenticatedUser, CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ActivityDateQueryDto } from './dto/activity-date-query.dto';
+import { UpdateDailyActivityDto } from './dto/daily-activity.dto';
 import { AddMealDto, UpdateMealDto } from './dto/meal.dto';
 import { MealActivitiesService } from './meal-activities.service';
 import { MealType } from './schemas/meal-activity.schema';
@@ -47,6 +48,16 @@ export class MealActivitiesController {
     @Query() query: ActivityDateQueryDto,
   ) {
     return this.mealActivities.copyToToday(user.id, query.date);
+  }
+
+  @Patch('daily')
+  @HttpCode(HttpStatus.OK)
+  updateDailyActivity(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: ActivityDateQueryDto,
+    @Body() dto: UpdateDailyActivityDto,
+  ) {
+    return this.mealActivities.updateDailyActivity(user.id, dto, query.date);
   }
 
   @Patch('meals/:mealType')
