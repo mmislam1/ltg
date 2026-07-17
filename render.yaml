@@ -1,0 +1,67 @@
+services:
+  - type: web
+    name: ltg-api
+    runtime: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start:prod
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "10000"
+      - key: MONGODB_URI
+        sync: false
+      - key: CORS_ORIGINS
+        fromService:
+          type: web
+          name: ltg-web
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRES_IN
+        value: 15m
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: MAIL_HOST
+        sync: false
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_SECURE
+        value: "false"
+      - key: MAIL_USER
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: MAIL_FROM
+        sync: false
+      - key: NUTRITION_LABEL_SCAN_ENABLED
+        value: "false"
+      - key: GEMINI_NUTRITION_MODEL
+        value: gemini-2.5-flash
+
+  - type: web
+    name: ltg-web
+    runtime: node
+    rootDir: frontend
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start -- -H 0.0.0.0 -p $PORT
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: PORT
+        value: "10000"
+      - key: NEXT_PUBLIC_API_HOSTNAME
+        fromService:
+          type: web
+          name: ltg-api
+          envVarKey: RENDER_EXTERNAL_HOSTNAME
+      - key: NEXT_PUBLIC_NUTRITION_LABEL_SCAN_ENABLED
+        value: "false"

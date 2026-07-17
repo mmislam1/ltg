@@ -10,7 +10,24 @@ export interface ApiErrorPayload {
   errors?: Record<string, string[] | string>;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const normalizeBaseUrl = (value: string) => value.trim().replace(/\/+$/, "");
+
+const getApiUrl = () => {
+  const explicitUrl = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (explicitUrl) return normalizeBaseUrl(explicitUrl);
+
+  const apiHostname = process.env.NEXT_PUBLIC_API_HOSTNAME?.trim();
+  if (apiHostname) {
+    const origin = /^https?:\/\//i.test(apiHostname)
+      ? normalizeBaseUrl(apiHostname)
+      : `https://${normalizeBaseUrl(apiHostname)}`;
+    return `${origin}/api`;
+  }
+
+  return "http://localhost:8000/api";
+};
+
+const API_URL = getApiUrl();
 const TOKEN_STORAGE_KEY = "ltg.auth.tokens";
 
 let memoryTokens: StoredTokens | null = null;

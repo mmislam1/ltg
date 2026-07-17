@@ -25,7 +25,7 @@ export class DietChartMailService {
   async send({ recipient, recipientName, date, filename, pdf }: DietChartEmail) {
     const transporter = this.getTransporter();
     const safeName = this.escapeHtml(recipientName);
-    const from = this.config.get<string>('MAIL_FROM', 'Lose To Gain <no-reply@losetogain.app>');
+    const from = this.config.get<string>('MAIL_FROM')?.trim() || 'Lose To Gain <no-reply@losetogain.app>';
 
     try {
       await transporter.sendMail({

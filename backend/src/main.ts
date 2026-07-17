@@ -17,6 +17,11 @@ function validationErrors(errors: ValidationError[]): Record<string, string[]> {
   }, {});
 }
 
+function normalizeCorsOrigin(origin: string) {
+  if (origin === '*' || /^https?:\/\//i.test(origin)) return origin;
+  return `https://${origin}`;
+}
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: false });
   const config = app.get(ConfigService);
@@ -27,7 +32,7 @@ async function bootstrap() {
     .filter(Boolean);
 
   app.use(helmet());
-  app.enableCors({ origin: origins, credentials: false });
+  app.enableCors({ origin: origins.map(normalizeCorsOrigin), credentials: false });
   app.setGlobalPrefix('api');
   app.useGlobalFilters(new ApiExceptionFilter());
   app.useGlobalPipes(
