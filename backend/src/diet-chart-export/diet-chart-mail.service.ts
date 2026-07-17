@@ -6,6 +6,8 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import dns from 'node:dns/promises';
+import net from 'node:net';
 import nodemailer, { Transporter } from 'nodemailer';
 
 interface DietChartEmail {
@@ -119,11 +121,76 @@ export class DietChartMailService {
       secure,
       requireTLS: !secure,
       ...(user && normalizedPassword ? { auth: { user, pass: normalizedPassword } } : {}),
+      getSocket: (
+        _options: unknown,
+        callback: (
+          error: Error | null,
+          socketOptions?: { connection: net.Socket; servername: string },
+        ) => void,
+      ) => {
+        this.openIpv4Socket(host, port)
+          .then((connection) =>
+            callback(null, {
+              connection,
+              servername: host,
+            }),
+          )
+          .catch((error: unknown) =>
+            callback(error instanceof Error ? error : new Error(String(error))),
+          );
+      },
       connectionTimeout: 10_000,
       greetingTimeout: 10_000,
       socketTimeout: 20_000,
     });
     return this.transporter;
+  }
+
+  private async openIpv4Socket(host: string, port: number) {
+    const addresses = net.isIP(host) === 4 ? [host] : await dns.resolve4(host);
+    if (!addresses.length) {
+      throw new ServiceUnavailableException(
+        `Email delivery could not resolve an IPv4 address for ${host}.`,
+      );
+    }
+
+    let lastError: unknown;
+    for (const address of addresses) {
+      try {
+        return await this.connectSocket(address, port);
+      } catch (error) {
+        lastError = error;
+        this.logger.warn(
+          `SMTP IPv4 connection to ${address}:${port} failed: ${
+            error instanceof Error ? error.message : String(error)
+          }`,
+        );
+      }
+    }
+
+    throw lastError instanceof Error
+      ? lastError
+      : new Error(`Unable to connect to ${host}:${port} over IPv4.`);
+  }
+
+  private connectSocket(address: string, port: number) {
+    return new Promise<net.Socket>((resolve, reject) => {
+      const socket = net.connect({ host: address, port, family: 4 });
+      const timeout = setTimeout(() => {
+        socket.destroy();
+        reject(new Error(`SMTP IPv4 connection to ${address}:${port} timed out.`));
+      }, 10_000);
+
+      socket.once('connect', () => {
+        clearTimeout(timeout);
+        socket.setKeepAlive(true);
+        resolve(socket);
+      });
+      socket.once('error', (error) => {
+        clearTimeout(timeout);
+        reject(error);
+      });
+    });
   }
 
   private escapeHtml(value: string) {

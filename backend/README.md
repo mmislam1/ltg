@@ -81,7 +81,8 @@ Configure SMTP with `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`,
 for an SMTP relay that does not require authentication.
 For Gmail, use a Google App Password; display spaces are removed automatically
 before authentication. Approval only marks a request approved after SMTP accepts
-the member recipient.
+the member recipient. SMTP connections are opened over IPv4 to avoid hosts that
+resolve Gmail to IPv6 addresses on platforms without IPv6 egress.
 
 When production runs with automatic index creation disabled, create the activity key once:
 
