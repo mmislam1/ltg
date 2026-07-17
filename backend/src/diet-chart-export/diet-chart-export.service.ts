@@ -51,6 +51,12 @@ export class DietChartExportService {
       })
       .exec();
     if (existing) {
+      if (existing.status === DietChartExportRequestStatus.APPROVED) {
+        existing.status = DietChartExportRequestStatus.PENDING;
+        existing.approvedAt = undefined;
+        existing.approvedBy = undefined;
+        await existing.save();
+      }
       return this.requestResponse(existing);
     }
 
@@ -193,7 +199,7 @@ export class DietChartExportService {
     const filename = `diet-chart-${activity.date}.pdf`;
     const pdf = await this.pdf.render(chart);
 
-    await this.mail.send({
+    const delivery = await this.mail.send({
       recipient: user.email,
       recipientName: user.name,
       date: activity.date,
@@ -205,6 +211,7 @@ export class DietChartExportService {
       message: 'PDF request approved and diet chart emailed successfully.',
       sentTo: user.email,
       date: activity.date,
+      mail: delivery,
     };
   }
 

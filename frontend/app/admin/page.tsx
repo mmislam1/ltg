@@ -134,13 +134,13 @@ export default function AdminPage() {
     setBusy(request.id, true);
     setNotice(null);
     try {
-      const { data } = await api.patch<{ message: string }>(`/diet-chart-exports/requests/${request.id}/approve`);
+      const { data } = await api.patch<{ message: string; sentTo?: string }>(`/diet-chart-exports/requests/${request.id}/approve`);
       setPdfRequests((current) => current.filter((item) => item.id !== request.id));
       setDashboard((current) => current ? {
         ...current,
         summary: { ...current.summary, pendingPdfRequests: Math.max(0, current.summary.pendingPdfRequests - 1) },
       } : current);
-      setNotice({ type: "success", text: data.message || `PDF sent to ${request.user.email}.` });
+      setNotice({ type: "success", text: data.sentTo ? `${data.message} Sent to ${data.sentTo}.` : data.message || `PDF sent to ${request.user.email}.` });
     } catch (requestError) {
       setNotice({ type: "error", text: getApiError(requestError, "Unable to approve and send this PDF.") });
     } finally {

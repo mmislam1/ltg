@@ -79,6 +79,9 @@ All admin endpoints require an authenticated account with the `admin` role.
 Configure SMTP with `MAIL_HOST`, `MAIL_PORT`, `MAIL_SECURE`, `MAIL_USER`,
 `MAIL_PASSWORD`, and `MAIL_FROM`. `MAIL_USER` and `MAIL_PASSWORD` may both be omitted
 for an SMTP relay that does not require authentication.
+For Gmail, use a Google App Password; display spaces are removed automatically
+before authentication. Approval only marks a request approved after SMTP accepts
+the member recipient.
 
 When production runs with automatic index creation disabled, create the activity key once:
 

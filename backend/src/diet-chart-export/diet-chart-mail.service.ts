@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  HttpException,
   Injectable,
   Logger,
   ServiceUnavailableException,
@@ -15,6 +16,13 @@ interface DietChartEmail {
   pdf: Buffer;
 }
 
+export interface DietChartEmailDelivery {
+  accepted: string[];
+  rejected: string[];
+  messageId?: string;
+  response?: string;
+}
+
 @Injectable()
 export class DietChartMailService {
   private readonly logger = new Logger(DietChartMailService.name);
@@ -28,7 +36,7 @@ export class DietChartMailService {
     const from = this.config.get<string>('MAIL_FROM')?.trim() || 'Lose To Gain <no-reply@losetogain.app>';
 
     try {
-      await transporter.sendMail({
+      const delivery = await transporter.sendMail({
         from,
         to: recipient,
         subject: `Your diet chart for ${date}`,
@@ -49,7 +57,30 @@ export class DietChartMailService {
         </div>`,
         attachments: [{ filename, content: pdf, contentType: 'application/pdf' }],
       });
+      const accepted = this.addressList(delivery.accepted);
+      const rejected = this.addressList(delivery.rejected);
+      if (!accepted.some((address) => address.toLowerCase() === recipient.toLowerCase())) {
+        this.logger.error(
+          `Diet chart email was not accepted by SMTP. Accepted: ${accepted.join(', ') || 'none'}; rejected: ${rejected.join(', ') || 'none'}`,
+        );
+        throw new BadGatewayException(
+          'The email service did not accept the recipient address. Check the member email and SMTP settings.',
+        );
+      }
+      if (rejected.length) {
+        this.logger.warn(`SMTP rejected recipient(s): ${rejected.join(', ')}`);
+      }
+      this.logger.log(
+        `Diet chart email accepted for ${recipient}. Message id: ${delivery.messageId || 'unavailable'}`,
+      );
+      return {
+        accepted,
+        rejected,
+        messageId: delivery.messageId,
+        response: delivery.response,
+      } satisfies DietChartEmailDelivery;
     } catch (error) {
+      if (error instanceof HttpException) throw error;
       this.logger.error(
         'Unable to deliver diet chart email.',
         error instanceof Error ? error.stack : undefined,
@@ -68,6 +99,8 @@ export class DietChartMailService {
     const secure = this.config.get<boolean>('MAIL_SECURE', false);
     const user = this.config.get<string>('MAIL_USER');
     const password = this.config.get<string>('MAIL_PASSWORD');
+    const normalizedPassword =
+      host?.includes('gmail.com') && password ? password.replace(/\s+/g, '') : password;
 
     if (!host) {
       throw new ServiceUnavailableException(
@@ -84,7 +117,8 @@ export class DietChartMailService {
       host,
       port,
       secure,
-      ...(user && password ? { auth: { user, pass: password } } : {}),
+      requireTLS: !secure,
+      ...(user && normalizedPassword ? { auth: { user, pass: normalizedPassword } } : {}),
       connectionTimeout: 10_000,
       greetingTimeout: 10_000,
       socketTimeout: 20_000,
@@ -103,5 +137,11 @@ export class DietChartMailService {
       };
       return entities[character];
     });
+  }
+
+  private addressList(value: unknown) {
+    return Array.isArray(value)
+      ? value.map((item) => String(item)).filter(Boolean)
+      : [];
   }
 }
