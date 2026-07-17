@@ -11,6 +11,7 @@ import type { Minerals, Vitamins } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { NUTRIENT_UNITS, scaleNutrient } from "../store/nutritionUnits";
 import DatePicker from "./calender";
+import { MacroCalorieRing } from "./ringChart";
 
 type Notice = { kind: "success" | "error"; text: string } | null;
 type MacroValues = { calories: number; protein: number; carbs: number; fats: number };
@@ -29,10 +30,10 @@ const PDF_COLORS = {
   brandSoft: "#DFF4F0",
   canvas: "#F5F8F7",
   line: "#DDE7E5",
-  calories: "#F59E0B",
-  protein: "#0EA5E9",
-  carbs: "#8B5CF6",
-  fats: "#F97316",
+  calories: "#c026d3",
+  protein: "#059669",
+  carbs: "#2563eb",
+  fats: "#dc2626",
 } as const;
 
 const VITAMIN_ENTRIES = [
@@ -370,6 +371,14 @@ function MacroOverview({ user, totals }: { user: User; totals: NutritionTotals }
         <h3 className="text-sm font-bold tracking-[0.08em] text-[#172B2A] sm:text-[11px]">MACRO OVERVIEW</h3>
         <p className="mt-1 text-sm leading-5 text-[#657473] sm:text-[10px]">Amounts, targets, target progress, and distribution are combined here.</p>
       </div>
+      <MacroCalorieRing
+        className="mb-3 rounded-xl border-[#DDE7E5] shadow-none"
+        dense
+        goals={{ targetCalories: user.dailyGoals.targetCalories }}
+        macros={totals}
+        title="Macro calorie split"
+        subtitle="Percentage of calories coming from protein, carbs, and fat."
+      />
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {cards.map((card) => {
           const consumed = totals[card.key];

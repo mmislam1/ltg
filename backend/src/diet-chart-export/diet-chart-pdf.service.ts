@@ -17,15 +17,25 @@ const COLORS = {
   paper: '#FFFFFF',
   canvas: '#F5F8F7',
   line: '#DDE7E5',
-  calories: '#F59E0B',
-  protein: '#0EA5E9',
-  carbs: '#8B5CF6',
-  fats: '#F97316',
+  calories: '#c026d3',
+  protein: '#059669',
+  carbs: '#2563eb',
+  fats: '#dc2626',
 } as const;
 
 const PAGE = { width: 595.28, height: 841.89, margin: 40, footerTop: 776 };
 const FONT_REGULAR = require.resolve('@fontsource/inter/files/inter-latin-400-normal.woff');
 const FONT_BOLD = require.resolve('@fontsource/inter/files/inter-latin-700-normal.woff');
+type PdfDocumentWithArc = PDFKit.PDFDocument & {
+  arc(
+    x: number,
+    y: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number,
+    anticlockwise?: boolean,
+  ): PDFKit.PDFDocument;
+};
 
 const VITAMIN_ENTRIES = [
   { key: 'a', label: 'Vitamin A', unit: 'µg RAE' },
@@ -152,10 +162,13 @@ export class DietChartPdfService {
       carbs: macroDistribution.find((item) => item.key === 'carbs')?.percent ?? 0,
       fats: macroDistribution.find((item) => item.key === 'fats')?.percent ?? 0,
     };
-    const sectionY = this.ensureSpace(document, y, 246);
+    const sectionY = this.ensureSpace(document, y, 374);
     const gap = 10;
     const width = (PAGE.width - PAGE.margin * 2 - gap) / 2;
     const height = 96;
+    const ringY = sectionY + 38;
+    const ringHeight = 124;
+    const cardsY = ringY + ringHeight + 14;
 
     document
       .fillColor(COLORS.ink)
@@ -173,11 +186,13 @@ export class DietChartPdfService {
         lineBreak: false,
       });
 
+    this.drawMacroCalorieSummary(document, macroDistribution, ringY, ringHeight);
+
     cards.forEach((card, index) => {
       const row = Math.floor(index / 2);
       const column = index % 2;
       const x = PAGE.margin + column * (width + gap);
-      const cardY = sectionY + 40 + row * (height + gap);
+      const cardY = cardsY + row * (height + gap);
       const consumed = chart.totals[card.key];
       const goal = chart.goals[card.key];
       const percentOfTarget = goal > 0 ? (consumed / goal) * 100 : 0;
@@ -231,7 +246,144 @@ export class DietChartPdfService {
         });
     });
 
-    return sectionY + 40 + height * 2 + gap;
+    return cardsY + height * 2 + gap;
+  }
+
+  private drawMacroCalorieSummary(
+    document: PDFKit.PDFDocument,
+    macroDistribution: ReturnType<DietChartPdfService['macroDistribution']>,
+    y: number,
+    height: number,
+  ) {
+    const width = PAGE.width - PAGE.margin * 2;
+    const total = macroDistribution.reduce((sum, item) => sum + item.calories, 0);
+    const dominant = macroDistribution.reduce(
+      (winner, item) => (item.percent > winner.percent ? item : winner),
+      macroDistribution[0],
+    );
+    const ringCenterX = PAGE.margin + 70;
+    const ringCenterY = y + height / 2;
+    const legendX = PAGE.margin + 148;
+    const legendWidth = width - 172;
+
+    document.roundedRect(PAGE.margin, y, width, height, 8).fill(COLORS.canvas);
+    this.drawMacroCalorieRing(document, macroDistribution, ringCenterX, ringCenterY, 43, 13);
+
+    document
+      .fillColor(COLORS.ink)
+      .font('Inter-Bold')
+      .fontSize(15)
+      .text(total > 0 ? `${this.compact(dominant.percent, 0)}%` : '0%', ringCenterX - 27, ringCenterY - 13, {
+        width: 54,
+        align: 'center',
+        lineBreak: false,
+      });
+    document
+      .fillColor(COLORS.muted)
+      .font('Inter-Bold')
+      .fontSize(6.8)
+      .text(total > 0 ? dominant.label.toUpperCase() : 'NO MEALS', ringCenterX - 34, ringCenterY + 7, {
+        width: 68,
+        align: 'center',
+        lineBreak: false,
+      });
+
+    document
+      .fillColor(COLORS.ink)
+      .font('Inter-Bold')
+      .fontSize(10)
+      .text('MACRO CALORIE SPLIT', legendX, y + 15, {
+        characterSpacing: 0.6,
+        lineBreak: false,
+      });
+    document
+      .fillColor(COLORS.muted)
+      .font('Inter')
+      .fontSize(7.5)
+      .text(
+        total > 0
+          ? `${this.compact(total)} kcal from protein, carbs, and fat`
+          : 'Add meals to see calories from each macro.',
+        legendX,
+        y + 31,
+        { width: legendWidth, lineBreak: false },
+      );
+
+    macroDistribution.forEach((item, index) => {
+      const rowY = y + 54 + index * 20;
+      const percent = Math.min(Math.max(item.percent, 0), 100);
+
+      document.circle(legendX + 4, rowY + 5, 4).fill(item.color);
+      document
+        .fillColor(COLORS.ink)
+        .font('Inter-Bold')
+        .fontSize(8)
+        .text(item.label, legendX + 15, rowY, {
+          width: 82,
+          lineBreak: false,
+        });
+      document.roundedRect(legendX + 98, rowY + 4, 124, 5, 2.5).fill(COLORS.line);
+      if (percent > 0) {
+        document
+          .roundedRect(legendX + 98, rowY + 4, 124 * (percent / 100), 5, 2.5)
+          .fill(item.color);
+      }
+      document
+        .fillColor(COLORS.ink)
+        .font('Inter-Bold')
+        .fontSize(8)
+        .text(`${this.compact(item.percent, 0)}%`, legendX + 232, rowY, {
+          width: 36,
+          align: 'right',
+          lineBreak: false,
+        });
+      document
+        .fillColor(COLORS.muted)
+        .font('Inter')
+        .fontSize(7.2)
+        .text(`${this.compact(item.calories)} kcal  /  ${this.compact(item.grams)} g`, legendX + 278, rowY, {
+          width: legendWidth - 278,
+          align: 'right',
+          lineBreak: false,
+        });
+    });
+  }
+
+  private drawMacroCalorieRing(
+    document: PDFKit.PDFDocument,
+    macroDistribution: ReturnType<DietChartPdfService['macroDistribution']>,
+    centerX: number,
+    centerY: number,
+    radius: number,
+    thickness: number,
+  ) {
+    const total = macroDistribution.reduce((sum, item) => sum + item.calories, 0);
+    const arcDocument = document as PdfDocumentWithArc;
+
+    document
+      .circle(centerX, centerY, radius)
+      .lineWidth(thickness)
+      .lineCap('butt')
+      .strokeColor(COLORS.line)
+      .stroke();
+
+    if (total > 0) {
+      let angle = -90;
+      macroDistribution.forEach((item) => {
+        const sweep = (item.percent / 100) * 360;
+        if (sweep <= 0) return;
+        const gap = sweep > 7 ? 1.6 : 0;
+        arcDocument
+          .arc(centerX, centerY, radius, angle + gap, angle + sweep - gap, false)
+          .lineWidth(thickness)
+          .lineCap('butt')
+          .strokeColor(item.color)
+          .stroke();
+        angle += sweep;
+      });
+    }
+
+    document.circle(centerX, centerY, radius - thickness / 2 - 2).fill(COLORS.paper);
   }
 
   private drawMeals(document: PDFKit.PDFDocument, chart: DietChartDocument, y: number) {
@@ -501,9 +653,9 @@ export class DietChartPdfService {
     });
   }
 
-  private compact(value: number) {
+  private compact(value: number, maximumFractionDigits = 1) {
     if (!Number.isFinite(value)) return '0';
-    return value.toLocaleString('en-US', { maximumFractionDigits: 1 });
+    return value.toLocaleString('en-US', { maximumFractionDigits });
   }
 
   private macroDistribution(totals: DietChartMacroValues) {

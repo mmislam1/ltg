@@ -1,246 +1,224 @@
 "use client";
 
-import React from "react";
-import { useSelector } from "react-redux";
-import {
-    PieChart,
-    Pie,
-    Cell,
-    Legend,
-    Tooltip,
-    ResponsiveContainer,
-} from "recharts";
-import { ActivityState } from "../store/features/activitySlice";
-import { RootState } from "../store/store";
+import React, { useMemo } from "react";
 import { useAppSelector } from "../store/hooks";
 
-interface MacroState {
-    macros: {
-        protein: number;
-        carbs: number;
-        fat: number;
-    };
+type MacroValues = {
+  calories?: number;
+  protein: number;
+  carbs: number;
+  fats: number;
+};
+
+type MacroGoals = {
+  targetCalories?: number;
+};
+
+type MacroKey = "protein" | "carbs" | "fats";
+
+const MACROS: ReadonlyArray<{
+  key: MacroKey;
+  label: string;
+  caloriesPerGram: number;
+  color: string;
+}> = [
+  {
+    key: "protein",
+    label: "Protein",
+    caloriesPerGram: 4,
+    color: "var(--nutrition-protein)",
+  },
+  {
+    key: "carbs",
+    label: "Carbs",
+    caloriesPerGram: 4,
+    color: "var(--nutrition-carbs)",
+  },
+  {
+    key: "fats",
+    label: "Fat",
+    caloriesPerGram: 9,
+    color: "var(--nutrition-fat)",
+  },
+];
+
+const compact = (value: number, maximumFractionDigits = 1) =>
+  Number.isFinite(value)
+    ? value.toLocaleString("en-US", { maximumFractionDigits })
+    : "0";
+
+export const macroCalorieDistribution = (macros: MacroValues) => {
+  const items = MACROS.map((macro) => ({
+    key: macro.key,
+    label: macro.label,
+    grams: macros[macro.key] || 0,
+    calories: Math.max(0, (macros[macro.key] || 0) * macro.caloriesPerGram),
+    percent: 0,
+    color: macro.color,
+  }));
+  const total = items.reduce((sum, item) => sum + item.calories, 0);
+
+  return {
+    total,
+    items: items.map((item) => ({
+      ...item,
+      percent: total > 0 ? (item.calories / total) * 100 : 0,
+    })),
+  };
+};
+
+export function MacroCalorieRing({
+  macros,
+  goals,
+  title = "Macro calorie split",
+  subtitle = "Percentage of calories coming from protein, carbs, and fat.",
+  className = "",
+  dense = false,
+}: {
+  macros: MacroValues;
+  goals?: MacroGoals;
+  title?: string;
+  subtitle?: string;
+  className?: string;
+  dense?: boolean;
+}) {
+  const distribution = useMemo(() => macroCalorieDistribution(macros), [macros]);
+  const ringGradient = useMemo(() => {
+    if (distribution.total <= 0) return "var(--theme-border) 0deg 360deg";
+
+    let angle = 0;
+    return distribution.items
+      .map((item) => {
+        const start = angle;
+        const end = angle + item.percent * 3.6;
+        angle = end;
+        return `${item.color} ${start}deg ${end}deg`;
+      })
+      .join(", ");
+  }, [distribution]);
+  const dominant = distribution.items.reduce(
+    (winner, item) => (item.percent > winner.percent ? item : winner),
+    distribution.items[0],
+  );
+  const energy = Math.max(0, macros.calories ?? distribution.total);
+  const targetCalories = Math.max(0, goals?.targetCalories ?? 0);
+  const energyPercent = targetCalories > 0 ? (energy / targetCalories) * 100 : 0;
+  const cappedEnergyPercent = Math.min(Math.max(energyPercent, 0), 100);
+
+  return (
+    <section className={`card p-4 ${className}`}>
+      <div className="mb-4 flex items-start justify-between gap-3 border-b border-line pb-3">
+        <div>
+          <h2 className="text-lg font-bold text-ink">{title}</h2>
+          <p className="mt-1 max-w-xl text-sm leading-5 text-muted">{subtitle}</p>
+        </div>
+        {distribution.total > 0 && (
+          <span className="shrink-0 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold text-brand-active">
+            {compact(distribution.total)} kcal
+          </span>
+        )}
+      </div>
+
+      <div className={`grid items-center gap-5 ${dense ? "sm:grid-cols-[13rem_1fr]" : "md:grid-cols-[15rem_1fr]"}`}>
+        <div
+          className="relative mx-auto grid size-48 place-items-center rounded-full"
+          style={{ background: `conic-gradient(from -90deg, ${ringGradient})` }}
+          aria-label={
+            distribution.total > 0
+              ? `Macro calorie split: ${distribution.items
+                  .map((item) => `${item.label} ${compact(item.percent, 0)} percent`)
+                  .join(", ")}`
+              : "No macro calorie data"
+          }
+          role="img"
+        >
+          <div className="grid size-[7.25rem] place-items-center rounded-full bg-surface text-center shadow-inner">
+            {distribution.total > 0 ? (
+              <span>
+                <span className="text-2xl font-bold tabular-nums text-ink">
+                  {compact(dominant.percent, 0)}%
+                </span>
+                <span className="block text-xs font-semibold text-muted">
+                  {dominant.label}
+                </span>
+              </span>
+            ) : (
+              <span>
+                <span className="text-lg font-bold text-ink">0%</span>
+                <span className="block text-xs font-semibold text-muted">No meals</span>
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="min-w-0">
+          <div className="space-y-3">
+            {distribution.items.map((item) => (
+              <div key={item.key} className="grid grid-cols-[auto_1fr_auto] items-center gap-3">
+                <span
+                  className="size-3 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                  aria-hidden="true"
+                />
+                <div className="min-w-0">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <p className="truncate text-sm font-bold text-ink">{item.label}</p>
+                    <p className="text-sm font-bold tabular-nums text-ink">
+                      {compact(item.percent, 0)}%
+                    </p>
+                  </div>
+                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-brand-soft">
+                    <div
+                      className="h-full rounded-full transition-all duration-700 ease-out"
+                      style={{
+                        width: `${Math.min(Math.max(item.percent, 0), 100)}%`,
+                        backgroundColor: item.color,
+                      }}
+                    />
+                  </div>
+                </div>
+                <p className="w-24 text-right text-xs text-muted">
+                  {compact(item.calories)} kcal
+                  <span className="block">{compact(item.grams)} g</span>
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {targetCalories > 0 && (
+            <div className="mt-5 rounded-lg bg-canvas p-3">
+              <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                <span className="font-bold text-ink">Energy target</span>
+                <span className="text-muted tabular-nums">
+                  {compact(energy)} / {compact(targetCalories)} kcal
+                </span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-line">
+                <div
+                  className="h-full rounded-full bg-brand transition-all duration-700 ease-out"
+                  style={{ width: `${cappedEnergyPercent}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs font-semibold text-muted">
+                {compact(energyPercent, 0)}% of daily calories logged
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default function RingChart() {
-    const { protein, carbs, fats } = useAppSelector(
-        (state: RootState) => state.activity.current.macros
-    );
-    const goals = useAppSelector(
-        (state: RootState) => state.auth.user?.dailyGoals
-    );
-    const { targetCalories, targetProtein, targetCarb, targetFat } = goals ? goals : { targetCalories: 0, targetProtein: 0, targetCarb: 0, targetFat: 0 } 
-    const { burnt, total } = useSelector(
-        (state: RootState) => state.activity.current
-    );
+  const macros = useAppSelector((state) => state.activity.current.macros);
+  const goals = useAppSelector((state) => state.auth.user?.dailyGoals);
 
-    const data2 = [
-        { name: "Protein", value: targetProtein ? targetProtein :0, fill: "var(--nutrition-protein)" },
-        { name: "Carbs", value: targetCarb ? targetCarb :0, fill: "var(--nutrition-carbs)" },
-        { name: "Fat", value: targetFat ? targetFat:0, fill: "var(--nutrition-fat)" },
-    ];
-    const data3 = [
-        { name: "Total", value: total, fill: "var(--theme-border)" },
-        { name: "Remaining", value: total - burnt, fill: "var(--theme-primary)" },
-    ];
-
-    const data = [
-        { name: "Protein", value: protein, fill: "var(--nutrition-protein)" },
-        { name: "Carbs", value: carbs, fill: "var(--nutrition-carbs)" },
-        { name: "Fat", value: fats, fill: "var(--nutrition-fat)" },
-    ];
-
-
-    if (targetCalories===0){
-        data2.push({ name: "No Data", value: 1, fill: "var(--theme-muted)" })
-        data2[0] = { name: "Protein", value: 0, fill: "var(--nutrition-protein)" }
-        data2[1] = { name: "Carbs", value: 0, fill: "var(--nutrition-carbs)" }
-        data2[2] = { name: "Fat", value: 0, fill: "var(--nutrition-fat)" }
-    }
-    if (protein === 0 && carbs===0 && fats===0) {
-        data.push({ name: "No Data", value: 1, fill: "var(--theme-muted)" })
-        data[0] = { name: "Protein", value: 0, fill: "var(--nutrition-protein)" }
-        data[1] = { name: "Carbs", value: 0, fill: "var(--nutrition-carbs)" }
-        data[2] = { name: "Fat", value: 0, fill: "var(--nutrition-fat)" }
-    }
-
-
-
-
-    return (
-        <div className="w-full flex flex-col items-center p-2 pt-4 justify-center">
-            <div className="w-full md:w-2xl h-48 flex flex-row items-center justify-between">
-                <div className="w-full md:w-2xl h-48 flex flex-col items-center justify-center">
-                    <div className="flex flex-col items-right justify-start gap-1 w-full h-30">
-                        {data.map((it, n) => {
-                            if(it.name==="No Data")
-                            return
-                            return (
-                                <div
-                                    key={n + "a"}
-                                    className="flex flex-row items-center justify-left gap-1"
-                                >
-                                    <div
-                                        className={`h-3 w-3 rounded-sm`}
-                                        style={{ backgroundColor: it.fill }}
-                                    ></div>
-                                    <h3
-                                        className="text-sm font-semibold"
-                                        style={{ color: it.fill }}
-                                    >
-                                        {it.name}
-                                    </h3>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={data}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={40}
-                                outerRadius={50}
-                                paddingAngle={1}
-                                dataKey="value"
-                            >
-                                {data.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                                ))}
-                            </Pie>
-
-                            <Tooltip
-                                formatter={(value: number) => `${value}g`}
-                                contentStyle={{
-                                    backgroundColor: "var(--theme-surface)",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    color: "var(--theme-muted)",
-                                }}
-                            />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-
-                <div className="w-full md:w-2xl h-48 flex flex-col items-center justify-center">
-                    <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
-                        {data2.map((it, n) => {
-                            if (it.name === "No Data")
-                                return
-                            return (
-                                <div
-                                    key={n + "a"}
-                                    className="flex flex-row items-center justify-left gap-1"
-                                >
-                                    <div
-                                        className={`h-3 w-3 rounded-sm`}
-                                        style={{ backgroundColor: it.fill }}
-                                    ></div>
-                                    <h3
-                                        className="text-sm font-semibold"
-                                        style={{ color: it.fill }}
-                                    >
-                                        {it.name}
-                                    </h3>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={data2}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={40}
-                                outerRadius={50}
-                                paddingAngle={1}
-                                dataKey="value"
-                            >
-                                {data2.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                                ))}
-                            </Pie>
-
-                            <Tooltip
-                                formatter={(value: number) => `${value}g`}
-                                contentStyle={{
-                                    backgroundColor: "var(--theme-surface)",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    color: "var(--theme-muted)",
-                                }}
-                            />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-
-                <div className="w-full md:w-2xl h-48 flex flex-col items-center justify-center">
-                    <div className="flex flex-col items-right justify-start gap-1 w-full h-30 ml-2">
-                        {data3.map((it, n) => {
-                            return (
-                                <div
-                                    key={n + "a"}
-                                    className="flex flex-row items-center justify-left gap-1"
-                                >
-                                    <div
-                                        className={`h-3 w-3 rounded-sm`}
-                                        style={{ backgroundColor: it.fill }}
-                                    ></div>
-                                    <h3
-                                        className="text-sm font-semibold"
-                                        style={{ color: it.fill }}
-                                    >
-                                        {it.name}
-                                    </h3>
-                                </div>
-                            );
-                        })}
-                    </div>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <PieChart>
-                            <Pie
-                                data={data3}
-                                cx="50%"
-                                cy="50%"
-                                innerRadius={40}
-                                outerRadius={50}
-                                paddingAngle={1}
-                                dataKey="value"
-                            >
-                                {data3.map((entry, index) => (
-                                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                                ))}
-                            </Pie>
-
-                            <Tooltip
-                                formatter={(value: number) => `${value}g`}
-                                contentStyle={{
-                                    backgroundColor: "var(--theme-surface)",
-                                    border: "none",
-                                    borderRadius: "8px",
-                                    color: "var(--theme-muted)",
-                                }}
-                            />
-                        </PieChart>
-                    </ResponsiveContainer>
-                </div>
-            </div>
-            <div className="w-[100%] flex flex-col items-start justify-center mt-4 mx-6">
-                <p className="text-md font-semibold">Remaining</p>
-            </div>
-            <div className="mx-6 mb-8 h-2 w-full overflow-hidden rounded-lg bg-line">
-                <div
-                    className="h-full bg-brand transition-all duration-500 ease-in-out"
-                    style={{
-                        width: `${Math.min(
-                            100,
-                            Math.max(0, ((total - burnt) / total) * 100)
-                        )}%`,
-                    }}
-                />
-            </div>
-        </div>
-    );
+  return (
+    <MacroCalorieRing
+      className="m-2"
+      macros={macros}
+      goals={{ targetCalories: goals?.targetCalories }}
+    />
+  );
 }

@@ -205,6 +205,7 @@ export class DietChartExportService {
       date: activity.date,
       filename,
       pdf,
+      totals,
     });
 
     return {

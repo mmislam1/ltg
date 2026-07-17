@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import dns from 'node:dns/promises';
 import net from 'node:net';
 import nodemailer, { Transporter } from 'nodemailer';
+import { DietChartMacroValues } from './diet-chart.types';
 
 interface DietChartEmail {
   recipient: string;
@@ -16,6 +17,7 @@ interface DietChartEmail {
   date: string;
   filename: string;
   pdf: Buffer;
+  totals?: DietChartMacroValues;
 }
 
 export interface DietChartEmailDelivery {
@@ -32,10 +34,10 @@ export class DietChartMailService {
 
   constructor(private readonly config: ConfigService) {}
 
-  async send({ recipient, recipientName, date, filename, pdf }: DietChartEmail) {
+  async send({ recipient, recipientName, date, filename, pdf, totals }: DietChartEmail) {
     const safeName = this.escapeHtml(recipientName);
     const from = this.config.get<string>('MAIL_FROM')?.trim() || 'Lose To Gain <no-reply@losetogain.app>';
-    const content = this.emailContent(recipientName, safeName, date);
+    const content = this.emailContent(recipientName, safeName, date, totals);
     const resendApiKey = this.config.get<string>('RESEND_API_KEY')?.trim();
 
     if (resendApiKey) {
@@ -161,10 +163,23 @@ export class DietChartMailService {
     } satisfies DietChartEmailDelivery;
   }
 
-  private emailContent(recipientName: string, safeName: string, date: string) {
+  private emailContent(
+    recipientName: string,
+    safeName: string,
+    date: string,
+    totals?: DietChartMacroValues,
+  ) {
+    const macroSummary = totals ? this.macroSummary(totals) : null;
+    const macroText =
+      macroSummary && macroSummary.total > 0
+        ? ` Macro calorie split: ${macroSummary.items
+            .map((item) => `${item.label} ${this.compact(item.percent, 0)}%`)
+            .join(', ')}.`
+        : '';
+
     return {
       subject: `Your diet chart for ${date}`,
-      text: `Hello ${recipientName}, your Lose To Gain diet chart for ${date} is attached as a PDF.`,
+      text: `Hello ${recipientName}, your Lose To Gain diet chart for ${date} is attached as a PDF.${macroText}`,
       html: `
       <div style="margin:0;background:#f5f8f7;padding:32px 16px;font-family:Arial,sans-serif;color:#172b2a">
         <div style="max-width:560px;margin:auto;background:#fff;border-radius:16px;overflow:hidden;border:1px solid #dde7e5">
@@ -175,11 +190,87 @@ export class DietChartMailService {
           <div style="padding:28px 32px">
             <p style="margin:0 0 14px">Hello ${safeName},</p>
             <p style="margin:0 0 20px;line-height:1.6;color:#657473">Your daily diet chart for <strong style="color:#172b2a">${date}</strong> is attached. It includes your meals, nutrition totals, and progress against your daily goals.</p>
+            ${macroSummary && macroSummary.total > 0 ? this.macroSummaryHtml(macroSummary) : ''}
             <div style="background:#dff4f0;border-radius:10px;padding:14px 16px;color:#115e59;font-size:13px">Open the attached PDF to view or print your chart.</div>
           </div>
         </div>
       </div>`,
     };
+  }
+
+  private macroSummary(totals: DietChartMacroValues) {
+    const items = [
+      { label: 'Protein', calories: Math.max(0, totals.protein * 4), color: '#059669' },
+      { label: 'Carbs', calories: Math.max(0, totals.carbs * 4), color: '#2563eb' },
+      { label: 'Fat', calories: Math.max(0, totals.fats * 9), color: '#dc2626' },
+    ];
+    const total = items.reduce((sum, item) => sum + item.calories, 0);
+
+    return {
+      total,
+      items: items.map((item) => ({
+        ...item,
+        percent: total > 0 ? (item.calories / total) * 100 : 0,
+      })),
+    };
+  }
+
+  private macroSummaryHtml(summary: ReturnType<DietChartMailService['macroSummary']>) {
+    return `
+      <div style="margin:0 0 20px;border:1px solid #dde7e5;border-radius:12px;background:#f5f8f7;padding:16px">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:#657473;text-transform:uppercase">Macro calorie split</div>
+        <div style="margin-top:14px;display:table;width:100%">
+          <div style="display:table-cell;width:108px;vertical-align:middle">${this.macroRingSvg(summary)}</div>
+          <div style="display:table-cell;vertical-align:middle;padding-left:16px">
+            ${summary.items
+              .map(
+                (item) => `
+                  <div style="margin-bottom:10px">
+                    <div style="display:table;width:100%;font-size:13px">
+                      <span style="display:table-cell;color:#172b2a;font-weight:700"><span style="display:inline-block;width:9px;height:9px;border-radius:9px;background:${item.color};margin-right:7px"></span>${item.label}</span>
+                      <span style="display:table-cell;text-align:right;color:#172b2a;font-weight:700">${this.compact(item.percent, 0)}%</span>
+                    </div>
+                    <div style="margin-top:5px;height:6px;background:#dde7e5;border-radius:999px;overflow:hidden">
+                      <div style="height:6px;width:${Math.min(Math.max(item.percent, 0), 100)}%;background:${item.color};border-radius:999px"></div>
+                    </div>
+                  </div>`,
+              )
+              .join('')}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  private macroRingSvg(summary: ReturnType<DietChartMailService['macroSummary']>) {
+    const radius = 35;
+    const circumference = 2 * Math.PI * radius;
+    let offset = 0;
+    const rings = summary.items
+      .map((item) => {
+        const length = (item.percent / 100) * circumference;
+        const circle = `<circle cx="48" cy="48" r="${radius}" fill="none" stroke="${item.color}" stroke-width="12" stroke-dasharray="${length} ${circumference - length}" stroke-dashoffset="${-offset}" transform="rotate(-90 48 48)" />`;
+        offset += length;
+        return circle;
+      })
+      .join('');
+    const dominant = summary.items.reduce(
+      (winner, item) => (item.percent > winner.percent ? item : winner),
+      summary.items[0],
+    );
+
+    return `
+      <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Macro calorie split">
+        <circle cx="48" cy="48" r="${radius}" fill="none" stroke="#dde7e5" stroke-width="12" />
+        ${rings}
+        <circle cx="48" cy="48" r="24" fill="#ffffff" />
+        <text x="48" y="45" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#172b2a">${this.compact(dominant.percent, 0)}%</text>
+        <text x="48" y="60" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="#657473">${dominant.label}</text>
+      </svg>`;
+  }
+
+  private compact(value: number, maximumFractionDigits = 1) {
+    if (!Number.isFinite(value)) return '0';
+    return value.toLocaleString('en-US', { maximumFractionDigits });
   }
 
   private getTransporters() {
