@@ -2,7 +2,8 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, CheckCircle2, Ruler, Save, UserRound, Weight } from "lucide-react";
+import { ArrowLeft, Ruler, Save, UserRound, Weight } from "lucide-react";
+import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   AuthError,
@@ -54,11 +55,10 @@ const formFromUser = (user: User): ProfileForm => ({
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { user, initialized, profileLoading, profileError } = useAppSelector((state) => state.auth);
+  const { user, initialized, profileLoading } = useAppSelector((state) => state.auth);
   const [form, setForm] = useState<ProfileForm>(emptyForm);
   const [formUserId, setFormUserId] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (initialized && !user) router.replace("/auth/signin");
@@ -72,7 +72,6 @@ export default function ProfilePage() {
   const update = (field: keyof ProfileForm, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setFieldErrors((current) => ({ ...current, [field]: "" }));
-    setSaved(false);
   };
 
   const submit = async (event: FormEvent) => {
@@ -101,8 +100,9 @@ export default function ProfilePage() {
 
     try {
       await dispatch(updateProfile(payload)).unwrap();
-      setSaved(true);
+      toast.success("Profile saved.");
     } catch (reason) {
+      const message = (reason as AuthError).message || "Profile update failed.";
       const fields = (reason as AuthError).fields || {};
       setFieldErrors(
         Object.fromEntries(
@@ -112,6 +112,7 @@ export default function ProfilePage() {
           ]),
         ),
       );
+      toast.error(message);
     }
   };
 
@@ -160,11 +161,7 @@ export default function ProfilePage() {
             </div>
           </section>
 
-          <div className="flex flex-col gap-3 border-t border-line bg-canvas px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-            <div className="min-h-5 text-sm">
-              {saved && <span className="inline-flex items-center gap-1.5 font-semibold text-brand"><CheckCircle2 size={17} /> Profile saved</span>}
-              {!saved && profileError && <span className="text-danger">{profileError}</span>}
-            </div>
+          <div className="flex flex-col gap-3 border-t border-line bg-canvas px-5 py-4 sm:flex-row sm:items-center sm:justify-end sm:px-7">
             <button type="submit" disabled={profileLoading} className="btn btn-primary sm:min-w-36">
               {profileLoading ? <span className="auth-spinner" aria-label="Saving profile" /> : <><Save size={17} /> Save changes</>}
             </button>

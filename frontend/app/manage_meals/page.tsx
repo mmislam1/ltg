@@ -2,6 +2,8 @@
 
 import Link from 'next/link';
 import { ChevronDown, Pencil } from 'lucide-react';
+import { useEffect } from 'react';
+import { toast } from 'sonner';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import {
     saveMealActivity,
@@ -23,6 +25,10 @@ export default function MealsPage() {
     const dispatch=useAppDispatch()
 
     const addedMeals = meals.filter((meal) => meal.list.length > 0);
+
+    useEffect(() => {
+        if (activityError) toast.error(activityError);
+    }, [activityError]);
 
     const commitMeal = (nextMeal: Meal) => {
         if (!selectedDate) return;
@@ -99,12 +105,6 @@ export default function MealsPage() {
                         {loading ? 'Loading record...' : saving > 0 ? 'Saving...' : 'Saved'}
                     </span>
                 </div>
-                {activityError && (
-                    <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
-                        {activityError}
-                    </div>
-                )}
-
                 <div className="space-y-6">
                     {addedMeals.map((meal) => (
                         <details

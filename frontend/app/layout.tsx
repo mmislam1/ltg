@@ -5,6 +5,7 @@ import "./globals.css";
 import ReduxProvider from "./providers/ReduxProvider";
 import { themeStyle } from "./theme";
 import SiteShell from "./components/siteShell";
+import AppToaster from "./components/appToaster";
 
 const comfortaa = Comfortaa({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
       <body className="flex min-h-screen w-full max-w-full flex-col items-center antialiased">
         <ReduxProvider>
           <SiteShell>{children}</SiteShell>
+          <AppToaster />
         </ReduxProvider>
       </body>
     </html>

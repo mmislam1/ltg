@@ -22,6 +22,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { toast } from "sonner";
 import api, { getApiError } from "../store/api";
 import type { Food } from "../store/features/foodSlice";
 import { useAppSelector } from "../store/hooks";
@@ -56,8 +57,6 @@ interface PendingPdfRequest {
   user: { id: string; name: string; email: string };
 }
 
-type Notice = { type: "success" | "error"; text: string } | null;
-
 const formatDate = (value: string | null) =>
   value
     ? new Intl.DateTimeFormat("en", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value))
@@ -71,7 +70,6 @@ export default function AdminPage() {
   const [pdfRequests, setPdfRequests] = useState<PendingPdfRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<Notice>(null);
   const [busyIds, setBusyIds] = useState<string[]>([]);
   const [memberSearch, setMemberSearch] = useState("");
 
@@ -94,7 +92,9 @@ export default function AdminPage() {
       setSubmissions(submissionsResponse.data);
       setPdfRequests(pdfResponse.data);
     } catch (requestError) {
-      setError(getApiError(requestError, "Unable to load the admin dashboard."));
+      const message = getApiError(requestError, "Unable to load the admin dashboard.");
+      setError(message);
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -110,7 +110,6 @@ export default function AdminPage() {
 
   const approveSubmission = async (submission: Food) => {
     setBusy(submission.id, true);
-    setNotice(null);
     try {
       await api.patch(`/foods/${submission.id}/approve`);
       setSubmissions((current) => current.filter((item) => item.id !== submission.id));
@@ -122,9 +121,9 @@ export default function AdminPage() {
             Math.max(0, current.summary[submission.kind === "recipe" ? "pendingRecipes" : "pendingFoods"] - 1),
         },
       } : current);
-      setNotice({ type: "success", text: `${submission.name} has been approved.` });
+      toast.success(`${submission.name} has been approved.`);
     } catch (requestError) {
-      setNotice({ type: "error", text: getApiError(requestError, "Unable to approve this submission.") });
+      toast.error(getApiError(requestError, "Unable to approve this submission."));
     } finally {
       setBusy(submission.id, false);
     }
@@ -132,7 +131,6 @@ export default function AdminPage() {
 
   const approvePdf = async (request: PendingPdfRequest) => {
     setBusy(request.id, true);
-    setNotice(null);
     try {
       const { data } = await api.patch<{ message: string; sentTo?: string }>(`/diet-chart-exports/requests/${request.id}/approve`);
       setPdfRequests((current) => current.filter((item) => item.id !== request.id));
@@ -140,9 +138,9 @@ export default function AdminPage() {
         ...current,
         summary: { ...current.summary, pendingPdfRequests: Math.max(0, current.summary.pendingPdfRequests - 1) },
       } : current);
-      setNotice({ type: "success", text: data.sentTo ? `${data.message} Sent to ${data.sentTo}.` : data.message || `PDF sent to ${request.user.email}.` });
+      toast.success(data.sentTo ? `${data.message} Sent to ${data.sentTo}.` : data.message || `PDF sent to ${request.user.email}.`);
     } catch (requestError) {
-      setNotice({ type: "error", text: getApiError(requestError, "Unable to approve and send this PDF.") });
+      toast.error(getApiError(requestError, "Unable to approve and send this PDF."));
     } finally {
       setBusy(request.id, false);
     }
@@ -150,7 +148,6 @@ export default function AdminPage() {
 
   const togglePurchased = async (member: Member) => {
     setBusy(member.id, true);
-    setNotice(null);
     try {
       const { data } = await api.patch<Member>(`/admin/members/${member.id}/purchase`, {
         purchased: !member.purchased,
@@ -163,12 +160,9 @@ export default function AdminPage() {
         },
         members: current.members.map((item) => item.id === data.id ? data : item),
       } : current);
-      setNotice({
-        type: "success",
-        text: data.purchased ? `${data.name} was marked as purchased.` : `${data.name}'s purchase tag was removed.`,
-      });
+      toast.success(data.purchased ? `${data.name} was marked as purchased.` : `${data.name}'s purchase tag was removed.`);
     } catch (requestError) {
-      setNotice({ type: "error", text: getApiError(requestError, "Unable to update the purchase tag.") });
+      toast.error(getApiError(requestError, "Unable to update the purchase tag."));
     } finally {
       setBusy(member.id, false);
     }
@@ -203,13 +197,6 @@ export default function AdminPage() {
             <RefreshCw size={17} className={loading ? "animate-spin" : ""} /> Refresh
           </button>
         </header>
-
-        {notice && (
-          <div role={notice.type === "error" ? "alert" : "status"} className={`mb-5 rounded-xl border px-4 py-3 text-sm ${notice.type === "error" ? "border-red-200 bg-red-50 text-danger" : "border-brand/25 bg-brand-soft text-brand-active"}`}>
-            {notice.text}
-          </div>
-        )}
-        {error && <div role="alert" className="mb-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">{error}</div>}
 
         {loading && !dashboard ? (
           <div className="card flex min-h-72 items-center justify-center text-sm text-muted">Loading admin data...</div>
@@ -329,7 +316,11 @@ export default function AdminPage() {
               </div>
             </section>
           </>
-        ) : null}
+        ) : (
+          <div className="card flex min-h-72 items-center justify-center px-5 text-center text-sm text-muted">
+            {error || "Unable to load admin data."}
+          </div>
+        )}
       </div>
     </div>
   );

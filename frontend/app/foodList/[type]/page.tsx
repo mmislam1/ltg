@@ -2,7 +2,8 @@
 
 import { SearchIcon } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import FoodSelector from "../../components/foodSelector";
 import {
   type Meal,
@@ -47,6 +48,10 @@ export default function FoodList() {
     state.activity.current.chart.meals.find((meal) => meal.mealType === mealType),
   );
   const meal = savedMeal ?? newMeal(mealType);
+
+  useEffect(() => {
+    if (activityError) toast.error(activityError);
+  }, [activityError]);
 
   const filteredFoods = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -162,12 +167,6 @@ export default function FoodList() {
         className="px-3 py-4 md:max-w-4xl"
         showSearch={false}
       />
-
-      {activityError && (
-        <div role="alert" className="mx-3 mb-20 w-[calc(100%-1.5rem)] max-w-4xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
-          {activityError}
-        </div>
-      )}
 
       <button
         type="button"

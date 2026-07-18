@@ -1,7 +1,8 @@
 'use client';
 
 import { FormEvent, useState } from 'react';
-import { CheckCircle2, Save, Weight } from 'lucide-react';
+import { Save, Weight } from 'lucide-react';
+import { toast } from 'sonner';
 import { updateProfile } from '../store/features/authSlice';
 import { saveDailyActivityMetrics } from '../store/features/activitySlice';
 import type { AuthError } from '../store/features/authSlice';
@@ -9,7 +10,7 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 
 export default function WeightUpdater() {
   const dispatch = useAppDispatch();
-  const { user, profileLoading, profileError } = useAppSelector((state) => state.auth);
+  const { user, profileLoading } = useAppSelector((state) => state.auth);
   const selectedDate = useAppSelector((state) => state.activity.current.selectedDate);
   const [draft, setDraft] = useState({
     weight: '',
@@ -17,7 +18,6 @@ export default function WeightUpdater() {
     dirty: false,
   });
   const [fieldError, setFieldError] = useState('');
-  const [saved, setSaved] = useState(false);
 
   if (!user) return null;
 
@@ -30,7 +30,6 @@ export default function WeightUpdater() {
 
     if (!Number.isFinite(nextWeight) || nextWeight < 20 || nextWeight > 700) {
       setFieldError('Weight must be between 20 and 700.');
-      setSaved(false);
       return;
     }
 
@@ -50,8 +49,9 @@ export default function WeightUpdater() {
       );
       setDraft({ weight: String(nextWeight), unit, dirty: false });
       setFieldError('');
-      setSaved(true);
+      toast.success('Profile updated.');
     } catch (reason) {
+      const message = (reason as AuthError).message || 'Profile update failed.';
       const fields = (reason as AuthError).fields || {};
       const weightError = fields.weight;
       setFieldError(
@@ -61,7 +61,7 @@ export default function WeightUpdater() {
             ? String(weightError)
             : '',
       );
-      setSaved(false);
+      toast.error(message);
     }
   };
 
@@ -90,7 +90,6 @@ export default function WeightUpdater() {
               onChange={(event) => {
                 setDraft({ weight: event.target.value, unit, dirty: true });
                 setFieldError('');
-                setSaved(false);
               }}
               className="form-control !rounded-r-none !pl-10"
               aria-invalid={Boolean(fieldError)}
@@ -104,7 +103,6 @@ export default function WeightUpdater() {
                   unit: event.target.value as 'kg' | 'lb',
                   dirty: true,
                 });
-                setSaved(false);
               }}
               className="rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-3 text-sm font-bold text-brand"
             >
@@ -115,15 +113,7 @@ export default function WeightUpdater() {
           {fieldError && <span className="form-error">{fieldError}</span>}
         </label>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-h-5 text-sm">
-            {saved && (
-              <span className="inline-flex items-center gap-1.5 font-semibold text-brand">
-                <CheckCircle2 size={17} /> Profile updated
-              </span>
-            )}
-            {!saved && profileError && <span className="text-danger">{profileError}</span>}
-          </div>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
           <button type="submit" disabled={profileLoading} className="btn btn-primary justify-center sm:min-w-36">
             {profileLoading ? (
               <span className="auth-spinner" aria-label="Updating weight" />

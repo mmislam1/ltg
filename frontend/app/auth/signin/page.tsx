@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Mail } from "lucide-react";
+import { toast } from "sonner";
 import AuthShell from "../components/AuthShell";
 import PasswordField from "../components/PasswordField";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -11,7 +12,7 @@ import { AuthError, clearAuthError, loginUser } from "../../store/features/authS
 export default function SignInPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { loading, error, user } = useAppSelector((state) => state.auth);
+  const { loading, user } = useAppSelector((state) => state.auth);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -26,8 +27,10 @@ export default function SignInPage() {
       await dispatch(loginUser({ email: email.trim(), password })).unwrap();
       router.replace("/");
     } catch (reason) {
-      const fields = (reason as AuthError).fields || {};
+      const authError = reason as AuthError;
+      const fields = authError.fields || {};
       setFieldErrors(Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, Array.isArray(value) ? value[0] : String(value)])));
+      toast.error(authError.message || "Sign in failed. Please try again.");
     }
   };
 
@@ -40,7 +43,6 @@ export default function SignInPage() {
           <p className="mt-3 text-sm leading-6 text-muted">Continue your nutrition plan and pick up right where you left off.</p>
         </div>
         <form onSubmit={submit} className="grid gap-5" noValidate>
-          {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-danger">{error}</div>}
           <label className="form-field" htmlFor="email">
             <span className="form-label">Email address</span>
             <span className="relative block">

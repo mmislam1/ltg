@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
-import { CalendarClock, CheckCircle2, Copy, Droplets, FileText, Footprints, Pencil } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { CalendarClock, Copy, Droplets, FileText, Footprints, Pencil } from "lucide-react";
+import { toast } from "sonner";
 import api, { getApiError } from "../store/api";
 import { fetchMealActivity, type ListItems, type Meal } from "../store/features/activitySlice";
 import type { User } from "../store/features/authSlice";
@@ -13,7 +14,6 @@ import { NUTRIENT_UNITS, scaleNutrient } from "../store/nutritionUnits";
 import DatePicker from "./calender";
 import { MacroCalorieRing } from "./ringChart";
 
-type Notice = { kind: "success" | "error"; text: string } | null;
 type MacroValues = { calories: number; protein: number; carbs: number; fats: number };
 type NutritionTotals = MacroValues & {
   fiber: number;
@@ -161,7 +161,6 @@ export default function SimplifiedDietChart() {
   const { current, loading, error } = useAppSelector((state) => state.activity);
   const [requestingPdf, setRequestingPdf] = useState(false);
   const [copying, setCopying] = useState(false);
-  const [notice, setNotice] = useState<Notice>(null);
 
   const today = dateInTimezone(new Date(), user?.timezone);
   const selectedDate = current.selectedDate || today;
@@ -171,8 +170,11 @@ export default function SimplifiedDietChart() {
     [current.chart.meals],
   );
 
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
   const returnToToday = () => {
-    setNotice(null);
     void dispatch(fetchMealActivity(today));
   };
 
@@ -182,21 +184,25 @@ export default function SimplifiedDietChart() {
       return;
     }
     if (!profileIsComplete(user)) {
-      setNotice({ kind: "error", text: "Complete your profile before requesting a diet chart PDF." });
+      toast.error("Complete your profile before requesting a diet chart PDF.", {
+        action: {
+          label: "Update profile",
+          onClick: () => router.push("/profile"),
+        },
+      });
       return;
     }
 
     setRequestingPdf(true);
-    setNotice(null);
     try {
       const { data } = await api.post<{ message: string }>(
         "/diet-chart-exports/requests",
         {},
         { params: { date: selectedDate } },
       );
-      setNotice({ kind: "success", text: data.message });
+      toast.success(data.message);
     } catch (requestError) {
-      setNotice({ kind: "error", text: getApiError(requestError, "Unable to save the PDF request.") });
+      toast.error(getApiError(requestError, "Unable to save the PDF request."));
     } finally {
       setRequestingPdf(false);
     }
@@ -204,10 +210,8 @@ export default function SimplifiedDietChart() {
 
   const copyToToday = async () => {
     if (isToday || !user) return;
-    if (!window.confirm("Replace today's meals with the meals from this date?")) return;
 
     setCopying(true);
-    setNotice(null);
     try {
       const { data } = await api.post<{ date: string }>(
         "/meal-activities/copy-to-today",
@@ -215,12 +219,31 @@ export default function SimplifiedDietChart() {
         { params: { date: selectedDate } },
       );
       await dispatch(fetchMealActivity(data.date)).unwrap();
-      setNotice({ kind: "success", text: "Meals copied to today." });
+      toast.success("Meals copied to today.");
     } catch (copyError) {
-      setNotice({ kind: "error", text: getApiError(copyError, "Unable to copy these meals to today.") });
+      toast.error(getApiError(copyError, "Unable to copy these meals to today."));
     } finally {
       setCopying(false);
     }
+  };
+
+  const requestCopyToToday = () => {
+    if (isToday || !user || copying) return;
+    const toastId = toast.warning("Replace today's meals?", {
+      description: `Copy meals from ${displayDate(selectedDate)} into today.`,
+      duration: 10000,
+      action: {
+        label: "Replace",
+        onClick: () => {
+          toast.dismiss(toastId);
+          void copyToToday();
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => toast.dismiss(toastId),
+      },
+    });
   };
 
   if (!initialized) return <div className="min-h-[60vh] bg-canvas" />;
@@ -244,18 +267,6 @@ export default function SimplifiedDietChart() {
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand">Diet diary</p>
         <h1 className="mt-1 text-2xl font-bold text-ink sm:text-3xl">Your daily chart</h1>
       </header>
-
-      {(error || notice) && (
-        <div role="status" className={`mb-4 flex items-start gap-2 rounded-xl border px-4 py-3 text-sm ${notice?.kind === "success" ? "border-brand/20 bg-brand-soft text-brand-active" : "border-red-200 bg-red-50 text-danger"}`}>
-          {notice?.kind === "success" && <CheckCircle2 className="mt-0.5 shrink-0" size={17} />}
-          <div>
-            <span>{notice?.text || error}</span>
-            {notice?.kind === "error" && notice.text.startsWith("Complete your profile") && (
-              <Link href="/profile" className="ml-1 font-bold underline">Update profile</Link>
-            )}
-          </div>
-        </div>
-      )}
 
       <div className="card relative z-20 mb-4 flex min-h-16 items-center justify-between gap-3 overflow-visible px-3 py-2 sm:px-5">
         <DatePicker />
@@ -283,7 +294,7 @@ export default function SimplifiedDietChart() {
         <button type="button" onClick={requestPdf} disabled={requestingPdf} className="btn btn-primary px-2">
           <FileText size={17} /><span>{requestingPdf ? "Saving..." : "Get PDF"}</span>
         </button>
-        <button type="button" onClick={copyToToday} disabled={isToday || copying} className="btn btn-secondary px-2">
+        <button type="button" onClick={requestCopyToToday} disabled={isToday || copying} className="btn btn-secondary px-2">
           <Copy size={17} /><span>{copying ? "Copying..." : "Copy"}</span>
         </button>
       </div>

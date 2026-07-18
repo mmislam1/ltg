@@ -18,6 +18,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { toast } from "sonner";
 import api, { getApiError } from "../store/api";
 import { useAppSelector } from "../store/hooks";
 import { NUTRITION_COLORS } from "../nutritionColors";
@@ -88,7 +89,10 @@ export default function ProgressPage() {
         if (active) setHistory(data);
       })
       .catch((requestError) => {
-        if (active) setError(getApiError(requestError, "Unable to load progress."));
+        if (!active) return;
+        const message = getApiError(requestError, "Unable to load progress.");
+        setError(message);
+        toast.error(message);
       });
 
     return () => {
@@ -164,12 +168,6 @@ export default function ProgressPage() {
           ))}
         </div>
       </header>
-
-      {error && (
-        <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
-          {error}
-        </div>
-      )}
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <MetricCard icon={Activity} label="Avg calories" value={compact(averageCalories)} unit="kcal" />

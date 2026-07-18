@@ -1,8 +1,9 @@
 "use client";
 
-import { CheckCircle2, ChefHat } from "lucide-react";
+import { ChefHat } from "lucide-react";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Back from "../components/back";
 import FoodSelector from "../components/foodSelector";
 import NutritionProfile from "../components/nutritionProfile";
@@ -44,8 +45,6 @@ export default function CustomRecipePage() {
   const [name, setName] = useState("");
   const [servings, setServings] = useState(1);
   const [selected, setSelected] = useState<Record<string, SelectedIngredient>>({});
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialized && !user) router.replace("/auth/signin");
@@ -54,6 +53,10 @@ export default function CustomRecipePage() {
   useEffect(() => () => {
     dispatch(clearFoodError());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
 
   const ingredients = useMemo(() => Object.values(selected), [selected]);
   const selectedItems = useMemo<ListItems[]>(
@@ -85,7 +88,6 @@ export default function CustomRecipePage() {
       else next[food.id] = { food, quantity };
       return next;
     });
-    setSuccess(null);
   };
 
   const updateQuantity = (foodId: string, quantity: number) => {
@@ -96,12 +98,10 @@ export default function CustomRecipePage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFormError(null);
-    setSuccess(null);
     dispatch(clearFoodError());
-    if (!name.trim()) return setFormError("Give your recipe a name.");
-    if (!Number.isInteger(servings) || servings < 1) return setFormError("Servings must be a whole number of at least 1.");
-    if (ingredients.length === 0) return setFormError("Add at least one ingredient.");
+    if (!name.trim()) return toast.error("Give your recipe a name.");
+    if (!Number.isInteger(servings) || servings < 1) return toast.error("Servings must be a whole number of at least 1.");
+    if (ingredients.length === 0) return toast.error("Add at least one ingredient.");
 
     try {
       const recipe = await dispatch(createRecipe({
@@ -109,12 +109,12 @@ export default function CustomRecipePage() {
         servings,
         ingredients: ingredients.map(({ food, quantity }) => ({ foodId: food.id, quantity })),
       })).unwrap();
-      setSuccess(`${recipe.name} is now available in your foods.`);
+      toast.success(`${recipe.name} is now available in your foods.`);
       setName("");
       setServings(1);
       setSelected({});
     } catch {
-      // The shared food error is rendered with the form.
+      // The shared food error is shown as a toast.
     }
   };
 
@@ -167,8 +167,6 @@ export default function CustomRecipePage() {
             <NutritionProfile nutrition={nutrition} />
           </section>
 
-          {(formError || error) && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">{formError || error}</div>}
-          {success && <div role="status" className="flex gap-2 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3 text-sm text-brand-active"><CheckCircle2 className="mt-0.5 shrink-0" size={17} />{success}</div>}
           <button type="submit" disabled={creatingRecipe || ingredients.length === 0} className="btn btn-primary w-full sm:w-auto">
             <ChefHat size={19} /> {creatingRecipe ? "Saving recipe…" : "Save recipe to foods"}
           </button>

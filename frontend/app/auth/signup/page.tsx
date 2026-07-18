@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Ruler, UserRound, Weight } from "lucide-react";
+import { toast } from "sonner";
 import AuthShell from "../components/AuthShell";
 import PasswordField from "../components/PasswordField";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
@@ -14,7 +15,7 @@ const initialForm: FormState = { name: "", email: "", age: "", weight: "", weigh
 export default function SignUpPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
-  const { loading, error, user } = useAppSelector((state) => state.auth);
+  const { loading, user } = useAppSelector((state) => state.auth);
   const [form, setForm] = useState(initialForm);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -52,8 +53,10 @@ export default function SignUpPage() {
       })).unwrap();
       router.replace("/");
     } catch (reason) {
-      const fields = (reason as AuthError).fields || {};
+      const authError = reason as AuthError;
+      const fields = authError.fields || {};
       setFieldErrors((current) => ({ ...current, ...Object.fromEntries(Object.entries(fields).map(([key, value]) => [key, Array.isArray(value) ? value[0] : String(value)])) }));
+      toast.error(authError.message || "Account creation failed. Please try again.");
     }
   };
 
@@ -66,7 +69,6 @@ export default function SignUpPage() {
           <p className="mt-3 text-sm leading-6 text-muted">Tell us the essentials so we can tailor your daily nutrition targets.</p>
         </div>
         <form onSubmit={submit} className="grid gap-5" noValidate>
-          {error && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-danger">{error}</div>}
           <div className="grid gap-5 sm:grid-cols-2">
             <TextField icon={UserRound} label="Full name" name="name" value={form.name} onChange={(value) => update("name", value)} placeholder="Your full name" autoComplete="name" error={fieldErrors.name} />
             <TextField icon={Mail} label="Email address" name="email" type="email" value={form.email} onChange={(value) => update("email", value)} placeholder="you@example.com" autoComplete="email" error={fieldErrors.email} />

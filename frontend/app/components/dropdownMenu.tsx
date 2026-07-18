@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import {
   ChartNoAxesColumnIncreasing,
   CheckIcon,
-  CheckCircle2,
   CookingPot,
   CopyIcon,
   File,
@@ -23,16 +22,14 @@ import {
   Trash2,
   UserRoundPen,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logoutUser } from "../store/features/authSlice";
 import api, { getApiError } from "../store/api";
 
-type ExportNotice = { kind: "success" | "error"; message: string } | null;
-
 export default function DropdownMenu() {
   const [isOpen, setIsOpen] = useState(false);
   const [exporting, setExporting] = useState(false);
-  const [exportNotice, setExportNotice] = useState<ExportNotice>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const user = useAppSelector((state) => state.auth.user);
@@ -87,7 +84,6 @@ export default function DropdownMenu() {
 
   const exportChart = async () => {
     setIsOpen(false);
-    setExportNotice(null);
     setExporting(true);
     try {
       const { data } = await api.post<{ message: string }>(
@@ -95,12 +91,9 @@ export default function DropdownMenu() {
         {},
         { params: selectedDate ? { date: selectedDate } : undefined },
       );
-      setExportNotice({ kind: "success", message: data.message });
+      toast.success(data.message);
     } catch (error) {
-      setExportNotice({
-        kind: "error",
-        message: getApiError(error, "Unable to email the diet chart."),
-      });
+      toast.error(getApiError(error, "Unable to email the diet chart."));
     } finally {
       setExporting(false);
     }
@@ -127,29 +120,6 @@ export default function DropdownMenu() {
 
   return (
     <div className="relative inline-block">
-      {exportNotice && (
-        <div
-          role={exportNotice.kind === "error" ? "alert" : "status"}
-          className={`fixed right-4 top-20 z-[70] flex max-w-sm items-start gap-2 rounded-xl border px-4 py-3 text-sm shadow-lg ${
-            exportNotice.kind === "success"
-              ? "border-brand/25 bg-brand-soft text-brand-active"
-              : "border-red-200 bg-red-50 text-danger"
-          }`}
-        >
-          {exportNotice.kind === "success" ? (
-            <CheckCircle2 className="mt-0.5 shrink-0" size={17} />
-          ) : null}
-          <span>{exportNotice.message}</span>
-          <button
-            type="button"
-            onClick={() => setExportNotice(null)}
-            className="ml-2 font-bold"
-            aria-label="Dismiss notification"
-          >
-            x
-          </button>
-        </div>
-      )}
       <button
         type="button"
         ref={buttonRef}

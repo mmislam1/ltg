@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { toast } from "sonner";
 import { DiaryPdfPreview } from "../components/simplifiedDietChart";
 import { useAppSelector } from "../store/hooks";
 
@@ -14,6 +15,10 @@ export default function NutritionChart() {
     [current.chart.meals],
   );
   const selectedDate = current.selectedDate || new Date().toISOString().slice(0, 10);
+
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
 
   if (!initialized) return <div className="min-h-[60vh] bg-canvas" />;
 
@@ -37,12 +42,6 @@ export default function NutritionChart() {
         <h1 className="mt-1 text-2xl font-bold text-ink sm:text-3xl">Daily chart preview</h1>
         <p className="mt-2 text-sm leading-6 text-muted">The macro overview is shown once with targets, progress, and distribution together.</p>
       </header>
-
-      {error && (
-        <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">
-          {error}
-        </div>
-      )}
 
       <div className="overflow-hidden rounded-xl border border-line bg-white shadow-sm">
         <DiaryPdfPreview

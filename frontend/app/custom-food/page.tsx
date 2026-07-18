@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import Back from "../components/back";
 import NutritionProfile from "../components/nutritionProfile";
 import {
@@ -25,6 +26,7 @@ import {
   fetchPendingFoods,
   scanNutritionLabel,
   type CreateFoodInput,
+  type Food,
   type Minerals,
   type Nutrition,
   type Vitamins,
@@ -156,8 +158,6 @@ export default function CustomFoodPage() {
   const [core, setCore] = useState(emptyValues(coreFields));
   const [vitamins, setVitamins] = useState(emptyValues(vitaminFields));
   const [minerals, setMinerals] = useState(emptyValues(mineralFields));
-  const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
   const [scanModalOpen, setScanModalOpen] = useState(false);
 
   useEffect(() => {
@@ -171,6 +171,14 @@ export default function CustomFoodPage() {
   useEffect(() => () => {
     dispatch(clearFoodError());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
+  useEffect(() => {
+    if (pendingError) toast.error(pendingError);
+  }, [pendingError]);
 
   const myFoods = useMemo(
     () => list.filter((food) => food.addedBy === user?.id),
@@ -225,21 +233,19 @@ export default function CustomFoodPage() {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setFormError(null);
-    setSuccess(null);
     dispatch(clearFoodError());
 
     const numericGroups = [core, vitamins, minerals].flatMap((group) => Object.values(group));
     if (!name.trim()) {
-      setFormError("Enter a food name.");
+      toast.error("Enter a food name.");
       return;
     }
     if (!Number.isFinite(Number(nutritionPer)) || Number(nutritionPer) <= 0) {
-      setFormError("Serving basis must be greater than zero.");
+      toast.error("Serving basis must be greater than zero.");
       return;
     }
     if (numericGroups.some((value) => value === "" || Number(value) < 0 || !Number.isFinite(Number(value)))) {
-      setFormError("Every nutrient needs a valid value of zero or more.");
+      toast.error("Every nutrient needs a valid value of zero or more.");
       return;
     }
 
@@ -256,10 +262,10 @@ export default function CustomFoodPage() {
 
     try {
       const created = await dispatch(createFood(payload)).unwrap();
-      setSuccess(`${created.name} was saved and is awaiting admin approval.`);
+      toast.success(`${created.name} was saved and is awaiting admin approval.`);
       resetForm();
     } catch {
-      // The API error from the food slice is displayed below.
+      // The API error from the food slice is shown as a toast.
     }
   };
 
@@ -269,16 +275,35 @@ export default function CustomFoodPage() {
     if (!image) return;
 
     setScanModalOpen(false);
-    setFormError(null);
-    setSuccess(null);
     dispatch(clearFoodError());
 
     try {
       const scannedFood = await dispatch(scanNutritionLabel(image)).unwrap();
       fillFromScan(scannedFood);
     } catch {
-      // The API error from the food slice is displayed below.
+      // The API error from the food slice is shown as a toast.
     }
+  };
+
+  const requestDeleteFood = (food: Food) => {
+    const toastId = toast.warning(`Delete ${food.name}?`, {
+      description: "This removes it from your custom foods.",
+      duration: 10000,
+      action: {
+        label: "Delete",
+        onClick: () => {
+          toast.dismiss(toastId);
+          void dispatch(deleteFood(food.id))
+            .unwrap()
+            .then(() => toast.success(`${food.name} deleted.`))
+            .catch(() => {});
+        },
+      },
+      cancel: {
+        label: "Cancel",
+        onClick: () => toast.dismiss(toastId),
+      },
+    });
   };
 
   if (!initialized || !user) {
@@ -397,8 +422,6 @@ export default function CustomFoodPage() {
             </details>
 
             <div className="border-t border-line bg-canvas/60 p-5 sm:p-6">
-              {(formError || error) && <div role="alert" className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">{formError || error}</div>}
-              {success && <div role="status" className="mb-4 rounded-xl border border-brand/25 bg-brand-soft px-4 py-3 text-sm text-brand-active">{success}</div>}
               <button type="submit" disabled={creating} className="btn btn-primary w-full sm:w-auto">
                 <Plus size={19} /> {creating ? "Saving food…" : "Save custom food"}
               </button>
@@ -437,9 +460,7 @@ export default function CustomFoodPage() {
                       className="btn btn-ghost btn-icon btn-icon-sm text-danger"
                       aria-label={`Delete ${food.name}`}
                       disabled={deletingIds.includes(food.id)}
-                      onClick={() => {
-                        if (window.confirm(`Delete ${food.name}?`)) dispatch(deleteFood(food.id));
-                      }}
+                      onClick={() => requestDeleteFood(food)}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -468,7 +489,6 @@ export default function CustomFoodPage() {
               </div>
               <span className="text-sm text-muted">{pending.length} waiting</span>
             </div>
-            {pendingError && <div role="alert" className="m-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-danger">{pendingError}</div>}
             <div className="divide-y divide-line">
               {pending.map((food) => (
                 <div key={food.id} className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:px-6">
