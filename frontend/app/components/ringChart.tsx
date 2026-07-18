@@ -83,6 +83,7 @@ export function MacroCalorieRing({
   dense?: boolean;
 }) {
   const distribution = useMemo(() => macroCalorieDistribution(macros), [macros]);
+  const energy = Math.max(0, macros.calories ?? distribution.total);
   const ringGradient = useMemo(() => {
     if (distribution.total <= 0) return "var(--theme-border) 0deg 360deg";
 
@@ -96,27 +97,17 @@ export function MacroCalorieRing({
       })
       .join(", ");
   }, [distribution]);
-  const dominant = distribution.items.reduce(
-    (winner, item) => (item.percent > winner.percent ? item : winner),
-    distribution.items[0],
-  );
-  const energy = Math.max(0, macros.calories ?? distribution.total);
   const targetCalories = Math.max(0, goals?.targetCalories ?? 0);
   const energyPercent = targetCalories > 0 ? (energy / targetCalories) * 100 : 0;
   const cappedEnergyPercent = Math.min(Math.max(energyPercent, 0), 100);
 
   return (
     <section className={`card p-4 ${className}`}>
-      <div className="mb-4 flex items-start justify-between gap-3 border-b border-line pb-3">
+      <div className="mb-4 border-b border-line pb-3">
         <div>
           <h2 className="text-lg font-bold text-ink">{title}</h2>
           <p className="mt-1 max-w-xl text-sm leading-5 text-muted">{subtitle}</p>
         </div>
-        {distribution.total > 0 && (
-          <span className="shrink-0 rounded-full bg-brand-soft px-3 py-1 text-xs font-bold text-brand-active">
-            {compact(distribution.total)} kcal
-          </span>
-        )}
       </div>
 
       <div className={`grid items-center gap-5 ${dense ? "sm:grid-cols-[13rem_1fr]" : "md:grid-cols-[15rem_1fr]"}`}>
@@ -133,13 +124,13 @@ export function MacroCalorieRing({
           role="img"
         >
           <div className="grid size-[7.25rem] place-items-center rounded-full bg-surface text-center shadow-inner">
-            {distribution.total > 0 ? (
+            {energy > 0 ? (
               <span>
                 <span className="text-2xl font-bold tabular-nums text-ink">
-                  {compact(dominant.percent, 0)}%
+                  {compact(energy, 0)}
                 </span>
                 <span className="block text-xs font-semibold text-muted">
-                  {dominant.label}
+                  kcal
                 </span>
               </span>
             ) : (

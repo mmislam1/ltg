@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { CalendarClock, CheckCircle2, Copy, FileText, Pencil } from "lucide-react";
+import { CalendarClock, CheckCircle2, Copy, Droplets, FileText, Footprints, Pencil } from "lucide-react";
 import api, { getApiError } from "../store/api";
 import { fetchMealActivity, type ListItems, type Meal } from "../store/features/activitySlice";
 import type { User } from "../store/features/authSlice";
@@ -21,20 +21,6 @@ type NutritionTotals = MacroValues & {
   vitamins: Vitamins;
   minerals: Minerals;
 };
-
-const PDF_COLORS = {
-  ink: "#172B2A",
-  muted: "#657473",
-  brand: "#0F766E",
-  brandDark: "#115E59",
-  brandSoft: "#DFF4F0",
-  canvas: "#F5F8F7",
-  line: "#DDE7E5",
-  calories: "#c026d3",
-  protein: "#059669",
-  carbs: "#2563eb",
-  fats: "#dc2626",
-} as const;
 
 const VITAMIN_ENTRIES = [
   { key: "a", label: "Vitamin A", unit: NUTRIENT_UNITS.vitamins.a },
@@ -281,7 +267,14 @@ export default function SimplifiedDietChart() {
       </div>
 
       <div className="overflow-hidden rounded-xl border border-line bg-white shadow-sm">
-        <DiaryPdfPreview user={user} date={selectedDate} meals={meals} loading={loading} />
+        <DiaryPdfPreview
+          user={user}
+          date={selectedDate}
+          meals={meals}
+          water={current.water}
+          steps={current.steps}
+          loading={loading}
+        />
       </div>
 
       <div className="mt-5 grid grid-cols-3 gap-2 sm:gap-3" aria-label="Diary actions">
@@ -302,11 +295,15 @@ export function DiaryPdfPreview({
   user,
   date,
   meals,
+  water = 0,
+  steps = 0,
   loading = false,
 }: {
   user: User;
   date: string;
   meals: Meal[];
+  water?: number;
+  steps?: number;
   loading?: boolean;
 }) {
   const totals = useMemo(() => chartTotals(meals), [meals]);
@@ -314,8 +311,7 @@ export function DiaryPdfPreview({
     <article className="mx-auto w-full max-w-[800px] bg-white text-[#172B2A]">
       <PdfHero user={user} date={date} />
       <div className="px-3 py-5 sm:px-10 sm:py-8">
-        <MacroOverview user={user} totals={totals} />
-        <div className="mt-7">
+        <div>
           {loading ? (
             <div className="rounded-lg bg-[#F5F8F7] px-5 py-12 text-center text-sm text-[#657473]">Loading chart...</div>
           ) : meals.length === 0 ? (
@@ -327,6 +323,8 @@ export function DiaryPdfPreview({
             <div className="space-y-6">{meals.map((meal) => <MealTable key={meal.id} meal={meal} />)}</div>
           )}
         </div>
+        <ActivitySummary water={water} steps={steps} />
+        <MacroOverview user={user} totals={totals} />
         <CompleteNutrition totals={totals} />
         <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-xs text-[#657473] sm:text-[10px]">
           <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
@@ -352,72 +350,40 @@ function PdfHero({ user, date }: { user: User; date: string }) {
 }
 
 function MacroOverview({ user, totals }: { user: User; totals: NutritionTotals }) {
-  const cards = [
-    { label: "CALORIES", key: "calories", goal: user.dailyGoals.targetCalories, unit: "kcal", color: PDF_COLORS.calories },
-    { label: "PROTEIN", key: "protein", goal: user.dailyGoals.targetProtein, unit: "g", color: PDF_COLORS.protein },
-    { label: "CARBS", key: "carbs", goal: user.dailyGoals.targetCarb, unit: "g", color: PDF_COLORS.carbs },
-    { label: "FATS", key: "fats", goal: user.dailyGoals.targetFat, unit: "g", color: PDF_COLORS.fats },
-  ] as const;
-  const macroCalories = {
-    protein: totals.protein * 4,
-    carbs: totals.carbs * 4,
-    fats: totals.fats * 9,
-  };
-  const macroCalorieTotal = macroCalories.protein + macroCalories.carbs + macroCalories.fats;
-
   return (
-    <section>
-      <div className="mb-3">
-        <h3 className="text-sm font-bold tracking-[0.08em] text-[#172B2A] sm:text-[11px]">MACRO OVERVIEW</h3>
-        <p className="mt-1 text-sm leading-5 text-[#657473] sm:text-[10px]">Amounts, targets, target progress, and distribution are combined here.</p>
-      </div>
+    <section className="mt-6">
       <MacroCalorieRing
-        className="mb-3 rounded-xl border-[#DDE7E5] shadow-none"
+        className="rounded-xl border-[#DDE7E5] shadow-none"
         dense
         goals={{ targetCalories: user.dailyGoals.targetCalories }}
         macros={totals}
         title="Macro calorie split"
         subtitle="Percentage of calories coming from protein, carbs, and fat."
       />
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {cards.map((card) => {
-          const consumed = totals[card.key];
-          const percentOfTarget = card.goal > 0 ? (consumed / card.goal) * 100 : 0;
-          const cappedPercent = Math.min(Math.max(percentOfTarget, 0), 100);
-          const share =
-            card.key === "calories"
-              ? null
-              : macroCalorieTotal > 0
-                ? (macroCalories[card.key] / macroCalorieTotal) * 100
-                : 0;
+    </section>
+  );
+}
 
-          return (
-            <div key={card.key} className="rounded-xl border border-[#DDE7E5] bg-[#F5F8F7] p-4">
-              <div className="flex items-center gap-4">
-                <div
-                  className="grid h-20 w-20 shrink-0 place-items-center rounded-full"
-                  style={{ background: `conic-gradient(${card.color} ${cappedPercent * 3.6}deg, #DDE7E5 0deg)` }}
-                  aria-label={`${compact(percentOfTarget)}% of ${card.label.toLowerCase()} target`}
-                >
-                  <div className="grid h-[62px] w-[62px] place-items-center rounded-full bg-white text-center">
-                    <span className="text-sm font-bold text-[#172B2A]">{compact(percentOfTarget)}%</span>
-                  </div>
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-bold tracking-[0.1em] text-[#657473] sm:text-[9px]">{card.label}</p>
-                  <p className="mt-1 text-2xl font-bold leading-tight">{compact(consumed)} <span className="text-base text-[#657473]">{card.unit}</span></p>
-                  <p className="mt-2 inline-flex rounded-full bg-[#DFF4F0] px-2.5 py-1 text-xs font-bold text-[#115E59] sm:text-[9px]">Target {compact(card.goal)} {card.unit}</p>
-                  <p className="mt-2 text-sm text-[#657473] sm:text-[10px]">
-                    {share === null ? "Daily energy total" : `${compact(share)}% of macro calories`}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#DDE7E5]">
-                <div className="h-full rounded-full" style={{ width: `${cappedPercent}%`, backgroundColor: card.color }} />
-              </div>
-            </div>
-          );
-        })}
+function ActivitySummary({ water, steps }: { water: number; steps: number }) {
+  return (
+    <section className="mt-6 grid grid-cols-2 gap-2 sm:gap-3">
+      <div className="flex items-center gap-3 rounded-lg bg-[#F5F8F7] p-3 sm:p-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#DFF4F0] text-[#115E59]">
+          <Droplets size={19} aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-bold tracking-wide text-[#657473] sm:text-[9px]">WATER</p>
+          <p className="mt-1 text-lg font-bold leading-tight">{compact(water)} glasses</p>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 rounded-lg bg-[#F5F8F7] p-3 sm:p-4">
+        <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#DFF4F0] text-[#115E59]">
+          <Footprints size={19} aria-hidden="true" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-bold tracking-wide text-[#657473] sm:text-[9px]">STEPS</p>
+          <p className="mt-1 text-lg font-bold leading-tight">{steps.toLocaleString("en-US")} steps</p>
+        </div>
       </div>
     </section>
   );

@@ -192,6 +192,10 @@ export class DietChartExportService {
         carbs: user.targetCarbs,
         fats: user.targetFat,
       },
+      activity: {
+        water: activity.water ?? 0,
+        steps: activity.steps ?? 0,
+      },
       totals,
       meals,
       generatedAt: new Date(),

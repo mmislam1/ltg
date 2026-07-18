@@ -67,6 +67,10 @@ export interface DietChartDocument {
   date: string;
   timezone: string;
   goals: DietChartMacroValues;
+  activity: {
+    water: number;
+    steps: number;
+  };
   totals: DietChartNutritionTotals;
   meals: DietChartMeal[];
   generatedAt: Date;

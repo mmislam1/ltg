@@ -207,6 +207,7 @@ export class DietChartMailService {
     const total = items.reduce((sum, item) => sum + item.calories, 0);
 
     return {
+      energy: Math.max(0, totals.calories ?? total),
       total,
       items: items.map((item) => ({
         ...item,
@@ -253,18 +254,14 @@ export class DietChartMailService {
         return circle;
       })
       .join('');
-    const dominant = summary.items.reduce(
-      (winner, item) => (item.percent > winner.percent ? item : winner),
-      summary.items[0],
-    );
 
     return `
       <svg width="96" height="96" viewBox="0 0 96 96" role="img" aria-label="Macro calorie split">
         <circle cx="48" cy="48" r="${radius}" fill="none" stroke="#dde7e5" stroke-width="12" />
         ${rings}
         <circle cx="48" cy="48" r="24" fill="#ffffff" />
-        <text x="48" y="45" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#172b2a">${this.compact(dominant.percent, 0)}%</text>
-        <text x="48" y="60" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="#657473">${dominant.label}</text>
+        <text x="48" y="45" text-anchor="middle" font-family="Arial,sans-serif" font-size="16" font-weight="700" fill="#172b2a">${this.compact(summary.energy, 0)}</text>
+        <text x="48" y="60" text-anchor="middle" font-family="Arial,sans-serif" font-size="9" font-weight="700" fill="#657473">kcal</text>
       </svg>`;
   }
 

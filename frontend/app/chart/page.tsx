@@ -45,7 +45,14 @@ export default function NutritionChart() {
       )}
 
       <div className="overflow-hidden rounded-xl border border-line bg-white shadow-sm">
-        <DiaryPdfPreview user={user} date={selectedDate} meals={meals} loading={loading} />
+        <DiaryPdfPreview
+          user={user}
+          date={selectedDate}
+          meals={meals}
+          water={current.water}
+          steps={current.steps}
+          loading={loading}
+        />
       </div>
     </section>
   );
