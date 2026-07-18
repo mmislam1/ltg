@@ -16,7 +16,7 @@ type MacroGoals = {
   targetCalories?: number;
 };
 
-type MacroKey = "protein" | "carbs" | "fiber" | "fats";
+type MacroKey = "protein" | "carbs" | "fats";
 
 const MACROS: ReadonlyArray<{
   key: MacroKey;
@@ -35,12 +35,6 @@ const MACROS: ReadonlyArray<{
     label: "Net carbs",
     caloriesPerGram: 4,
     color: "var(--nutrition-carbs)",
-  },
-  {
-    key: "fiber",
-    label: "Fiber",
-    caloriesPerGram: 2,
-    color: "var(--nutrition-fiber)",
   },
   {
     key: "fats",
@@ -88,7 +82,7 @@ export function MacroCalorieRing({
   macros,
   goals,
   title = "Macro calorie split",
-  subtitle = "Percentage of calories coming from protein, net carbs, fiber, and fat.",
+  subtitle = "Percentage of calories coming from protein, net carbs, and fat.",
   className = "",
   dense = false,
 }: {

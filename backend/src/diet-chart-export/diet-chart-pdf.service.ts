@@ -214,7 +214,7 @@ export class DietChartPdfService {
       .fontSize(7.5)
       .text(
         total > 0
-          ? 'Percentage of calories coming from protein, net carbs, fiber, and fat.'
+          ? 'Percentage of calories coming from protein, net carbs, and fat.'
           : 'Add meals to see calories from each macro.',
         legendX,
         y + 31,
@@ -592,7 +592,6 @@ export class DietChartPdfService {
     const values = [
       { key: 'protein', label: 'Protein', grams: totals.protein, calories: totals.protein * 4, color: COLORS.protein },
       { key: 'carbs', label: 'Net carbs', grams: totals.netCarbs, calories: totals.netCarbs * 4, color: COLORS.carbs },
-      { key: 'fiber', label: 'Fiber', grams: totals.fiber, calories: totals.fiber * 2, color: COLORS.fiber },
       { key: 'fats', label: 'Fats', grams: totals.fats, calories: totals.fats * 9, color: COLORS.fats },
     ];
     const total = values.reduce((sum, item) => sum + item.calories, 0);

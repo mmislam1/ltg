@@ -202,7 +202,6 @@ export class DietChartMailService {
     const items = [
       { label: 'Protein', calories: Math.max(0, totals.protein * 4), color: '#059669' },
       { label: 'Net carbs', calories: Math.max(0, totals.netCarbs * 4), color: '#2563eb' },
-      { label: 'Fiber', calories: Math.max(0, totals.fiber * 2), color: '#0d9488' },
       { label: 'Fat', calories: Math.max(0, totals.fats * 9), color: '#dc2626' },
     ];
     const total = items.reduce((sum, item) => sum + item.calories, 0);

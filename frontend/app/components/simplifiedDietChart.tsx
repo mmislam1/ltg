@@ -373,7 +373,7 @@ function MacroOverview({ user, totals, water }: { user: User; totals: NutritionT
         goals={{ targetCalories: user.dailyGoals.targetCalories }}
         macros={totals}
         title="Macro calorie split"
-        subtitle="Percentage of calories coming from protein, net carbs, fiber, and fat."
+        subtitle="Percentage of calories coming from protein, net carbs, and fat."
       />
       <MacroDetails totals={totals} water={water} />
     </section>
