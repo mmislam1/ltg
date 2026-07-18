@@ -314,7 +314,7 @@ export function DiaryPdfPreview({
     <article className="mx-auto w-full max-w-[800px] bg-white text-[#172B2A]">
       <PdfHero user={user} date={date} />
       <div className="px-3 py-5 sm:px-10 sm:py-8">
-        <MealSectionHeader showEdit={showMealEdit} />
+        <MealSectionHeader />
         <div className="mt-3">
           {loading ? (
             <div className="rounded-lg bg-[#F5F8F7] px-5 py-12 text-center text-sm text-[#657473]">Loading chart...</div>
@@ -324,7 +324,7 @@ export function DiaryPdfPreview({
               <p className="mt-2 text-sm text-[#657473]">Add meals to your diary and export this chart again.</p>
             </div>
           ) : (
-            <div className="space-y-6">{meals.map((meal) => <MealTable key={meal.id} meal={meal} />)}</div>
+            <div className="space-y-6">{meals.map((meal) => <MealTable key={meal.id} meal={meal} showEdit={showMealEdit} />)}</div>
           )}
         </div>
         <ActivitySummary water={water} steps={steps} />
@@ -369,16 +369,10 @@ function MacroOverview({ user, totals, water }: { user: User; totals: NutritionT
   );
 }
 
-function MealSectionHeader({ showEdit }: { showEdit: boolean }) {
+function MealSectionHeader() {
   return (
     <div className="flex items-center justify-between gap-3">
       <h3 className="text-sm font-bold tracking-[0.08em] text-[#172B2A] sm:text-[11px]">MEALS</h3>
-      {showEdit && (
-        <Link href="/foodList/Breakfast" className="btn btn-secondary btn-sm px-3">
-          <Pencil size={15} aria-hidden="true" />
-          <span>Edit</span>
-        </Link>
-      )}
     </div>
   );
 }
@@ -440,10 +434,18 @@ function ActivitySummary({ water, steps }: { water: number; steps: number }) {
   );
 }
 
-function MealTable({ meal }: { meal: Meal }) {
+function MealTable({ meal, showEdit = false }: { meal: Meal; showEdit?: boolean }) {
   return (
     <section>
-      <h3 className="rounded-lg bg-[#DFF4F0] px-4 py-3 text-sm font-bold tracking-[0.1em] text-[#115E59] sm:text-[11px]">{meal.mealType?.toUpperCase()}</h3>
+      <div className="flex items-center justify-between gap-3 rounded-lg bg-[#DFF4F0] px-4 py-3 text-[#115E59]">
+        <h3 className="min-w-0 text-sm font-bold tracking-[0.1em] sm:text-[11px]">{meal.mealType?.toUpperCase()}</h3>
+        {showEdit && meal.mealType && (
+          <Link href={`/foodList/${meal.mealType}`} className="btn btn-secondary btn-sm min-h-8 shrink-0 px-2 py-1 text-xs">
+            <Pencil size={14} aria-hidden="true" />
+            <span>Edit</span>
+          </Link>
+        )}
+      </div>
       <div className="mt-2 sm:hidden">
         {meal.list.map((item, index) => {
           const macros = itemMacros(item);
