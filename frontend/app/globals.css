@@ -252,6 +252,190 @@
   will-change: transform;
 }
 
+.route-transition-content {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: center;
+  animation: route-content-in 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.logo-loader {
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: var(--theme-primary);
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 430ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.logo-loader--fixed {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.logo-loader[data-visible="false"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.logo-loader__panel {
+  position: relative;
+  display: flex;
+  width: min(22rem, 84vw);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 2rem;
+  animation: logo-panel-in 620ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.logo-loader__mark {
+  position: relative;
+  display: grid;
+  width: clamp(8rem, 22vw, 11.25rem);
+  aspect-ratio: 124 / 54;
+  place-items: center;
+}
+
+.logo-loader__mark::before {
+  position: absolute;
+  inset: -1.6rem -2rem;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--theme-primary) 18%, transparent), transparent 62%),
+    color-mix(in srgb, var(--theme-primary-soft) 54%, transparent);
+  content: "";
+  opacity: 0.85;
+  transform: scale(0.84);
+  animation: logo-aura 1.85s ease-in-out infinite;
+}
+
+.logo-loader__mark::after {
+  position: absolute;
+  inset: -0.75rem -1.1rem;
+  border: 1px solid color-mix(in srgb, var(--theme-primary) 18%, transparent);
+  border-radius: 9999px;
+  content: "";
+  opacity: 0;
+  animation: logo-ring 1.85s ease-out infinite;
+}
+
+.logo-loader__image {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 16px 22px color-mix(in srgb, var(--theme-primary) 16%, transparent));
+  animation: logo-breathe 1.65s ease-in-out infinite;
+}
+
+.logo-loader__track {
+  position: relative;
+  width: min(13.5rem, 48vw);
+  height: 0.25rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--theme-primary) 8%, #eef7f1);
+}
+
+.logo-loader__track::before {
+  position: absolute;
+  inset: 0;
+  width: 46%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--theme-primary) 82%, #23c55e),
+    transparent
+  );
+  content: "";
+  transform: translateX(-120%);
+  animation: logo-progress 1.18s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes route-content-in {
+  from {
+    opacity: 0.001;
+    transform: translateY(0.75rem) scale(0.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes logo-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.875rem) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes logo-aura {
+  0%,
+  100% {
+    opacity: 0.62;
+    transform: scale(0.84);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes logo-ring {
+  0% {
+    opacity: 0.65;
+    transform: scale(0.92);
+  }
+
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes logo-breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-0.1875rem) scale(1.025);
+  }
+}
+
+@keyframes logo-progress {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  55% {
+    transform: translateX(65%);
+  }
+
+  100% {
+    transform: translateX(245%);
+  }
+}
+
 .col {
   background-color: var(--theme-primary-active);
 }
@@ -283,4 +467,17 @@
 
 @media (prefers-reduced-motion: reduce) {
   .auth-spinner { animation-duration: 1.5s; }
+
+  .route-transition-content,
+  .logo-loader__panel,
+  .logo-loader__mark::before,
+  .logo-loader__mark::after,
+  .logo-loader__image,
+  .logo-loader__track::before {
+    animation: none;
+  }
+
+  .logo-loader {
+    transition-duration: 160ms;
+  }
 }
