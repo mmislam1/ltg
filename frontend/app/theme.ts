@@ -30,6 +30,7 @@ export const themeStyle: ThemeProperties = {
   "--nutrition-calories": NUTRITION_COLORS.calories,
   "--nutrition-protein": NUTRITION_COLORS.protein,
   "--nutrition-carbs": NUTRITION_COLORS.carbs,
+  "--nutrition-fiber": NUTRITION_COLORS.fiber,
   "--nutrition-fat": NUTRITION_COLORS.fat,
   "--theme-font-family": resolvedFontFamily,
   "--theme-primary": readThemeValue(

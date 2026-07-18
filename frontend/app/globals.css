@@ -18,6 +18,7 @@
   --color-calories: var(--nutrition-calories);
   --color-protein: var(--nutrition-protein);
   --color-carbs: var(--nutrition-carbs);
+  --color-fiber: var(--nutrition-fiber);
   --color-fat: var(--nutrition-fat);
 }
 

@@ -273,6 +273,7 @@ export default function SimplifiedDietChart() {
           meals={meals}
           water={current.water}
           steps={current.steps}
+          showMealEdit
           loading={loading}
         />
       </div>
@@ -297,6 +298,7 @@ export function DiaryPdfPreview({
   meals,
   water = 0,
   steps = 0,
+  showMealEdit = false,
   loading = false,
 }: {
   user: User;
@@ -304,6 +306,7 @@ export function DiaryPdfPreview({
   meals: Meal[];
   water?: number;
   steps?: number;
+  showMealEdit?: boolean;
   loading?: boolean;
 }) {
   const totals = useMemo(() => chartTotals(meals), [meals]);
@@ -311,7 +314,8 @@ export function DiaryPdfPreview({
     <article className="mx-auto w-full max-w-[800px] bg-white text-[#172B2A]">
       <PdfHero user={user} date={date} />
       <div className="px-3 py-5 sm:px-10 sm:py-8">
-        <div>
+        <MealSectionHeader showEdit={showMealEdit} />
+        <div className="mt-3">
           {loading ? (
             <div className="rounded-lg bg-[#F5F8F7] px-5 py-12 text-center text-sm text-[#657473]">Loading chart...</div>
           ) : meals.length === 0 ? (
@@ -324,7 +328,7 @@ export function DiaryPdfPreview({
           )}
         </div>
         <ActivitySummary water={water} steps={steps} />
-        <MacroOverview user={user} totals={totals} />
+        <MacroOverview user={user} totals={totals} water={water} />
         <CompleteNutrition totals={totals} />
         <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-xs text-[#657473] sm:text-[10px]">
           <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
@@ -349,18 +353,65 @@ function PdfHero({ user, date }: { user: User; date: string }) {
   );
 }
 
-function MacroOverview({ user, totals }: { user: User; totals: NutritionTotals }) {
+function MacroOverview({ user, totals, water }: { user: User; totals: NutritionTotals; water: number }) {
   return (
-    <section className="mt-6">
+    <section className="mt-6 grid gap-3 lg:grid-cols-[1.08fr_0.92fr]">
       <MacroCalorieRing
         className="rounded-xl border-[#DDE7E5] shadow-none"
         dense
         goals={{ targetCalories: user.dailyGoals.targetCalories }}
         macros={totals}
         title="Macro calorie split"
-        subtitle="Percentage of calories coming from protein, carbs, and fat."
+        subtitle="Percentage of calories coming from protein, net carbs, fiber, and fat."
       />
+      <MacroDetails totals={totals} water={water} />
     </section>
+  );
+}
+
+function MealSectionHeader({ showEdit }: { showEdit: boolean }) {
+  return (
+    <div className="flex items-center justify-between gap-3">
+      <h3 className="text-sm font-bold tracking-[0.08em] text-[#172B2A] sm:text-[11px]">MEALS</h3>
+      {showEdit && (
+        <Link href="/foodList/Breakfast" className="btn btn-secondary btn-sm px-3">
+          <Pencil size={15} aria-hidden="true" />
+          <span>Edit</span>
+        </Link>
+      )}
+    </div>
+  );
+}
+
+function MacroDetails({ totals, water }: { totals: NutritionTotals; water: number }) {
+  const entries = [
+    { label: "Calories", value: compact(totals.calories), unit: NUTRIENT_UNITS.calories, color: "var(--nutrition-calories)" },
+    { label: "Protein", value: compact(totals.protein), unit: NUTRIENT_UNITS.protein, color: "var(--nutrition-protein)" },
+    { label: "Net carbs", value: compact(totals.netCarbs), unit: NUTRIENT_UNITS.netCarbs, color: "var(--nutrition-carbs)" },
+    { label: "Fiber", value: compact(totals.fiber), unit: NUTRIENT_UNITS.fiber, color: "var(--nutrition-fiber)" },
+    { label: "Fat", value: compact(totals.fats), unit: NUTRIENT_UNITS.fats, color: "var(--nutrition-fat)" },
+    { label: "Water", value: compact(water), unit: "glasses", color: "#0EA5E9" },
+  ];
+
+  return (
+    <div className="rounded-xl border border-[#DDE7E5] bg-[#F5F8F7] p-4">
+      <div className="border-b border-[#DDE7E5] pb-3">
+        <h3 className="text-lg font-bold text-[#172B2A]">Macros</h3>
+      </div>
+      <div className="mt-4 grid gap-2">
+        {entries.map((entry) => (
+          <div key={entry.label} className="flex min-w-0 items-center justify-between gap-3 rounded-lg bg-white px-3 py-2.5">
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: entry.color }} aria-hidden="true" />
+              <span className="truncate text-sm font-bold text-[#172B2A]">{entry.label}</span>
+            </div>
+            <span className="shrink-0 text-sm font-semibold tabular-nums text-[#657473]">
+              {entry.value} {entry.unit}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -445,18 +496,7 @@ function CompleteNutrition({ totals }: { totals: NutritionTotals }) {
   return (
     <section className="mt-7">
       <h3 className="text-xs font-bold tracking-[0.08em]">OTHER NUTRITION TOTALS</h3>
-      <p className="mt-1 text-sm text-[#657473] sm:text-[10px]">Fiber, net carbs, vitamins, and minerals recorded for this day</p>
-
-      <div className="mt-4 grid grid-cols-2 gap-2 sm:gap-3">
-        <div className="rounded-lg bg-[#DFF4F0] p-3 sm:p-4">
-          <p className="text-xs font-bold tracking-wide text-[#115E59] sm:text-[9px]">DIETARY FIBER</p>
-          <p className="mt-2 text-lg font-bold">{compact(totals.fiber)} {NUTRIENT_UNITS.fiber}</p>
-        </div>
-        <div className="rounded-lg bg-[#DFF4F0] p-3 sm:p-4">
-          <p className="text-xs font-bold tracking-wide text-[#115E59] sm:text-[9px]">NET CARBS</p>
-          <p className="mt-2 text-lg font-bold">{compact(totals.netCarbs)} {NUTRIENT_UNITS.netCarbs}</p>
-        </div>
-      </div>
+      <p className="mt-1 text-sm text-[#657473] sm:text-[10px]">Vitamins and minerals recorded for this day</p>
 
       <NutrientGroup title="VITAMINS" entries={VITAMIN_ENTRIES} values={totals.vitamins} />
       <NutrientGroup title="MINERALS" entries={MINERAL_ENTRIES} values={totals.minerals} />

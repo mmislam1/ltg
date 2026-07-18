@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import dns from 'node:dns/promises';
 import net from 'node:net';
 import nodemailer, { Transporter } from 'nodemailer';
-import { DietChartMacroValues } from './diet-chart.types';
+import { DietChartNutritionTotals } from './diet-chart.types';
 
 interface DietChartEmail {
   recipient: string;
@@ -17,7 +17,7 @@ interface DietChartEmail {
   date: string;
   filename: string;
   pdf: Buffer;
-  totals?: DietChartMacroValues;
+  totals?: DietChartNutritionTotals;
 }
 
 export interface DietChartEmailDelivery {
@@ -167,7 +167,7 @@ export class DietChartMailService {
     recipientName: string,
     safeName: string,
     date: string,
-    totals?: DietChartMacroValues,
+    totals?: DietChartNutritionTotals,
   ) {
     const macroSummary = totals ? this.macroSummary(totals) : null;
     const macroText =
@@ -198,10 +198,11 @@ export class DietChartMailService {
     };
   }
 
-  private macroSummary(totals: DietChartMacroValues) {
+  private macroSummary(totals: DietChartNutritionTotals) {
     const items = [
       { label: 'Protein', calories: Math.max(0, totals.protein * 4), color: '#059669' },
-      { label: 'Carbs', calories: Math.max(0, totals.carbs * 4), color: '#2563eb' },
+      { label: 'Net carbs', calories: Math.max(0, totals.netCarbs * 4), color: '#2563eb' },
+      { label: 'Fiber', calories: Math.max(0, totals.fiber * 2), color: '#0d9488' },
       { label: 'Fat', calories: Math.max(0, totals.fats * 9), color: '#dc2626' },
     ];
     const total = items.reduce((sum, item) => sum + item.calories, 0);

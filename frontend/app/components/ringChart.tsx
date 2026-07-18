@@ -7,6 +7,8 @@ type MacroValues = {
   calories?: number;
   protein: number;
   carbs: number;
+  netCarbs?: number;
+  fiber?: number;
   fats: number;
 };
 
@@ -14,7 +16,7 @@ type MacroGoals = {
   targetCalories?: number;
 };
 
-type MacroKey = "protein" | "carbs" | "fats";
+type MacroKey = "protein" | "carbs" | "fiber" | "fats";
 
 const MACROS: ReadonlyArray<{
   key: MacroKey;
@@ -30,9 +32,15 @@ const MACROS: ReadonlyArray<{
   },
   {
     key: "carbs",
-    label: "Carbs",
+    label: "Net carbs",
     caloriesPerGram: 4,
     color: "var(--nutrition-carbs)",
+  },
+  {
+    key: "fiber",
+    label: "Fiber",
+    caloriesPerGram: 2,
+    color: "var(--nutrition-fiber)",
   },
   {
     key: "fats",
@@ -48,14 +56,23 @@ const compact = (value: number, maximumFractionDigits = 1) =>
     : "0";
 
 export const macroCalorieDistribution = (macros: MacroValues) => {
-  const items = MACROS.map((macro) => ({
-    key: macro.key,
-    label: macro.label,
-    grams: macros[macro.key] || 0,
-    calories: Math.max(0, (macros[macro.key] || 0) * macro.caloriesPerGram),
-    percent: 0,
-    color: macro.color,
-  }));
+  const macroGrams = (key: MacroKey) => {
+    if (key === "carbs") {
+      return macros.netCarbs ?? Math.max((macros.carbs || 0) - (macros.fiber || 0), 0);
+    }
+    return macros[key] || 0;
+  };
+  const items = MACROS.map((macro) => {
+    const grams = macroGrams(macro.key);
+    return {
+      key: macro.key,
+      label: macro.label,
+      grams,
+      calories: Math.max(0, grams * macro.caloriesPerGram),
+      percent: 0,
+      color: macro.color,
+    };
+  });
   const total = items.reduce((sum, item) => sum + item.calories, 0);
 
   return {
@@ -71,7 +88,7 @@ export function MacroCalorieRing({
   macros,
   goals,
   title = "Macro calorie split",
-  subtitle = "Percentage of calories coming from protein, carbs, and fat.",
+  subtitle = "Percentage of calories coming from protein, net carbs, fiber, and fat.",
   className = "",
   dense = false,
 }: {

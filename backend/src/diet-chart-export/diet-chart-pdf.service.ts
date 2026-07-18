@@ -3,7 +3,6 @@ import PDFDocument from 'pdfkit';
 import {
   DietChartDocument,
   DietChartItem,
-  DietChartMacroValues,
   DietChartNutritionTotals,
 } from './diet-chart.types';
 import { DIET_CHART_LOGO } from './diet-chart-logo';
@@ -20,6 +19,7 @@ const COLORS = {
   calories: '#c026d3',
   protein: '#059669',
   carbs: '#2563eb',
+  fiber: '#0d9488',
   fats: '#dc2626',
 } as const;
 
@@ -214,7 +214,7 @@ export class DietChartPdfService {
       .fontSize(7.5)
       .text(
         total > 0
-          ? 'Percentage of calories coming from protein, carbs, and fat.'
+          ? 'Percentage of calories coming from protein, net carbs, fiber, and fat.'
           : 'Add meals to see calories from each macro.',
         legendX,
         y + 31,
@@ -464,29 +464,11 @@ export class DietChartPdfService {
       .fillColor(COLORS.muted)
       .font('Inter')
       .fontSize(7.5)
-      .text('Fiber, net carbs, vitamins, and minerals recorded for this day', PAGE.margin, y + 17, {
+      .text('Vitamins and minerals recorded for this day', PAGE.margin, y + 17, {
         lineBreak: false,
       });
 
-    const detailY = y + 38;
-    const detailWidth = (PAGE.width - PAGE.margin * 2 - 10) / 2;
-    [
-      { label: 'Dietary fiber', value: totals.fiber },
-      { label: 'Net carbs', value: totals.netCarbs },
-    ].forEach((item, index) => {
-      const x = PAGE.margin + index * (detailWidth + 10);
-      document.roundedRect(x, detailY, detailWidth, 54, 7).fill(COLORS.brandSoft);
-      document
-        .fillColor(COLORS.brandDark)
-        .font('Inter-Bold')
-        .fontSize(8)
-        .text(item.label.toUpperCase(), x + 12, detailY + 11, { lineBreak: false });
-      document
-        .fillColor(COLORS.ink)
-        .fontSize(14)
-        .text(`${this.compact(item.value)} g`, x + 12, detailY + 28, { lineBreak: false });
-    });
-    y = detailY + 68;
+    y += 38;
     y = this.drawNutrientGroup(
       document,
       'VITAMINS',
@@ -606,10 +588,11 @@ export class DietChartPdfService {
     return value.toLocaleString('en-US', { maximumFractionDigits });
   }
 
-  private macroDistribution(totals: DietChartMacroValues) {
+  private macroDistribution(totals: DietChartNutritionTotals) {
     const values = [
       { key: 'protein', label: 'Protein', grams: totals.protein, calories: totals.protein * 4, color: COLORS.protein },
-      { key: 'carbs', label: 'Carbohydrates', grams: totals.carbs, calories: totals.carbs * 4, color: COLORS.carbs },
+      { key: 'carbs', label: 'Net carbs', grams: totals.netCarbs, calories: totals.netCarbs * 4, color: COLORS.carbs },
+      { key: 'fiber', label: 'Fiber', grams: totals.fiber, calories: totals.fiber * 2, color: COLORS.fiber },
       { key: 'fats', label: 'Fats', grams: totals.fats, calories: totals.fats * 9, color: COLORS.fats },
     ];
     const total = values.reduce((sum, item) => sum + item.calories, 0);

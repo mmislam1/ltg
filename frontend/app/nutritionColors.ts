@@ -7,5 +7,6 @@ export const NUTRITION_COLORS = {
   calories: "#c026d3",
   protein: "#059669",
   carbs: "#2563eb",
+  fiber: "#0d9488",
   fat: "#dc2626",
 } as const;
