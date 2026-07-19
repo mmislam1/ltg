@@ -7,6 +7,7 @@ import {
   ArrowLeft,
   Calculator,
   CalendarDays,
+  ChevronDown,
   Flame,
   Gauge,
   Ruler,
@@ -272,6 +273,7 @@ export default function ProfilePage() {
   const [goalPreview, setGoalPreview] = useState<GoalPreview | null>(null);
   const [goalPreviewLoading, setGoalPreviewLoading] = useState(false);
   const [goalPreviewError, setGoalPreviewError] = useState("");
+  const [goalCardOpen, setGoalCardOpen] = useState(false);
   const heightForBmi =
     form.height_unit === "ft"
       ? feetInchesToFeet(Number(form.height), Number(form.height_inches || 0))
@@ -293,6 +295,7 @@ export default function ProfilePage() {
     setForm(formFromUser(user));
     setGoalPreview(previewFromUser(user));
     setGoalPreviewError("");
+    setGoalCardOpen(false);
   }, [formUserId, user]);
 
   useEffect(() => {
@@ -374,13 +377,21 @@ export default function ProfilePage() {
     setGoalPreviewError("");
   };
 
-  const updateSetGoals = (value: boolean) => {
+  const toggleGoalCard = () => {
+    const nextOpen = !goalCardOpen;
+    setGoalCardOpen(nextOpen);
     setForm((current) => ({
       ...current,
-      set_goals: value,
+      set_goals: nextOpen || current.set_goals || Boolean(user?.goal),
       target_weight: current.target_weight || current.weight,
       target_weight_unit: current.target_weight_unit || current.weight_unit,
     }));
+
+    if (!nextOpen && !user?.goal) {
+      setForm((current) => ({ ...current, set_goals: false }));
+      setGoalPreview(null);
+    }
+
     setFieldErrors((current) => ({
       ...current,
       formula_sex: "",
@@ -493,12 +504,11 @@ export default function ProfilePage() {
       payload.activity_level = form.activity_level;
       payload.formula_sex = form.formula_sex;
       payload.macro_ratio = form.macro_ratio;
-    } else if (user?.goal) {
-      payload.clear_goal = true;
     }
 
     try {
       await dispatch(updateProfile(payload)).unwrap();
+      setGoalCardOpen(false);
       toast.success("Profile saved.");
     } catch (reason) {
       const message = (reason as AuthError).message || "Profile update failed.";
@@ -540,155 +550,154 @@ export default function ProfilePage() {
           </p>
         </div>
 
-        <form onSubmit={submit} className="card overflow-hidden">
-          <section className="p-5 sm:p-7">
-            <h2 className="mb-5 text-lg font-bold text-ink">Personal information</h2>
-            <div className="grid gap-5 sm:grid-cols-2">
-              <Field
-                label="Full name"
-                name="name"
-                value={form.name}
-                onChange={(value) => update("name", value)}
-                icon={UserRound}
-                error={fieldErrors.name}
-              />
-              <label className="form-field">
-                <span className="form-label">Email address</span>
-                <input
-                  value={user.email}
-                  readOnly
-                  className="form-control bg-canvas text-muted"
-                  aria-label="Email address"
+        <form onSubmit={submit} className="space-y-5">
+          <div className="card overflow-hidden">
+            <section className="border-b border-line p-5 sm:p-7">
+              <h2 className="mb-5 text-lg font-bold text-ink">Personal information</h2>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <Field
+                  label="Full name"
+                  name="name"
+                  value={form.name}
+                  onChange={(value) => update("name", value)}
+                  icon={UserRound}
+                  error={fieldErrors.name}
                 />
-                <span className="text-xs text-muted">Contact support to change your email.</span>
-              </label>
-              <Field
-                label="Age"
-                name="age"
-                type="number"
-                min="13"
-                max="120"
-                value={form.age}
-                onChange={(value) => update("age", value)}
-                icon={UserRound}
-                error={fieldErrors.age}
-              />
-              <div className="hidden sm:block" />
-              <MeasurementField
-                label="Weight"
-                name="weight"
-                icon={Weight}
-                value={form.weight}
-                unit={form.weight_unit}
-                units={["kg", "lb"]}
-                onValueChange={(value) => update("weight", value)}
-                onUnitChange={(value) => updateWeightUnit(value as "kg" | "lb")}
-                error={fieldErrors.weight}
-              />
-              <HeightField
-                label="Height"
-                name="height"
-                icon={Ruler}
-                value={form.height}
-                inches={form.height_inches}
-                unit={form.height_unit}
-                onValueChange={(value) => update("height", value)}
-                onInchesChange={(value) => update("height_inches", value)}
-                onUnitChange={updateHeightUnit}
-                error={fieldErrors.height}
-              />
-              <div className="flex items-center justify-between gap-4 rounded-lg border border-line bg-canvas px-4 py-3 sm:col-span-2">
-                <div className="flex min-w-0 items-center gap-3">
-                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-brand-active">
-                    <Activity size={18} aria-hidden="true" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold text-ink">BMI</p>
-                    <p className="mt-0.5 text-xs text-muted">Based on current weight and height</p>
+                <label className="form-field">
+                  <span className="form-label">Email address</span>
+                  <input
+                    value={user.email}
+                    readOnly
+                    className="form-control bg-canvas text-muted"
+                    aria-label="Email address"
+                  />
+                  <span className="text-xs text-muted">Contact support to change your email.</span>
+                </label>
+                <Field
+                  label="Age"
+                  name="age"
+                  type="number"
+                  min="13"
+                  max="120"
+                  value={form.age}
+                  onChange={(value) => update("age", value)}
+                  icon={UserRound}
+                  error={fieldErrors.age}
+                />
+                <div className="hidden sm:block" />
+                <MeasurementField
+                  label="Weight"
+                  name="weight"
+                  icon={Weight}
+                  value={form.weight}
+                  unit={form.weight_unit}
+                  units={["kg", "lb"]}
+                  onValueChange={(value) => update("weight", value)}
+                  onUnitChange={(value) => updateWeightUnit(value as "kg" | "lb")}
+                  error={fieldErrors.weight}
+                />
+                <HeightField
+                  label="Height"
+                  name="height"
+                  icon={Ruler}
+                  value={form.height}
+                  inches={form.height_inches}
+                  unit={form.height_unit}
+                  onValueChange={(value) => update("height", value)}
+                  onInchesChange={(value) => update("height_inches", value)}
+                  onUnitChange={updateHeightUnit}
+                  error={fieldErrors.height}
+                />
+                <div className="flex items-center justify-between gap-4 rounded-lg border border-line bg-canvas px-4 py-3 sm:col-span-2">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-brand-active">
+                      <Activity size={18} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-ink">BMI</p>
+                      <p className="mt-0.5 text-xs text-muted">Based on current weight and height</p>
+                    </div>
                   </div>
+                  <p className="shrink-0 text-2xl font-bold tabular-nums text-ink">
+                    {formatBmi(bmi)}
+                  </p>
                 </div>
-                <p className="shrink-0 text-2xl font-bold tabular-nums text-ink">
-                  {formatBmi(bmi)}
-                </p>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <section className="border-b border-line p-5 sm:p-7">
-            <h2 className="text-lg font-bold text-ink">Daily nutrition targets</h2>
-            <p className="mb-5 mt-1 text-xs text-muted">
-              Adjust these values to match guidance from your nutrition plan.
-            </p>
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              <NumberField
-                label="Calories"
-                unit={NUTRIENT_UNITS.calories}
-                name="target_calories"
-                value={form.target_calories}
-                onChange={(value) => update("target_calories", value)}
-                error={fieldErrors.target_calories}
-              />
-              <NumberField
-                label="Protein"
-                unit={NUTRIENT_UNITS.protein}
-                name="target_protein"
-                value={form.target_protein}
-                onChange={(value) => update("target_protein", value)}
-                error={fieldErrors.target_protein}
-              />
-              <NumberField
-                label="Net carbs"
-                unit={NUTRIENT_UNITS.netCarbs}
-                name="target_carbs"
-                value={form.target_carbs}
-                onChange={(value) => update("target_carbs", value)}
-                error={fieldErrors.target_carbs}
-              />
-              <NumberField
-                label="Fat"
-                unit={NUTRIENT_UNITS.fats}
-                name="target_fat"
-                value={form.target_fat}
-                onChange={(value) => update("target_fat", value)}
-                error={fieldErrors.target_fat}
-              />
-            </div>
-          </section>
-
-          <div className="border-y border-line bg-canvas px-5 py-4 sm:px-7">
-            <div className="flex items-center gap-3">
-              <span className="h-px flex-1 bg-line" aria-hidden="true" />
-              <span className="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand">
-                <Target size={14} aria-hidden="true" />
-                Goal planning
-              </span>
-              <span className="h-px flex-1 bg-line" aria-hidden="true" />
-            </div>
+            <section className="p-5 sm:p-7">
+              <h2 className="text-lg font-bold text-ink">Daily nutrition targets</h2>
+              <p className="mb-5 mt-1 text-xs text-muted">
+                Adjust these values to match guidance from your nutrition plan.
+              </p>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <NumberField
+                  label="Calories"
+                  unit={NUTRIENT_UNITS.calories}
+                  name="target_calories"
+                  value={form.target_calories}
+                  onChange={(value) => update("target_calories", value)}
+                  error={fieldErrors.target_calories}
+                />
+                <NumberField
+                  label="Protein"
+                  unit={NUTRIENT_UNITS.protein}
+                  name="target_protein"
+                  value={form.target_protein}
+                  onChange={(value) => update("target_protein", value)}
+                  error={fieldErrors.target_protein}
+                />
+                <NumberField
+                  label="Net carbs"
+                  unit={NUTRIENT_UNITS.netCarbs}
+                  name="target_carbs"
+                  value={form.target_carbs}
+                  onChange={(value) => update("target_carbs", value)}
+                  error={fieldErrors.target_carbs}
+                />
+                <NumberField
+                  label="Fat"
+                  unit={NUTRIENT_UNITS.fats}
+                  name="target_fat"
+                  value={form.target_fat}
+                  onChange={(value) => update("target_fat", value)}
+                  error={fieldErrors.target_fat}
+                />
+              </div>
+            </section>
           </div>
 
-          <section className="border-b border-line bg-brand-soft/40 p-5 sm:p-7">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-ink">Set goals</h2>
-                <p className="mt-1 text-xs text-muted">
-                  Estimated with Mifflin-St Jeor TDEE and your selected macro split.
-                </p>
+          <section className="card overflow-hidden bg-brand-soft/35">
+            <button
+              type="button"
+              onClick={toggleGoalCard}
+              aria-expanded={goalCardOpen}
+              className="flex w-full items-center justify-between gap-4 p-4 text-left transition hover:bg-brand-soft sm:p-5"
+            >
+              <div className="flex min-w-0 items-center gap-3">
+                <span className="grid size-10 shrink-0 place-items-center rounded-full bg-surface text-brand-active">
+                  <Target size={18} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <h2 className="text-base font-bold text-ink">Set goals</h2>
+                  <p className="mt-1 text-xs text-muted">
+                    Estimated with Mifflin-St Jeor TDEE and your selected macro split.
+                  </p>
+                </div>
               </div>
-              <label className="flex w-fit cursor-pointer items-center gap-3 rounded-lg border border-line bg-canvas px-3 py-2 text-sm font-bold text-ink">
-                <input
-                  type="checkbox"
-                  checked={form.set_goals}
-                  onChange={(event) => updateSetGoals(event.target.checked)}
-                  className="size-4 accent-brand"
+              <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-surface text-brand-active">
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform ${goalCardOpen ? "rotate-180" : ""}`}
+                  aria-hidden="true"
                 />
-                Enable
-              </label>
-            </div>
+              </span>
+            </button>
 
-            {form.set_goals && (
-              <div className="mt-5">
+            {goalCardOpen && (
+              <div className="border-t border-line px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
                 <GoalPicker value={form.target_goal} onChange={updateGoalType} />
-                <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   <MeasurementField
                     label="Target weight"
                     name="target_weight"
@@ -748,13 +757,13 @@ export default function ProfilePage() {
                   preview={goalPreview}
                   loading={goalPreviewLoading}
                   error={goalPreviewError}
-                  enabled={form.set_goals}
+                  enabled={goalCardOpen}
                 />
               </div>
             )}
           </section>
 
-          <div className="flex flex-col gap-3 border-t border-line bg-canvas px-5 py-4 sm:flex-row sm:items-center sm:justify-end sm:px-7">
+          <div className="flex flex-col gap-3 px-1 sm:flex-row sm:items-center sm:justify-end">
             <button type="submit" disabled={profileLoading} className="btn btn-primary sm:min-w-36">
               {profileLoading ? (
                 <span className="auth-spinner" aria-label="Saving profile" />
