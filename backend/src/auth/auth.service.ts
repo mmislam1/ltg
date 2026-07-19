@@ -6,6 +6,7 @@ import { createHash, randomUUID } from 'node:crypto';
 import type { SignOptions } from 'jsonwebtoken';
 import {
   DEFAULT_TIMEZONE,
+  HeightUnit,
   UserDocument,
   UserRole,
 } from '../users/schemas/user.schema';
@@ -46,7 +47,7 @@ export class AuthService {
         age: dto.age,
         weight: dto.weight,
         weightUnit: dto.weight_unit,
-        height: dto.height,
+        height: this.heightToCentimeters(dto.height, dto.height_unit, dto.height_inches),
         heightUnit: dto.height_unit,
         ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
         passwordHash: await hash(dto.password, 12),
@@ -113,7 +114,9 @@ export class AuthService {
       ...(dto.age !== undefined ? { age: dto.age } : {}),
       ...(dto.weight !== undefined ? { weight: dto.weight } : {}),
       ...(dto.weight_unit !== undefined ? { weightUnit: dto.weight_unit } : {}),
-      ...(dto.height !== undefined ? { height: dto.height } : {}),
+      ...(dto.height !== undefined
+        ? { height: this.heightToCentimeters(dto.height, dto.height_unit, dto.height_inches) }
+        : {}),
       ...(dto.height_unit !== undefined ? { heightUnit: dto.height_unit } : {}),
       ...(dto.target_calories !== undefined ? { targetCalories: dto.target_calories } : {}),
       ...(dto.target_protein !== undefined ? { targetProtein: dto.target_protein } : {}),
@@ -160,6 +163,9 @@ export class AuthService {
   }
 
   private userResponse(user: UserDocument) {
+    const heightUnit = user.heightUnit || HeightUnit.CM;
+    const heightCm = this.storedHeightCentimeters(user.height, heightUnit);
+
     return {
       id: user.id,
       name: user.name,
@@ -168,8 +174,8 @@ export class AuthService {
       age: user.age,
       weight: user.weight,
       weight_unit: user.weightUnit,
-      height: user.height,
-      height_unit: user.heightUnit,
+      height: this.heightForDisplay(heightCm, heightUnit),
+      height_unit: heightUnit,
       timezone: user.timezone || DEFAULT_TIMEZONE,
       daily_goals: {
         target_calories: user.targetCalories,
@@ -178,5 +184,49 @@ export class AuthService {
         target_fat: user.targetFat,
       },
     };
+  }
+
+  private heightToCentimeters(
+    height: number,
+    heightUnit: HeightUnit | undefined,
+    heightInches?: number,
+  ) {
+    if (heightUnit === HeightUnit.FT) {
+      if (heightInches === undefined) {
+        return this.legacyFeetToCentimeters(height);
+      }
+      return this.round((height * 12 + heightInches) * 2.54);
+    }
+    return this.round(height);
+  }
+
+  private storedHeightCentimeters(height: number, heightUnit: HeightUnit) {
+    if (heightUnit === HeightUnit.FT && height <= 10) {
+      return this.legacyFeetToCentimeters(height);
+    }
+    return height;
+  }
+
+  private legacyFeetToCentimeters(height: number) {
+    const feet = Math.trunc(height);
+    const inchesText = height.toString().split('.')[1];
+    const inches = inchesText ? Number(inchesText) : 0;
+
+    if (Number.isFinite(inches) && inches >= 0 && inches < 12) {
+      return this.round((feet * 12 + inches) * 2.54);
+    }
+
+    return this.round(height * 30.48);
+  }
+
+  private heightForDisplay(heightCm: number, heightUnit: HeightUnit) {
+    if (heightUnit === HeightUnit.FT) {
+      return this.round(heightCm / 30.48);
+    }
+    return this.round(heightCm);
+  }
+
+  private round(value: number) {
+    return Number(value.toFixed(2));
   }
 }

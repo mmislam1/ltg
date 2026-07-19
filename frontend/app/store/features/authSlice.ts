@@ -60,6 +60,7 @@ export interface SignUpData {
   weight: number;
   weight_unit: "kg" | "lb";
   height: number;
+  height_inches?: number;
   height_unit: "cm" | "ft";
   timezone?: string;
   password: string;
@@ -72,6 +73,7 @@ export interface UpdateProfileData {
   weight: number;
   weight_unit: "kg" | "lb";
   height: number;
+  height_inches?: number;
   height_unit: "cm" | "ft";
   timezone?: string;
   target_calories: number;

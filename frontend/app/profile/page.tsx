@@ -2,8 +2,17 @@
 
 import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Ruler, Save, UserRound, Weight } from "lucide-react";
+import { Activity, ArrowLeft, Ruler, Save, UserRound, Weight } from "lucide-react";
 import { toast } from "sonner";
+import {
+  bmiFromMeasurements,
+  centimetersToFeet,
+  feetInchesToCentimeters,
+  feetInchesToFeet,
+  feetToFeetInches,
+  formatBmi,
+  inputNumber,
+} from "../bodyMetrics";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   AuthError,
@@ -19,6 +28,7 @@ type ProfileForm = {
   weight: string;
   weight_unit: "kg" | "lb";
   height: string;
+  height_inches: string;
   height_unit: "cm" | "ft";
   target_calories: string;
   target_protein: string;
@@ -32,6 +42,7 @@ const emptyForm: ProfileForm = {
   weight: "",
   weight_unit: "kg",
   height: "",
+  height_inches: "0",
   height_unit: "cm",
   target_calories: "",
   target_protein: "",
@@ -39,18 +50,23 @@ const emptyForm: ProfileForm = {
   target_fat: "",
 };
 
-const formFromUser = (user: User): ProfileForm => ({
-  name: user.name,
-  age: String(user.age),
-  weight: String(user.weight),
-  weight_unit: user.weightUnit,
-  height: String(user.height),
-  height_unit: user.heightUnit,
-  target_calories: String(user.dailyGoals.targetCalories),
-  target_protein: String(user.dailyGoals.targetProtein),
-  target_carbs: String(user.dailyGoals.targetCarb),
-  target_fat: String(user.dailyGoals.targetFat),
-});
+const formFromUser = (user: User): ProfileForm => {
+  const heightParts = user.heightUnit === "ft" ? feetToFeetInches(user.height) : null;
+
+  return {
+    name: user.name,
+    age: String(user.age),
+    weight: String(user.weight),
+    weight_unit: user.weightUnit,
+    height: heightParts ? String(heightParts.feet) : String(user.height),
+    height_inches: heightParts ? String(heightParts.inches) : "0",
+    height_unit: user.heightUnit,
+    target_calories: String(user.dailyGoals.targetCalories),
+    target_protein: String(user.dailyGoals.targetProtein),
+    target_carbs: String(user.dailyGoals.targetCarb),
+    target_fat: String(user.dailyGoals.targetFat),
+  };
+};
 
 export default function ProfilePage() {
   const dispatch = useAppDispatch();
@@ -59,6 +75,16 @@ export default function ProfilePage() {
   const [form, setForm] = useState<ProfileForm>(emptyForm);
   const [formUserId, setFormUserId] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const heightForBmi =
+    form.height_unit === "ft"
+      ? feetInchesToFeet(Number(form.height), Number(form.height_inches || 0))
+      : Number(form.height);
+  const bmi = bmiFromMeasurements({
+    weight: Number(form.weight),
+    weightUnit: form.weight_unit,
+    height: heightForBmi,
+    heightUnit: form.height_unit,
+  });
 
   useEffect(() => {
     if (initialized && !user) router.replace("/auth/signin");
@@ -74,6 +100,32 @@ export default function ProfilePage() {
     setFieldErrors((current) => ({ ...current, [field]: "" }));
   };
 
+  const updateHeightUnit = (value: "cm" | "ft") => {
+    setForm((current) => {
+      if (current.height_unit === value) return current;
+      const height = Number(current.height);
+      const inches = Number(current.height_inches || 0);
+
+      if (value === "ft") {
+        const parts = feetToFeetInches(centimetersToFeet(height));
+        return {
+          ...current,
+          height: parts.feet ? String(parts.feet) : "",
+          height_inches: String(parts.inches),
+          height_unit: value,
+        };
+      }
+
+      return {
+        ...current,
+        height: inputNumber(feetInchesToCentimeters(height, inches), 1),
+        height_inches: "0",
+        height_unit: value,
+      };
+    });
+    setFieldErrors((current) => ({ ...current, height: "", height_inches: "" }));
+  };
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     const payload: UpdateProfileData = {
@@ -82,6 +134,7 @@ export default function ProfilePage() {
       weight: Number(form.weight),
       weight_unit: form.weight_unit,
       height: Number(form.height),
+      height_inches: form.height_unit === "ft" ? Number(form.height_inches || 0) : undefined,
       height_unit: form.height_unit,
       target_calories: Number(form.target_calories),
       target_protein: Number(form.target_protein),
@@ -93,7 +146,13 @@ export default function ProfilePage() {
     if (payload.name.length < 2) errors.name = "Enter at least 2 characters.";
     if (payload.age < 13 || payload.age > 120) errors.age = "Age must be between 13 and 120.";
     if (payload.weight <= 0) errors.weight = "Enter a valid weight.";
-    if (payload.height <= 0) errors.height = "Enter a valid height.";
+    if (form.height_unit === "ft") {
+      const inches = Number(form.height_inches || 0);
+      if (payload.height <= 0) errors.height = "Enter a valid height.";
+      if (inches < 0 || inches >= 12) errors.height = "Inches must be between 0 and 11.";
+    } else if (payload.height <= 0) {
+      errors.height = "Enter a valid height.";
+    }
     if (payload.target_calories < 500) errors.target_calories = "Calories must be at least 500.";
     setFieldErrors(errors);
     if (Object.keys(errors).length) return;
@@ -146,7 +205,19 @@ export default function ProfilePage() {
               <Field label="Age" name="age" type="number" min="13" max="120" value={form.age} onChange={(value) => update("age", value)} icon={UserRound} error={fieldErrors.age} />
               <div className="hidden sm:block" />
               <MeasurementField label="Weight" name="weight" icon={Weight} value={form.weight} unit={form.weight_unit} units={["kg", "lb"]} onValueChange={(value) => update("weight", value)} onUnitChange={(value) => update("weight_unit", value as "kg" | "lb")} error={fieldErrors.weight} />
-              <MeasurementField label="Height" name="height" icon={Ruler} value={form.height} unit={form.height_unit} units={["cm", "ft"]} onValueChange={(value) => update("height", value)} onUnitChange={(value) => update("height_unit", value as "cm" | "ft")} error={fieldErrors.height} />
+              <HeightField label="Height" name="height" icon={Ruler} value={form.height} inches={form.height_inches} unit={form.height_unit} onValueChange={(value) => update("height", value)} onInchesChange={(value) => update("height_inches", value)} onUnitChange={updateHeightUnit} error={fieldErrors.height} />
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-line bg-canvas px-4 py-3 sm:col-span-2">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft text-brand-active">
+                    <Activity size={18} aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-ink">BMI</p>
+                    <p className="mt-0.5 text-xs text-muted">Based on current weight and height</p>
+                  </div>
+                </div>
+                <p className="shrink-0 text-2xl font-bold tabular-nums text-ink">{formatBmi(bmi)}</p>
+              </div>
             </div>
           </section>
 
@@ -197,6 +268,40 @@ function MeasurementField({ label, name, value, unit, units, icon: Icon, onValue
     <label className="form-field" htmlFor={name}>
       <span className="form-label">{label}</span>
       <span className="relative flex"><Icon size={17} className="absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" /><input id={name} type="number" min="1" step="0.01" value={value} onChange={(event) => onValueChange(event.target.value)} className="form-control !rounded-r-none !pl-10" aria-invalid={Boolean(error)} /><select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value)} className="rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-3 text-sm font-bold text-brand">{units.map((item) => <option key={item}>{item}</option>)}</select></span>
+      {error && <span className="form-error">{error}</span>}
+    </label>
+  );
+}
+
+interface HeightFieldProps { label: string; name: string; value: string; inches: string; unit: "cm" | "ft"; icon: typeof Ruler; onValueChange: (value: string) => void; onInchesChange: (value: string) => void; onUnitChange: (value: "cm" | "ft") => void; error?: string }
+function HeightField({ label, name, value, inches, unit, icon: Icon, onValueChange, onInchesChange, onUnitChange, error }: HeightFieldProps) {
+  return (
+    <label className="form-field" htmlFor={name}>
+      <span className="form-label">{label}</span>
+      {unit === "ft" ? (
+        <span className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+          <span className="relative">
+            <Icon size={17} className="absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" />
+            <input id={name} type="number" min="1" step="1" value={value} onChange={(event) => onValueChange(event.target.value)} className="form-control !rounded-r-none !pl-10 !pr-8" aria-invalid={Boolean(error)} />
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">ft</span>
+          </span>
+          <span className="relative -ml-px">
+            <input id={`${name}_inches`} type="number" min="0" max="11" step="1" value={inches} onChange={(event) => onInchesChange(event.target.value)} className="form-control !rounded-none !pr-8" aria-invalid={Boolean(error)} aria-label="Height inches" />
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">in</span>
+          </span>
+          <select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value as "cm" | "ft")} className="rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-3 text-sm font-bold text-brand">
+            {["cm", "ft"].map((item) => <option key={item}>{item}</option>)}
+          </select>
+        </span>
+      ) : (
+        <span className="relative flex">
+          <Icon size={17} className="absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" />
+          <input id={name} type="number" min="1" step="0.01" value={value} onChange={(event) => onValueChange(event.target.value)} className="form-control !rounded-r-none !pl-10" aria-invalid={Boolean(error)} />
+          <select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value as "cm" | "ft")} className="rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-3 text-sm font-bold text-brand">
+            {["cm", "ft"].map((item) => <option key={item}>{item}</option>)}
+          </select>
+        </span>
+      )}
       {error && <span className="form-error">{error}</span>}
     </label>
   );

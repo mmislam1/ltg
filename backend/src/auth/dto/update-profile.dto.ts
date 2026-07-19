@@ -46,6 +46,12 @@ export class UpdateProfileDto {
   height?: number;
 
   @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0)
+  @Max(11.99)
+  height_inches?: number;
+
+  @IsOptional()
   @IsEnum(HeightUnit)
   height_unit?: HeightUnit;
 

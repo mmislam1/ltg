@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { CalendarClock, Copy, Droplets, FileText, Footprints, Pencil } from "lucide-react";
 import { toast } from "sonner";
+import { bmiFromMeasurements, formatBmi, formatHeight } from "../bodyMetrics";
 import api, { getApiError } from "../store/api";
 import { fetchMealActivity, type ListItems, type Meal } from "../store/features/activitySlice";
 import type { User } from "../store/features/authSlice";
@@ -350,6 +351,15 @@ export function DiaryPdfPreview({
 }
 
 function PdfHero({ user, date }: { user: User; date: string }) {
+  const bmi = formatBmi(
+    bmiFromMeasurements({
+      weight: user.weight,
+      weightUnit: user.weightUnit,
+      height: user.height,
+      heightUnit: user.heightUnit,
+    }),
+  );
+
   return (
     <div className="relative min-h-[176px] overflow-hidden bg-[#115E59] px-5 py-7 text-white sm:px-10 sm:py-8">
       <span className="absolute -right-5 -top-16 h-36 w-36 rounded-full bg-[#147A72]" />
@@ -358,7 +368,7 @@ function PdfHero({ user, date }: { user: User; date: string }) {
         <p className="text-xs font-bold tracking-[0.18em] sm:text-[11px]">LOSE TO GAIN</p>
         <h2 className="mt-2 text-[26px] font-bold leading-tight sm:text-[28px]">Your daily diet chart</h2>
         <p className="mt-3 text-sm text-[#CDE9E5] sm:text-[11px]">{displayDate(date)}</p>
-        <p className="mt-2 max-w-[85%] text-sm leading-6 text-[#CDE9E5] sm:text-[11px] sm:leading-5">{user.name} &nbsp; | &nbsp; {compact(user.weight)} {user.weightUnit} &nbsp; | &nbsp; {compact(user.height)} {user.heightUnit} &nbsp; | &nbsp; {user.age} years</p>
+        <p className="mt-2 max-w-[85%] text-sm leading-6 text-[#CDE9E5] sm:text-[11px] sm:leading-5">{user.name} &nbsp; | &nbsp; {compact(user.weight)} {user.weightUnit} &nbsp; | &nbsp; {formatHeight(user.height, user.heightUnit)} &nbsp; | &nbsp; {user.age} years &nbsp; | &nbsp; BMI {bmi}</p>
       </div>
     </div>
   );

@@ -140,10 +140,15 @@ export class DietChartPdfService {
     const details = [
       chart.user.name,
       `${this.compact(chart.user.weight)} ${chart.user.weightUnit}`,
-      `${this.compact(chart.user.height)} ${chart.user.heightUnit}`,
+      this.formatHeight(chart.user.height, chart.user.heightUnit),
       `${chart.user.age} years`,
+      `BMI ${this.formatBmi(this.bmi(chart.user.weight, chart.user.weightUnit, chart.user.height, chart.user.heightUnit))}`,
     ].join('  |  ');
-    document.text(details, PAGE.margin, 117, { lineBreak: false });
+    document.text(details, PAGE.margin, 117, {
+      width: PAGE.width - PAGE.margin * 2,
+      lineBreak: false,
+      ellipsis: true,
+    });
   }
 
   private drawMacroOverview(
@@ -586,6 +591,47 @@ export class DietChartPdfService {
   private compact(value: number, maximumFractionDigits = 1) {
     if (!Number.isFinite(value)) return '0';
     return value.toLocaleString('en-US', { maximumFractionDigits });
+  }
+
+  private bmi(
+    weight: number,
+    weightUnit: string,
+    height: number,
+    heightUnit: string,
+  ) {
+    const weightKg = weightUnit === 'lb' ? weight * 0.45359237 : weight;
+    const heightMeters = heightUnit === 'ft' ? height * 0.3048 : height / 100;
+    if (
+      !Number.isFinite(weightKg) ||
+      !Number.isFinite(heightMeters) ||
+      weightKg <= 0 ||
+      heightMeters <= 0
+    ) {
+      return null;
+    }
+    return weightKg / heightMeters ** 2;
+  }
+
+  private formatBmi(value: number | null) {
+    if (value === null || !Number.isFinite(value)) return 'N/A';
+    return value.toLocaleString('en-US', {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+  }
+
+  private formatHeight(height: number, heightUnit: string) {
+    if (!Number.isFinite(height) || height <= 0) return 'N/A';
+    if (heightUnit === 'ft') {
+      let feet = Math.floor(height);
+      let inches = Math.round((height - feet) * 12);
+      if (inches >= 12) {
+        feet += 1;
+        inches = 0;
+      }
+      return `${feet} ft ${inches} in`;
+    }
+    return `${this.compact(height)} cm`;
   }
 
   private macroDistribution(totals: DietChartNutritionTotals) {

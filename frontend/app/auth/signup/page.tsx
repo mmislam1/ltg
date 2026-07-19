@@ -4,13 +4,20 @@ import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Mail, Ruler, UserRound, Weight } from "lucide-react";
 import { toast } from "sonner";
+import {
+  centimetersToFeet,
+  feetInchesToCentimeters,
+  feetInchesToFeet,
+  feetToFeetInches,
+  inputNumber,
+} from "../../bodyMetrics";
 import AuthShell from "../components/AuthShell";
 import PasswordField from "../components/PasswordField";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { AuthError, clearAuthError, registerUser, SignUpData } from "../../store/features/authSlice";
 
-type FormState = Omit<SignUpData, "age" | "weight" | "height"> & { age: string; weight: string; height: string };
-const initialForm: FormState = { name: "", email: "", age: "", weight: "", weight_unit: "kg", height: "", height_unit: "cm", password: "", password_confirm: "" };
+type FormState = Omit<SignUpData, "age" | "weight" | "height" | "height_inches"> & { age: string; weight: string; height: string; height_inches: string };
+const initialForm: FormState = { name: "", email: "", age: "", weight: "", weight_unit: "kg", height: "", height_inches: "0", height_unit: "cm", password: "", password_confirm: "" };
 
 export default function SignUpPage() {
   const dispatch = useAppDispatch();
@@ -26,13 +33,46 @@ export default function SignUpPage() {
     setForm((current) => ({ ...current, [field]: value }));
     setFieldErrors((current) => ({ ...current, [field]: "" }));
   };
+
+  const updateHeightUnit = (value: "cm" | "ft") => {
+    setForm((current) => {
+      if (current.height_unit === value) return current;
+      const height = Number(current.height);
+      const inches = Number(current.height_inches || 0);
+
+      if (value === "ft") {
+        const parts = feetToFeetInches(centimetersToFeet(height));
+        return {
+          ...current,
+          height: parts.feet ? String(parts.feet) : "",
+          height_inches: String(parts.inches),
+          height_unit: value,
+        };
+      }
+
+      return {
+        ...current,
+        height: inputNumber(feetInchesToCentimeters(height, inches), 1),
+        height_inches: "0",
+        height_unit: value,
+      };
+    });
+    setFieldErrors((current) => ({ ...current, height: "", height_inches: "" }));
+  };
+
   const validate = () => {
     const errors: Record<string, string> = {};
     if (form.name.trim().length < 2) errors.name = "Enter your full name.";
     if (!/^\S+@\S+\.\S+$/.test(form.email)) errors.email = "Enter a valid email address.";
     if (Number(form.age) < 13 || Number(form.age) > 120) errors.age = "Age must be between 13 and 120.";
     if (Number(form.weight) <= 0) errors.weight = "Enter your current weight.";
-    if (Number(form.height) <= 0) errors.height = "Enter your height.";
+    if (form.height_unit === "ft") {
+      const inches = Number(form.height_inches || 0);
+      if (feetInchesToFeet(Number(form.height), inches) <= 0) errors.height = "Enter your height.";
+      if (inches < 0 || inches >= 12) errors.height = "Inches must be between 0 and 11.";
+    } else if (Number(form.height) <= 0) {
+      errors.height = "Enter your height.";
+    }
     if (form.password.length < 8) errors.password = "Use at least 8 characters.";
     if (form.password !== form.password_confirm) errors.password_confirm = "Passwords do not match.";
     setFieldErrors(errors);
@@ -49,6 +89,7 @@ export default function SignUpPage() {
         age: Number(form.age),
         weight: Number(form.weight),
         height: Number(form.height),
+        height_inches: form.height_unit === "ft" ? Number(form.height_inches || 0) : undefined,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || undefined,
       })).unwrap();
       router.replace("/");
@@ -76,7 +117,7 @@ export default function SignUpPage() {
           <div className="grid gap-5 sm:grid-cols-[0.7fr_1fr_1fr]">
             <TextField icon={UserRound} label="Age" name="age" type="number" value={form.age} onChange={(value) => update("age", value)} placeholder="28" min="13" max="120" inputMode="numeric" error={fieldErrors.age} />
             <MeasurementField icon={Weight} label="Weight" name="weight" value={form.weight} unit={form.weight_unit} units={["kg", "lb"]} onValueChange={(value) => update("weight", value)} onUnitChange={(value) => update("weight_unit", value)} error={fieldErrors.weight} />
-            <MeasurementField icon={Ruler} label="Height" name="height" value={form.height} unit={form.height_unit} units={["cm", "ft"]} onValueChange={(value) => update("height", value)} onUnitChange={(value) => update("height_unit", value)} error={fieldErrors.height} />
+            <HeightField icon={Ruler} label="Height" name="height" value={form.height} inches={form.height_inches} unit={form.height_unit} onValueChange={(value) => update("height", value)} onInchesChange={(value) => update("height_inches", value)} onUnitChange={updateHeightUnit} error={fieldErrors.height} />
           </div>
           <div className="grid gap-5 sm:grid-cols-2">
             <PasswordField label="Password" id="password" name="password" value={form.password} onChange={(event) => update("password", event.target.value)} autoComplete="new-password" placeholder="At least 8 characters" required error={fieldErrors.password} />
@@ -100,4 +141,13 @@ function TextField({ icon: Icon, label, name, value, onChange, error, ...props }
 interface MeasurementFieldProps { icon: typeof Weight; label: string; name: string; value: string; unit: string; units: string[]; onValueChange: (value: string) => void; onUnitChange: (value: string) => void; error?: string }
 function MeasurementField({ icon: Icon, label, name, value, unit, units, onValueChange, onUnitChange, error }: MeasurementFieldProps) {
   return <label className="form-field" htmlFor={name}><span className="form-label">{label}</span><span className="relative flex"><Icon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" size={18} /><input id={name} name={name} type="number" min="1" step="0.01" inputMode="decimal" value={value} onChange={(event) => onValueChange(event.target.value)} required aria-invalid={Boolean(error)} className="form-control !min-h-12 !rounded-r-none !pl-11" placeholder={unit === "cm" ? "175" : unit === "ft" ? "5.9" : unit === "kg" ? "70" : "154"} /><select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value)} className="min-h-12 rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-2 text-sm font-bold text-brand focus:border-brand focus:outline-none">{units.map((item) => <option key={item}>{item}</option>)}</select></span>{error && <span className="form-error">{error}</span>}</label>;
+}
+
+interface HeightFieldProps { icon: typeof Ruler; label: string; name: string; value: string; inches: string; unit: "cm" | "ft"; onValueChange: (value: string) => void; onInchesChange: (value: string) => void; onUnitChange: (value: "cm" | "ft") => void; error?: string }
+function HeightField({ icon: Icon, label, name, value, inches, unit, onValueChange, onInchesChange, onUnitChange, error }: HeightFieldProps) {
+  if (unit === "ft") {
+    return <label className="form-field" htmlFor={name}><span className="form-label">{label}</span><span className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]"><span className="relative"><Icon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" size={18} /><input id={name} name={name} type="number" min="1" step="1" inputMode="numeric" value={value} onChange={(event) => onValueChange(event.target.value)} required aria-invalid={Boolean(error)} className="form-control !min-h-12 !rounded-r-none !pl-11 !pr-8" placeholder="5" /><span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">ft</span></span><span className="relative -ml-px"><input id={`${name}_inches`} name={`${name}_inches`} type="number" min="0" max="11" step="1" inputMode="numeric" value={inches} onChange={(event) => onInchesChange(event.target.value)} aria-invalid={Boolean(error)} aria-label="Height inches" className="form-control !min-h-12 !rounded-none !pr-8" placeholder="8" /><span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-muted">in</span></span><select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value as "cm" | "ft")} className="min-h-12 rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-2 text-sm font-bold text-brand focus:border-brand focus:outline-none">{["cm", "ft"].map((item) => <option key={item}>{item}</option>)}</select></span>{error && <span className="form-error">{error}</span>}</label>;
+  }
+
+  return <label className="form-field" htmlFor={name}><span className="form-label">{label}</span><span className="relative flex"><Icon className="pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-muted" size={18} /><input id={name} name={name} type="number" min="1" step="0.01" inputMode="decimal" value={value} onChange={(event) => onValueChange(event.target.value)} required aria-invalid={Boolean(error)} className="form-control !min-h-12 !rounded-r-none !pl-11" placeholder="175" /><select aria-label={`${label} unit`} value={unit} onChange={(event) => onUnitChange(event.target.value as "cm" | "ft")} className="min-h-12 rounded-r-[0.625rem] border border-l-0 border-line bg-surface px-2 text-sm font-bold text-brand focus:border-brand focus:outline-none">{["cm", "ft"].map((item) => <option key={item}>{item}</option>)}</select></span>{error && <span className="form-error">{error}</span>}</label>;
 }

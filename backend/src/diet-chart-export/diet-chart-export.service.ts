@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Food } from '../foods/schemas/food.schema';
 import { MealActivitiesService } from '../meal-activities/meal-activities.service';
+import { HeightUnit } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { DietChartMailService } from './diet-chart-mail.service';
 import { DietChartPdfService } from './diet-chart-pdf.service';
@@ -181,7 +182,7 @@ export class DietChartExportService {
         age: user.age,
         weight: user.weight,
         weightUnit: user.weightUnit,
-        height: user.height,
+        height: this.heightForDisplay(user.height, user.heightUnit),
         heightUnit: user.heightUnit,
       },
       date: activity.date,
@@ -337,5 +338,25 @@ export class DietChartExportService {
     for (const key of Object.keys(total.minerals) as Array<keyof typeof total.minerals>) {
       total.minerals[key] += (nutrition.minerals?.[key] ?? 0) * factor;
     }
+  }
+
+  private heightForDisplay(heightCm: number, heightUnit: HeightUnit) {
+    const normalizedHeightCm =
+      heightUnit === HeightUnit.FT && heightCm <= 10 ? this.legacyFeetToCentimeters(heightCm) : heightCm;
+    return heightUnit === HeightUnit.FT
+      ? Number((normalizedHeightCm / 30.48).toFixed(2))
+      : Number(normalizedHeightCm.toFixed(2));
+  }
+
+  private legacyFeetToCentimeters(height: number) {
+    const feet = Math.trunc(height);
+    const inchesText = height.toString().split('.')[1];
+    const inches = inchesText ? Number(inchesText) : 0;
+
+    if (Number.isFinite(inches) && inches >= 0 && inches < 12) {
+      return Number(((feet * 12 + inches) * 2.54).toFixed(2));
+    }
+
+    return Number((height * 30.48).toFixed(2));
   }
 }
