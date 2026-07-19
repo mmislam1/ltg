@@ -26,6 +26,28 @@ export interface User {
     targetCarb: number;
     targetFat: number;
   };
+  goal: UserGoal | null;
+}
+
+export type WeightGoalType = "lose_weight" | "maintain_weight" | "gain_weight";
+export type FormulaSex = "male" | "female";
+export type ActivityLevel = "sedentary" | "light" | "moderate" | "active" | "very_active";
+export type MacroRatioKey = "balanced" | "high_protein" | "lower_carb" | "keto" | "endurance";
+
+export interface UserGoal {
+  goalType: WeightGoalType;
+  targetWeight: number;
+  targetWeightUnit: "kg" | "lb";
+  durationWeeks: number;
+  activityLevel: ActivityLevel;
+  formulaSex: FormulaSex;
+  macroRatio: MacroRatioKey;
+  suggestedCalories: number;
+  bmr: number;
+  tdee: number;
+  calorieAdjustment: number;
+  targetDate: string;
+  warnings: string[];
 }
 
 interface ApiUser {
@@ -45,6 +67,21 @@ interface ApiUser {
     target_carbs: number;
     target_fat: number;
   };
+  goal?: {
+    goal_type: WeightGoalType;
+    target_weight: number;
+    target_weight_unit: "kg" | "lb";
+    duration_weeks: number;
+    activity_level: ActivityLevel;
+    formula_sex: FormulaSex;
+    macro_ratio: MacroRatioKey;
+    suggested_calories: number;
+    bmr: number;
+    tdee: number;
+    calorie_adjustment: number;
+    target_date: string;
+    warnings?: string[];
+  } | null;
 }
 
 interface AuthResponse {
@@ -80,6 +117,14 @@ export interface UpdateProfileData {
   target_protein: number;
   target_carbs: number;
   target_fat: number;
+  clear_goal?: boolean;
+  goal_type?: WeightGoalType;
+  target_weight?: number;
+  target_weight_unit?: "kg" | "lb";
+  duration_weeks?: number;
+  activity_level?: ActivityLevel;
+  formula_sex?: FormulaSex;
+  macro_ratio?: MacroRatioKey;
 }
 
 type UpdateProfileInput = Partial<UpdateProfileData>;
@@ -128,6 +173,23 @@ const mapUser = (user: ApiUser): User => ({
     targetCarb: user.daily_goals.target_carbs,
     targetFat: user.daily_goals.target_fat,
   },
+  goal: user.goal
+    ? {
+        goalType: user.goal.goal_type,
+        targetWeight: Number(user.goal.target_weight),
+        targetWeightUnit: user.goal.target_weight_unit,
+        durationWeeks: user.goal.duration_weeks,
+        activityLevel: user.goal.activity_level,
+        formulaSex: user.goal.formula_sex,
+        macroRatio: user.goal.macro_ratio,
+        suggestedCalories: user.goal.suggested_calories,
+        bmr: user.goal.bmr,
+        tdee: user.goal.tdee,
+        calorieAdjustment: user.goal.calorie_adjustment,
+        targetDate: user.goal.target_date,
+        warnings: user.goal.warnings || [],
+      }
+    : null,
 });
 
 const authError = (error: unknown, fallback: string): AuthError => ({

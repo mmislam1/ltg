@@ -7,9 +7,11 @@ import type { SignOptions } from 'jsonwebtoken';
 import {
   DEFAULT_TIMEZONE,
   HeightUnit,
+  User,
   UserDocument,
   UserRole,
 } from '../users/schemas/user.schema';
+import { GoalsService } from '../goals/goals.service';
 import { UsersService } from '../users/users.service';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -23,6 +25,7 @@ export class AuthService {
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
+    private readonly goalsService: GoalsService,
   ) {}
 
   async signUp(dto: SignUpDto) {
@@ -109,21 +112,61 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, dto: UpdateProfileDto) {
-    const user = await this.usersService.updateProfile(userId, {
+    const currentUser = await this.usersService.findById(userId);
+    if (!currentUser?.isActive) throw new UnauthorizedException('User account is unavailable.');
+
+    const nextHeightUnit = dto.height_unit ?? currentUser.heightUnit ?? HeightUnit.CM;
+    const nextHeightCm =
+      dto.height !== undefined
+        ? this.heightToCentimeters(dto.height, nextHeightUnit, dto.height_inches)
+        : this.storedHeightCentimeters(
+            currentUser.height,
+            currentUser.heightUnit || HeightUnit.CM,
+          );
+    const update: Partial<User> = {
       ...(dto.name !== undefined ? { name: dto.name } : {}),
       ...(dto.age !== undefined ? { age: dto.age } : {}),
       ...(dto.weight !== undefined ? { weight: dto.weight } : {}),
       ...(dto.weight_unit !== undefined ? { weightUnit: dto.weight_unit } : {}),
-      ...(dto.height !== undefined
-        ? { height: this.heightToCentimeters(dto.height, dto.height_unit, dto.height_inches) }
-        : {}),
+      ...(dto.height !== undefined ? { height: nextHeightCm } : {}),
       ...(dto.height_unit !== undefined ? { heightUnit: dto.height_unit } : {}),
       ...(dto.target_calories !== undefined ? { targetCalories: dto.target_calories } : {}),
       ...(dto.target_protein !== undefined ? { targetProtein: dto.target_protein } : {}),
       ...(dto.target_carbs !== undefined ? { targetCarbs: dto.target_carbs } : {}),
       ...(dto.target_fat !== undefined ? { targetFat: dto.target_fat } : {}),
       ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
-    });
+    };
+
+    if (dto.clear_goal) {
+      update.goal = null;
+    } else {
+      const calculatedGoal = this.goalsService.buildGoalForProfile({
+        age: dto.age ?? currentUser.age,
+        weight: dto.weight ?? currentUser.weight,
+        weightUnit: dto.weight_unit ?? currentUser.weightUnit,
+        heightCm: nextHeightCm,
+        currentGoal: currentUser.goal,
+        patch: {
+          goal_type: dto.goal_type,
+          target_weight: dto.target_weight,
+          target_weight_unit: dto.target_weight_unit,
+          duration_weeks: dto.duration_weeks,
+          activity_level: dto.activity_level,
+          formula_sex: dto.formula_sex,
+          macro_ratio: dto.macro_ratio,
+        },
+      });
+
+      if (calculatedGoal) {
+        update.goal = calculatedGoal.goal;
+        update.targetCalories = calculatedGoal.targets.targetCalories;
+        update.targetProtein = calculatedGoal.targets.targetProtein;
+        update.targetCarbs = calculatedGoal.targets.targetCarbs;
+        update.targetFat = calculatedGoal.targets.targetFat;
+      }
+    }
+
+    const user = await this.usersService.updateProfile(userId, update);
     if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');
     return this.userResponse(user);
   }
@@ -183,6 +226,7 @@ export class AuthService {
         target_carbs: user.targetCarbs,
         target_fat: user.targetFat,
       },
+      goal: this.goalsService.goalResponse(user.goal, user.weightUnit),
     };
   }
 

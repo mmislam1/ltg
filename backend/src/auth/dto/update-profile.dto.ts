@@ -1,5 +1,6 @@
 import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNumber,
@@ -12,6 +13,12 @@ import {
   MinLength,
 } from 'class-validator';
 import { HeightUnit, WeightUnit } from '../../users/schemas/user.schema';
+import {
+  ActivityLevel,
+  FormulaSex,
+  GoalType,
+  MacroRatioKey,
+} from '../../goals/goals.types';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -83,4 +90,40 @@ export class UpdateProfileDto {
   @IsTimeZone()
   @MaxLength(100)
   timezone?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  clear_goal?: boolean;
+
+  @IsOptional()
+  @IsEnum(GoalType)
+  goal_type?: GoalType;
+
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(20)
+  @Max(700)
+  target_weight?: number;
+
+  @IsOptional()
+  @IsEnum(WeightUnit)
+  target_weight_unit?: WeightUnit;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(260)
+  duration_weeks?: number;
+
+  @IsOptional()
+  @IsEnum(ActivityLevel)
+  activity_level?: ActivityLevel;
+
+  @IsOptional()
+  @IsEnum(FormulaSex)
+  formula_sex?: FormulaSex;
+
+  @IsOptional()
+  @IsEnum(MacroRatioKey)
+  macro_ratio?: MacroRatioKey;
 }

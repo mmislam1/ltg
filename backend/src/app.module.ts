@@ -11,6 +11,7 @@ import { FoodsModule } from './foods/foods.module';
 import { MealActivitiesModule } from './meal-activities/meal-activities.module';
 import { DietChartExportModule } from './diet-chart-export/diet-chart-export.module';
 import { AdminModule } from './admin/admin.module';
+import { GoalsModule } from './goals/goals.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { AdminModule } from './admin/admin.module';
     MealActivitiesModule,
     DietChartExportModule,
     AdminModule,
+    GoalsModule,
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }],

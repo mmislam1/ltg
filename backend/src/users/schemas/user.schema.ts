@@ -1,5 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema, Types } from 'mongoose';
+import {
+  ActivityLevel,
+  FormulaSex,
+  GoalType,
+  MacroRatioKey,
+} from '../../goals/goals.types';
 
 export enum WeightUnit {
   KG = 'kg',
@@ -17,6 +23,50 @@ export enum UserRole {
 }
 
 export const DEFAULT_TIMEZONE = 'Asia/Dhaka';
+
+@Schema({ _id: false })
+export class UserGoal {
+  @Prop({ required: true, enum: GoalType })
+  goalType: GoalType;
+
+  @Prop({ required: true, min: 20, max: 700 })
+  targetWeightKg: number;
+
+  @Prop({ required: true, min: 1, max: 260 })
+  durationWeeks: number;
+
+  @Prop({ required: true, enum: ActivityLevel })
+  activityLevel: ActivityLevel;
+
+  @Prop({ required: true, enum: FormulaSex })
+  formulaSex: FormulaSex;
+
+  @Prop({ required: true, enum: MacroRatioKey })
+  macroRatio: MacroRatioKey;
+
+  @Prop({ required: true, min: 500, max: 10_000 })
+  suggestedCalories: number;
+
+  @Prop({ required: true, min: 0, max: 10_000 })
+  bmr: number;
+
+  @Prop({ required: true, min: 0, max: 10_000 })
+  tdee: number;
+
+  @Prop({ required: true })
+  calorieAdjustment: number;
+
+  @Prop({ required: true })
+  startedAt: Date;
+
+  @Prop({ required: true })
+  targetDate: Date;
+
+  @Prop({ required: true })
+  updatedAt: Date;
+}
+
+export const UserGoalSchema = SchemaFactory.createForClass(UserGoal);
 
 @Schema({ timestamps: true, versionKey: false, collection: 'users' })
 export class User {
@@ -52,6 +102,9 @@ export class User {
 
   @Prop({ default: 65, min: 0, max: 1000 })
   targetFat: number;
+
+  @Prop({ type: UserGoalSchema, default: null })
+  goal?: UserGoal | null;
 
   @Prop({ required: true, default: DEFAULT_TIMEZONE, trim: true, maxlength: 100 })
   timezone: string;
