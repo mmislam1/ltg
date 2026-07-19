@@ -136,7 +136,7 @@ export const scanNutritionLabel = createAsyncThunk<CreateFoodInput, File, { reje
       const formData = new FormData();
       formData.append("image", image);
       const { data } = await api.post<CreateFoodInput>("/custom/foods/scan-label", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": undefined },
         timeout: 60_000,
       });
       return data;

@@ -291,6 +291,7 @@ export default function CustomFoodPage() {
     try {
       const scannedFood = await dispatch(scanNutritionLabel(image)).unwrap();
       fillFromScan(scannedFood);
+      toast.success("Scan complete. Review the values before saving.");
     } catch {
       // The API error from the food slice is shown as a toast.
     }

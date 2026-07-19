@@ -13,19 +13,14 @@ interface UploadedNutritionImage {
   size: number;
 }
 
-interface GeminiTextContent {
-  type?: string;
-  text?: string;
-}
-
-interface GeminiStep {
-  type?: string;
-  content?: GeminiTextContent[];
-}
-
-interface GeminiInteractionResponse {
-  output_text?: string;
-  steps?: GeminiStep[];
+interface GeminiGenerateContentResponse {
+  candidates?: {
+    content?: {
+      parts?: {
+        text?: string;
+      }[];
+    };
+  }[];
 }
 
 type CoreKey = 'calories' | 'protein' | 'carbs' | 'fiber' | 'netCarbs' | 'fats';
@@ -63,6 +58,7 @@ const MINERAL_KEYS: MineralKey[] = [
 ];
 
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+const SCAN_TIMEOUT_MS = 45_000;
 
 const numberField = { type: 'number', minimum: 0 };
 const scanResponseSchema = {
@@ -147,49 +143,70 @@ export class NutritionLabelScannerService {
       throw new ServiceUnavailableException('Scan is unavailable.');
     }
 
-    const model = this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-2.5-flash');
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-goog-api-key': apiKey,
-      },
-      body: JSON.stringify({
-        model,
-        store: false,
-        input: [
-          { type: 'text', text: scanPrompt },
-          {
-            type: 'image',
-            data: file.buffer.toString('base64'),
-            mime_type: file.mimetype,
-          },
-        ],
-        response_format: {
-          type: 'text',
-          mime_type: 'application/json',
-          schema: scanResponseSchema,
-        },
-      }),
-    });
+    const model = this.normalizeModelName(
+      this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-2.5-flash'),
+    );
+    const response = await this.requestGemini(model, apiKey, file);
 
     if (!response.ok) {
       throw new ServiceUnavailableException('Unable to scan image.');
     }
 
-    const body = (await response.json()) as GeminiInteractionResponse;
+    const body = (await response.json()) as GeminiGenerateContentResponse;
     return this.normalize(this.parseResponse(body));
   }
 
-  private parseResponse(body: GeminiInteractionResponse) {
-    const text =
-      body.output_text ||
-      body.steps
-        ?.filter((step) => step.type === 'model_output')
-        .flatMap((step) => step.content ?? [])
-        .filter((content) => content.type === 'text' && content.text)
-        .map((content) => content.text)
-        .join('\n');
+  private async requestGemini(model: string, apiKey: string, file: UploadedNutritionImage) {
+    try {
+      return await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(SCAN_TIMEOUT_MS),
+          body: JSON.stringify({
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  { text: scanPrompt },
+                  {
+                    inlineData: {
+                      data: file.buffer.toString('base64'),
+                      mimeType: file.mimetype,
+                    },
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              responseMimeType: 'application/json',
+              responseJsonSchema: scanResponseSchema,
+              temperature: 0.1,
+            },
+            store: false,
+          }),
+        },
+      );
+    } catch (error) {
+      if (error instanceof Error && (error.name === 'AbortError' || error.name === 'TimeoutError')) {
+        throw new ServiceUnavailableException('Scan timed out. Try a clearer photo.');
+      }
+      throw new ServiceUnavailableException('Unable to scan image.');
+    }
+  }
+
+  private normalizeModelName(model: string) {
+    const trimmed = model.trim() || 'gemini-2.5-flash';
+    return trimmed.startsWith('models/') ? trimmed : `models/${trimmed}`;
+  }
+
+  private parseResponse(body: GeminiGenerateContentResponse) {
+    const text = body.candidates
+      ?.flatMap((candidate) => candidate.content?.parts ?? [])
+      .map((part) => part.text)
+      .filter((text): text is string => Boolean(text))
+      .join('\n');
 
     if (!text) {
       throw new ServiceUnavailableException('Unable to scan image.');
