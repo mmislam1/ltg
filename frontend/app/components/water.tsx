@@ -2,23 +2,20 @@
 
 import type { MouseEvent } from 'react';
 import { incrementGlass, saveDailyActivityMetrics } from '../store/features/activitySlice';
-import { Droplets, GlassWater, Plus } from 'lucide-react';
+import { Droplet, Droplets, Plus } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 
-type WaterGlassMarkProps = {
+type WaterDropBadgeProps = {
     className?: string;
-    iconClassName?: string;
-    iconSize?: number;
 };
 
-function WaterGlassMark({ className = '', iconClassName = '', iconSize = 28 }: WaterGlassMarkProps) {
+function WaterDropBadge({ className = '' }: WaterDropBadgeProps) {
     return (
         <span
-            className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl border border-sky-100 bg-gradient-to-b from-white via-sky-50 to-sky-100 text-sky-600 shadow-sm ${className}`}
+            className={`inline-flex shrink-0 items-center justify-center rounded-full border border-sky-100 bg-sky-50 text-sky-600 shadow-sm ${className}`}
             aria-hidden="true"
         >
-            <span className="absolute bottom-[19%] h-[28%] w-[42%] rounded-b-md rounded-t-sm bg-sky-300/45" />
-            <GlassWater size={iconSize} strokeWidth={2.25} className={`relative z-10 ${iconClassName}`} />
+            <Droplet size={25} strokeWidth={2.35} className="fill-sky-200/70 sm:size-7" />
         </span>
     );
 }
@@ -57,21 +54,17 @@ export default function Water() {
                 <button
                     type="button"
                     onClick={handleIncrement}
-                    className="group relative flex size-14 items-center justify-center rounded-xl transition-transform active:translate-y-px sm:size-16"
+                    className="group relative flex size-14 items-center justify-center rounded-full border border-line bg-surface shadow-sm transition-colors hover:border-sky-300 hover:bg-sky-50 active:translate-y-px sm:size-16"
                     aria-label="Add a glass of water"
                 >
-                    <WaterGlassMark
-                        className="size-full transition-all group-hover:border-sky-300 group-hover:shadow-md"
-                        iconClassName="sm:size-9"
-                        iconSize={31}
-                    />
+                    <Droplets size={30} strokeWidth={2.25} className="text-sky-600 sm:size-9" aria-hidden="true" />
                     <span className="absolute -right-1 -top-1 flex size-6 items-center justify-center rounded-full bg-brand text-on-brand shadow-sm transition-colors group-hover:bg-brand-hover">
                         <Plus size={15} strokeWidth={3} aria-hidden="true" />
                     </span>
                 </button>
                 {glassesCount > 0 ? (
                     glassesArray.map((_, index) => (
-                        <WaterGlassMark key={index} className="size-12 sm:size-14" iconClassName="sm:size-8" />
+                        <WaterDropBadge key={index} className="size-12 sm:size-14" />
                     ))
                 ) : (
                     <p className="text-sm font-semibold text-muted">No water logged yet.</p>
