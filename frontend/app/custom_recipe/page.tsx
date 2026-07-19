@@ -187,9 +187,11 @@ export default function CustomRecipePage() {
             />
           </section>
 
-          <button type="submit" disabled={creatingRecipe || ingredients.length === 0} className="btn btn-primary w-full sm:w-auto">
-            <ChefHat size={19} /> {creatingRecipe ? "Saving recipe…" : "Save recipe to foods"}
-          </button>
+          <div className="sm:flex sm:justify-center">
+            <button type="submit" disabled={creatingRecipe || ingredients.length === 0} className="btn btn-primary w-full sm:w-auto">
+              <ChefHat size={19} /> {creatingRecipe ? "Saving recipe…" : "Save recipe to foods"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

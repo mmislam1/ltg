@@ -432,7 +432,7 @@ export default function CustomFoodPage() {
               </div>
             </details>
 
-            <div className="border-t border-line bg-canvas/60 p-5 sm:p-6">
+            <div className="border-t border-line bg-canvas/60 p-5 sm:flex sm:justify-center sm:p-6">
               <button type="submit" disabled={creating} className="btn btn-primary w-full sm:w-auto">
                 <Plus size={19} /> {creating ? "Saving food…" : "Save custom food"}
               </button>
