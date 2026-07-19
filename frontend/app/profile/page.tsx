@@ -541,7 +541,7 @@ export default function ProfilePage() {
         </div>
 
         <form onSubmit={submit} className="card overflow-hidden">
-          <section className="border-b border-line p-5 sm:p-7">
+          <section className="p-5 sm:p-7">
             <h2 className="mb-5 text-lg font-bold text-ink">Personal information</h2>
             <div className="grid gap-5 sm:grid-cols-2">
               <Field
@@ -615,100 +615,6 @@ export default function ProfilePage() {
           </section>
 
           <section className="border-b border-line p-5 sm:p-7">
-            <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-ink">Set goals</h2>
-                <p className="mt-1 text-xs text-muted">
-                  Estimated with Mifflin-St Jeor TDEE and your selected macro split.
-                </p>
-              </div>
-              <label className="flex w-fit cursor-pointer items-center gap-3 rounded-lg border border-line bg-canvas px-3 py-2 text-sm font-bold text-ink">
-                <input
-                  type="checkbox"
-                  checked={form.set_goals}
-                  onChange={(event) => updateSetGoals(event.target.checked)}
-                  className="size-4 accent-brand"
-                />
-                Enable
-              </label>
-            </div>
-
-            <div className={!form.set_goals ? "pointer-events-none opacity-55" : ""}>
-              <GoalPicker
-                value={form.target_goal}
-                onChange={updateGoalType}
-                disabled={!form.set_goals}
-              />
-              <div className="mt-5 grid gap-5 sm:grid-cols-2">
-                <MeasurementField
-                  label="Target weight"
-                  name="target_weight"
-                  icon={Target}
-                  value={form.target_weight}
-                  unit={
-                    form.target_goal === "maintain_weight"
-                      ? form.weight_unit
-                      : form.target_weight_unit
-                  }
-                  units={["kg", "lb"]}
-                  disabled={!form.set_goals || form.target_goal === "maintain_weight"}
-                  onValueChange={(value) => update("target_weight", value)}
-                  onUnitChange={(value) => update("target_weight_unit", value as "kg" | "lb")}
-                  error={fieldErrors.target_weight}
-                />
-                <NumberField
-                  label="Duration"
-                  unit="wk"
-                  name="duration_weeks"
-                  min="1"
-                  max="260"
-                  value={form.duration_weeks}
-                  disabled={!form.set_goals}
-                  onChange={(value) => update("duration_weeks", value)}
-                  error={fieldErrors.duration_weeks}
-                />
-                <SelectField
-                  label="BMR formula sex"
-                  name="formula_sex"
-                  icon={UserRound}
-                  value={form.formula_sex}
-                  disabled={!form.set_goals}
-                  placeholder="Select"
-                  options={[
-                    { value: "male", label: "Male" },
-                    { value: "female", label: "Female" },
-                  ]}
-                  onChange={(value) => update("formula_sex", value as FormulaSex | "")}
-                  error={fieldErrors.formula_sex}
-                />
-                <SelectField
-                  label="Activity level"
-                  name="activity_level"
-                  icon={Gauge}
-                  value={form.activity_level}
-                  disabled={!form.set_goals}
-                  options={activityOptions}
-                  onChange={(value) => update("activity_level", value as ActivityLevel)}
-                  error={fieldErrors.activity_level}
-                />
-              </div>
-
-              <MacroRatioPicker
-                value={form.macro_ratio}
-                disabled={!form.set_goals}
-                onChange={(value) => update("macro_ratio", value)}
-              />
-
-              <GoalPreviewPanel
-                preview={goalPreview}
-                loading={goalPreviewLoading}
-                error={goalPreviewError}
-                enabled={form.set_goals}
-              />
-            </div>
-          </section>
-
-          <section className="p-5 sm:p-7">
             <h2 className="text-lg font-bold text-ink">Daily nutrition targets</h2>
             <p className="mb-5 mt-1 text-xs text-muted">
               Adjust these values to match guidance from your nutrition plan.
@@ -747,6 +653,105 @@ export default function ProfilePage() {
                 error={fieldErrors.target_fat}
               />
             </div>
+          </section>
+
+          <div className="border-y border-line bg-canvas px-5 py-4 sm:px-7">
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-line" aria-hidden="true" />
+              <span className="inline-flex items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-bold uppercase tracking-[0.14em] text-brand">
+                <Target size={14} aria-hidden="true" />
+                Goal planning
+              </span>
+              <span className="h-px flex-1 bg-line" aria-hidden="true" />
+            </div>
+          </div>
+
+          <section className="border-b border-line bg-brand-soft/40 p-5 sm:p-7">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <h2 className="text-lg font-bold text-ink">Set goals</h2>
+                <p className="mt-1 text-xs text-muted">
+                  Estimated with Mifflin-St Jeor TDEE and your selected macro split.
+                </p>
+              </div>
+              <label className="flex w-fit cursor-pointer items-center gap-3 rounded-lg border border-line bg-canvas px-3 py-2 text-sm font-bold text-ink">
+                <input
+                  type="checkbox"
+                  checked={form.set_goals}
+                  onChange={(event) => updateSetGoals(event.target.checked)}
+                  className="size-4 accent-brand"
+                />
+                Enable
+              </label>
+            </div>
+
+            {form.set_goals && (
+              <div className="mt-5">
+                <GoalPicker value={form.target_goal} onChange={updateGoalType} />
+                <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                  <MeasurementField
+                    label="Target weight"
+                    name="target_weight"
+                    icon={Target}
+                    value={form.target_weight}
+                    unit={
+                      form.target_goal === "maintain_weight"
+                        ? form.weight_unit
+                        : form.target_weight_unit
+                    }
+                    units={["kg", "lb"]}
+                    disabled={form.target_goal === "maintain_weight"}
+                    onValueChange={(value) => update("target_weight", value)}
+                    onUnitChange={(value) => update("target_weight_unit", value as "kg" | "lb")}
+                    error={fieldErrors.target_weight}
+                  />
+                  <NumberField
+                    label="Duration"
+                    unit="wk"
+                    name="duration_weeks"
+                    min="1"
+                    max="260"
+                    value={form.duration_weeks}
+                    onChange={(value) => update("duration_weeks", value)}
+                    error={fieldErrors.duration_weeks}
+                  />
+                  <SelectField
+                    label="BMR formula sex"
+                    name="formula_sex"
+                    icon={UserRound}
+                    value={form.formula_sex}
+                    placeholder="Select"
+                    options={[
+                      { value: "male", label: "Male" },
+                      { value: "female", label: "Female" },
+                    ]}
+                    onChange={(value) => update("formula_sex", value as FormulaSex | "")}
+                    error={fieldErrors.formula_sex}
+                  />
+                  <SelectField
+                    label="Activity level"
+                    name="activity_level"
+                    icon={Gauge}
+                    value={form.activity_level}
+                    options={activityOptions}
+                    onChange={(value) => update("activity_level", value as ActivityLevel)}
+                    error={fieldErrors.activity_level}
+                  />
+                </div>
+
+                <MacroRatioPicker
+                  value={form.macro_ratio}
+                  onChange={(value) => update("macro_ratio", value)}
+                />
+
+                <GoalPreviewPanel
+                  preview={goalPreview}
+                  loading={goalPreviewLoading}
+                  error={goalPreviewError}
+                  enabled={form.set_goals}
+                />
+              </div>
+            )}
           </section>
 
           <div className="flex flex-col gap-3 border-t border-line bg-canvas px-5 py-4 sm:flex-row sm:items-center sm:justify-end sm:px-7">
