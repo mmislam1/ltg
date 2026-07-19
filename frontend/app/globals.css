@@ -243,13 +243,46 @@
   scrollbar-width: none;
 }
 
+:root {
+  --bottom-nav-height: 4.5rem;
+  --bottom-nav-safe-offset: max(env(safe-area-inset-bottom, 0px), 0.375rem);
+  --bottom-nav-total-height: calc(var(--bottom-nav-height) + var(--bottom-nav-safe-offset));
+}
+
 .safe-area-bottom {
-  padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.375rem);
+  padding-bottom: var(--bottom-nav-safe-offset);
 }
 
 .bottom-nav {
   transform: translateZ(0);
   will-change: transform;
+}
+
+.mobile-bottom-content {
+  padding-bottom: calc(var(--bottom-nav-total-height) + 1rem);
+}
+
+.food-list-bottom-space {
+  padding-bottom: 4.75rem;
+}
+
+.food-list-done-button {
+  bottom: calc(var(--bottom-nav-total-height) + 0.75rem);
+  width: min(calc(100vw - 2rem), 42rem);
+}
+
+@media (min-width: 48rem) {
+  .mobile-bottom-content {
+    padding-bottom: 0;
+  }
+
+  .food-list-bottom-space {
+    padding-bottom: 5.25rem;
+  }
+
+  .food-list-done-button {
+    bottom: 1.5rem;
+  }
 }
 
 .route-transition-content {

@@ -113,7 +113,7 @@ export default function FoodList() {
   };
 
   return (
-    <div className="flex w-full flex-col items-center pb-24">
+    <div className="food-list-bottom-space flex w-full flex-col items-center">
       <div className="w-full bg-brand px-4 py-3 text-center">
         <h2 className="text-xl font-bold text-on-brand">
           {mealType || "Select foods"}
@@ -172,7 +172,7 @@ export default function FoodList() {
         type="button"
         onClick={handleSubmit}
         disabled={saving > 0 || !selectedDate}
-        className="btn btn-primary fixed bottom-18 left-1/2 z-50 w-77 -translate-x-1/2 rounded-full shadow-xl md:max-w-2xl"
+        className="food-list-done-button btn btn-primary fixed left-1/2 z-50 -translate-x-1/2 rounded-full shadow-xl"
       >
         {saving > 0 ? "Saving..." : `Done (${meal.list.length})`}
       </button>
