@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -13,14 +14,27 @@ interface UploadedNutritionImage {
   size: number;
 }
 
-interface GeminiGenerateContentResponse {
-  candidates?: {
-    content?: {
-      parts?: {
-        text?: string;
-      }[];
-    };
-  }[];
+interface GeminiTextContent {
+  type?: string;
+  text?: string;
+}
+
+interface GeminiStep {
+  type?: string;
+  content?: GeminiTextContent[];
+}
+
+interface GeminiInteractionResponse {
+  output_text?: string;
+  steps?: GeminiStep[];
+}
+
+interface GeminiErrorResponse {
+  error?: {
+    code?: number;
+    message?: string;
+    status?: string;
+  };
 }
 
 type CoreKey = 'calories' | 'protein' | 'carbs' | 'fiber' | 'netCarbs' | 'fats';
@@ -118,6 +132,8 @@ Use this app contract:
 
 @Injectable()
 export class NutritionLabelScannerService {
+  private readonly logger = new Logger(NutritionLabelScannerService.name);
+
   constructor(private readonly config: ConfigService) {}
 
   isEnabled() {
@@ -143,51 +159,44 @@ export class NutritionLabelScannerService {
       throw new ServiceUnavailableException('Scan is unavailable.');
     }
 
-    const model = this.normalizeModelName(
-      this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-2.5-flash'),
-    );
+    const model = this.normalizeModelName(this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-3.5-flash'));
     const response = await this.requestGemini(model, apiKey, file);
 
     if (!response.ok) {
-      throw new ServiceUnavailableException('Unable to scan image.');
+      throw await this.geminiFailure(response);
     }
 
-    const body = (await response.json()) as GeminiGenerateContentResponse;
+    const body = (await response.json()) as GeminiInteractionResponse;
     return this.normalize(this.parseResponse(body));
   }
 
   private async requestGemini(model: string, apiKey: string, file: UploadedNutritionImage) {
     try {
-      return await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          signal: AbortSignal.timeout(SCAN_TIMEOUT_MS),
-          body: JSON.stringify({
-            contents: [
-              {
-                role: 'user',
-                parts: [
-                  { text: scanPrompt },
-                  {
-                    inlineData: {
-                      data: file.buffer.toString('base64'),
-                      mimeType: file.mimetype,
-                    },
-                  },
-                ],
-              },
-            ],
-            generationConfig: {
-              responseMimeType: 'application/json',
-              responseJsonSchema: scanResponseSchema,
-              temperature: 0.1,
-            },
-            store: false,
-          }),
+      return await fetch('https://generativelanguage.googleapis.com/v1beta/interactions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey,
         },
-      );
+        signal: AbortSignal.timeout(SCAN_TIMEOUT_MS),
+        body: JSON.stringify({
+          model,
+          store: false,
+          input: [
+            { type: 'text', text: scanPrompt },
+            {
+              type: 'image',
+              data: file.buffer.toString('base64'),
+              mime_type: file.mimetype,
+            },
+          ],
+          response_format: {
+            type: 'text',
+            mime_type: 'application/json',
+            schema: scanResponseSchema,
+          },
+        }),
+      });
     } catch (error) {
       if (error instanceof Error && (error.name === 'AbortError' || error.name === 'TimeoutError')) {
         throw new ServiceUnavailableException('Scan timed out. Try a clearer photo.');
@@ -197,16 +206,45 @@ export class NutritionLabelScannerService {
   }
 
   private normalizeModelName(model: string) {
-    const trimmed = model.trim() || 'gemini-2.5-flash';
-    return trimmed.startsWith('models/') ? trimmed : `models/${trimmed}`;
+    const trimmed = model.trim() || 'gemini-3.5-flash';
+    return trimmed.replace(/^models\//, '');
   }
 
-  private parseResponse(body: GeminiGenerateContentResponse) {
-    const text = body.candidates
-      ?.flatMap((candidate) => candidate.content?.parts ?? [])
-      .map((part) => part.text)
-      .filter((text): text is string => Boolean(text))
-      .join('\n');
+  private async geminiFailure(response: Response) {
+    let geminiMessage = '';
+    try {
+      const body = (await response.json()) as GeminiErrorResponse;
+      geminiMessage = body.error?.message ?? '';
+    } catch {
+      geminiMessage = response.statusText;
+    }
+
+    this.logger.warn(`Gemini scan failed (${response.status}): ${geminiMessage || 'No error body'}`);
+
+    if (response.status === 401 || response.status === 403) {
+      return new ServiceUnavailableException('Scan is unavailable. Ask an admin to check Gemini access.');
+    }
+    if (response.status === 404 || /model/i.test(geminiMessage)) {
+      return new ServiceUnavailableException('Scan is unavailable. Ask an admin to check the Gemini model setting.');
+    }
+    if (response.status === 429) {
+      return new ServiceUnavailableException('Gemini is rate limited. Try again shortly.');
+    }
+    if (response.status >= 500) {
+      return new ServiceUnavailableException('Gemini is temporarily unavailable. Try again shortly.');
+    }
+    return new ServiceUnavailableException('Unable to scan image. Try a clearer nutrition label.');
+  }
+
+  private parseResponse(body: GeminiInteractionResponse) {
+    const text =
+      body.output_text ||
+      body.steps
+        ?.filter((step) => step.type === 'model_output')
+        .flatMap((step) => step.content ?? [])
+        .filter((content) => content.type === 'text' && content.text)
+        .map((content) => content.text)
+        .join('\n');
 
     if (!text) {
       throw new ServiceUnavailableException('Unable to scan image.');

@@ -44,7 +44,7 @@ services:
       - key: NUTRITION_LABEL_SCAN_ENABLED
         value: "false"
       - key: GEMINI_NUTRITION_MODEL
-        value: gemini-2.5-flash
+        value: gemini-3.5-flash
 
   - type: web
     name: ltg-web

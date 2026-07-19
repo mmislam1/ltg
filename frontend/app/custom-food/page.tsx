@@ -11,7 +11,6 @@ import {
   ShieldCheck,
   Trash2,
   Utensils,
-  X,
 } from "lucide-react";
 import { ChangeEvent, FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -106,6 +105,8 @@ const unitNames: Record<FoodUnit, string> = {
 };
 
 const SCAN_ENABLED = process.env.NEXT_PUBLIC_NUTRITION_LABEL_SCAN_ENABLED === "true";
+const CAMERA_INPUT_ID = "custom-food-camera-scan";
+const PHOTO_INPUT_ID = "custom-food-photo-scan";
 
 function NutrientGrid<Key extends string>({
   fields,
@@ -158,7 +159,7 @@ export default function CustomFoodPage() {
   const [core, setCore] = useState(emptyValues(coreFields));
   const [vitamins, setVitamins] = useState(emptyValues(vitaminFields));
   const [minerals, setMinerals] = useState(emptyValues(mineralFields));
-  const [scanModalOpen, setScanModalOpen] = useState(false);
+  const [scanMenuOpen, setScanMenuOpen] = useState(false);
 
   useEffect(() => {
     if (initialized && !user) router.replace("/auth/signin");
@@ -285,7 +286,7 @@ export default function CustomFoodPage() {
     event.target.value = "";
     if (!image) return;
 
-    setScanModalOpen(false);
+    setScanMenuOpen(false);
     dispatch(clearFoodError());
 
     try {
@@ -331,35 +332,64 @@ export default function CustomFoodPage() {
             <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
           </div>
           {SCAN_ENABLED && (
-            <button
-              type="button"
-              className="btn btn-secondary shrink-0"
-              disabled={scanningLabel}
-              onClick={() => setScanModalOpen(true)}
-            >
-              <ScanLine size={18} /> {scanningLabel ? "Scanning..." : "Scan"}
-            </button>
+            <div className="relative shrink-0">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                disabled={scanningLabel}
+                aria-expanded={scanMenuOpen}
+                aria-controls="custom-food-scan-menu"
+                onClick={() => setScanMenuOpen((open) => !open)}
+              >
+                <ScanLine size={18} /> {scanningLabel ? "Scanning..." : "Scan"}
+              </button>
+              {scanMenuOpen && (
+                <div
+                  id="custom-food-scan-menu"
+                  className="card absolute right-0 top-full z-[260] mt-2 w-[min(calc(100vw-2rem),20rem)] p-3 shadow-xl"
+                >
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label
+                      htmlFor={CAMERA_INPUT_ID}
+                      aria-disabled={scanningLabel}
+                      className={`btn btn-secondary min-h-20 flex-col ${scanningLabel ? "pointer-events-none opacity-55" : ""}`}
+                    >
+                      <Camera size={24} />
+                      Camera
+                    </label>
+                    <label
+                      htmlFor={PHOTO_INPUT_ID}
+                      aria-disabled={scanningLabel}
+                      className={`btn btn-secondary min-h-20 flex-col ${scanningLabel ? "pointer-events-none opacity-55" : ""}`}
+                    >
+                      <ImageUp size={24} />
+                      Photo
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
           )}
         </div>
 
         {SCAN_ENABLED && (
           <>
             <input
+              id={CAMERA_INPUT_ID}
               ref={cameraInputRef}
               type="file"
               accept="image/*"
               capture="environment"
               onChange={handleScanImage}
               className="sr-only"
-              aria-hidden="true"
             />
             <input
+              id={PHOTO_INPUT_ID}
               ref={photoInputRef}
               type="file"
               accept="image/*"
               onChange={handleScanImage}
               className="sr-only"
-              aria-hidden="true"
             />
           </>
         )}
@@ -533,39 +563,6 @@ export default function CustomFoodPage() {
               {pending.length === 0 && !pendingError && <p className="px-5 py-10 text-center text-sm text-muted">No foods are waiting for approval.</p>}
             </div>
           </section>
-        )}
-
-        {SCAN_ENABLED && scanModalOpen && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-ink/45 p-4" role="dialog" aria-modal="true" aria-label="Scan">
-            <div className="card w-full max-w-sm overflow-hidden p-4">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h2 className="text-lg font-bold text-ink">Scan</h2>
-                <button type="button" className="btn btn-ghost btn-icon btn-icon-sm" aria-label="Close" onClick={() => setScanModalOpen(false)}>
-                  <X size={18} />
-                </button>
-              </div>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <button
-                  type="button"
-                  className="btn btn-secondary min-h-24 flex-col"
-                  disabled={scanningLabel}
-                  onClick={() => cameraInputRef.current?.click()}
-                >
-                  <Camera size={24} />
-                  Camera
-                </button>
-                <button
-                  type="button"
-                  className="btn btn-secondary min-h-24 flex-col"
-                  disabled={scanningLabel}
-                  onClick={() => photoInputRef.current?.click()}
-                >
-                  <ImageUp size={24} />
-                  Photo
-                </button>
-              </div>
-            </div>
-          </div>
         )}
       </div>
     </div>
