@@ -73,6 +73,7 @@ const finiteNutrient = (value: number | undefined) =>
   Number.isFinite(value) ? Math.max(0, value ?? 0) : 0;
 
 export const macroCarbGrams = (nutrition: MacroEnergyValues) => {
+  if (Number.isFinite(nutrition.carbs)) return finiteNutrient(nutrition.carbs);
   if (Number.isFinite(nutrition.netCarbs)) return finiteNutrient(nutrition.netCarbs);
   return Math.max(
     finiteNutrient(nutrition.carbs) - finiteNutrient(nutrition.fiber),

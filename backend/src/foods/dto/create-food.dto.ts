@@ -47,7 +47,8 @@ export class MineralsDto {
 export class NutritionDto {
   @nutrient() @Min(0) @Max(100_000) calories: number;
   @nutrient() @Min(0) @Max(100_000) protein: number;
-  @nutrient() @Min(0) @Max(100_000) carbs: number;
+  @IsOptional()
+  @nutrient() @Min(0) @Max(100_000) carbs?: number;
   @nutrient() @Min(0) @Max(100_000) fiber: number;
   @nutrient() @Min(0) @Max(100_000) netCarbs: number;
   @nutrient() @Min(0) @Max(100_000) fats: number;

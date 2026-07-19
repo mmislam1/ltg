@@ -1,15 +1,16 @@
-import { countedCalories } from './nutrition-energy';
+import { countedCalories, macroCarbGrams } from './nutrition-energy';
 import { FoodDocument, FoodKind, FoodUnit } from './schemas/food.schema';
 
 export function foodToResponse(item: FoodDocument) {
   const nutritionPer = item.nutritionPer ??
     (item.unit === FoodUnit.GRAM || item.unit === FoodUnit.MILLILITER ? 100 : 1);
+  const carbGrams = macroCarbGrams(item.nutrition);
   const nutrition = {
     calories: countedCalories(item.nutrition),
     protein: item.nutrition.protein,
-    carbs: item.nutrition.carbs,
+    carbs: carbGrams,
     fiber: item.nutrition.fiber ?? 0,
-    netCarbs: item.nutrition.netCarbs ?? item.nutrition.carbs,
+    netCarbs: carbGrams,
     fats: item.nutrition.fats,
     vitamins: item.nutrition.vitamins,
     minerals: item.nutrition.minerals,

@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { countedCalories } from '../foods/nutrition-energy';
+import { countedCalories, macroCarbGrams } from '../foods/nutrition-energy';
 import { Food, Nutrition } from '../foods/schemas/food.schema';
 import { DEFAULT_TIMEZONE } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
@@ -340,12 +340,13 @@ export class MealActivitiesService {
     nutrition: Nutrition,
     factor: number,
   ) {
+    const carbGrams = macroCarbGrams(nutrition);
     totals.calories += countedCalories(nutrition) * factor;
     totals.protein += nutrition.protein * factor;
-    totals.carbs += nutrition.carbs * factor;
+    totals.carbs += carbGrams * factor;
     totals.fats += nutrition.fats * factor;
     totals.fiber += (nutrition.fiber ?? 0) * factor;
-    totals.netCarbs += (nutrition.netCarbs ?? nutrition.carbs) * factor;
+    totals.netCarbs += carbGrams * factor;
   }
 
   private toResponse(activity: MealActivityDocument) {

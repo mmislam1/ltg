@@ -10,7 +10,7 @@
       "protein": 2.82,
       "carbs": 6.64,
       "fiber": 2.6,
-      "netCarbs": 4,
+      "netCarbs": 6.64,
       "fats": 0.37,
       "vitamins": {
         "b1": 0.07,
@@ -54,7 +54,7 @@
       "protein": 2.86,
       "carbs": 3.63,
       "fiber": 2.2,
-      "netCarbs": 1.4,
+      "netCarbs": 3.63,
       "fats": 0.39,
       "vitamins": {
         "b1": 0.08,
@@ -98,7 +98,7 @@
       "protein": 0.65,
       "carbs": 3.63,
       "fiber": 1.14,
-      "netCarbs": 2.4,
+      "netCarbs": 3.63,
       "fats": 0.11,
       "vitamins": {
         "b1": 0.03,
@@ -142,7 +142,7 @@
       "protein": 1.09,
       "carbs": 22.84,
       "fiber": 2.6,
-      "netCarbs": 20.2,
+      "netCarbs": 22.84,
       "fats": 0.33,
       "vitamins": {
         "b1": 0.03,
@@ -186,7 +186,7 @@
       "protein": 0.26,
       "carbs": 13.81,
       "fiber": 2.4,
-      "netCarbs": 10.6,
+      "netCarbs": 13.81,
       "fats": 0.17,
       "vitamins": {
         "b1": 0.02,
@@ -230,7 +230,7 @@
       "protein": 0.94,
       "carbs": 11.75,
       "fiber": 2.35,
-      "netCarbs": 9.1,
+      "netCarbs": 11.75,
       "fats": 0.12,
       "vitamins": {
         "b1": 0.09,
@@ -274,7 +274,7 @@
       "protein": 1.96,
       "carbs": 8.64,
       "fiber": 6.8,
-      "netCarbs": 1.8,
+      "netCarbs": 8.64,
       "fats": 15.41,
       "vitamins": {
         "b1": 0.08,
@@ -318,7 +318,7 @@
       "protein": 24.35,
       "carbs": 21.26,
       "fiber": 8.4,
-      "netCarbs": 12.7,
+      "netCarbs": 21.26,
       "fats": 49.66,
       "vitamins": {
         "b1": 0.15,
@@ -362,7 +362,7 @@
       "protein": 21.15,
       "carbs": 21.55,
       "fiber": 12.5,
-      "netCarbs": 8.8,
+      "netCarbs": 21.55,
       "fats": 49.93,
       "vitamins": {
         "b1": 0.21,
@@ -406,7 +406,7 @@
       "protein": 16.54,
       "carbs": 42.12,
       "fiber": 34.4,
-      "netCarbs": 6.2,
+      "netCarbs": 42.12,
       "fats": 30.74,
       "vitamins": {
         "b1": 0.18,
@@ -978,7 +978,7 @@
       "protein": 2.69,
       "carbs": 28.17,
       "fiber": 0.34,
-      "netCarbs": 27.83,
+      "netCarbs": 28.17,
       "fats": 0.28,
       "vitamins": {
         "b1": 0.16,
@@ -1022,7 +1022,7 @@
       "protein": 11.82,
       "carbs": 72.43,
       "fiber": 2.78,
-      "netCarbs": 69.6,
+      "netCarbs": 72.43,
       "fats": 7.28,
       "vitamins": {
         "b1": 0.75,
@@ -1066,7 +1066,7 @@
       "protein": 13.15,
       "carbs": 67.7,
       "fiber": 10.1,
-      "netCarbs": 57.6,
+      "netCarbs": 67.7,
       "fats": 6.52,
       "vitamins": {
         "b1": 0.46,
@@ -1110,7 +1110,7 @@
       "protein": 8.47,
       "carbs": 46.13,
       "fiber": 6.86,
-      "netCarbs": 39.3,
+      "netCarbs": 46.13,
       "fats": 9.2,
       "vitamins": {
         "b1": 0.32,
@@ -1154,7 +1154,7 @@
       "protein": 23.91,
       "carbs": 63.1,
       "fiber": 10.8,
-      "netCarbs": 52.3,
+      "netCarbs": 63.1,
       "fats": 2.17,
       "vitamins": {
         "b1": 0.51,

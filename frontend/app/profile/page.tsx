@@ -227,7 +227,7 @@ export default function ProfilePage() {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               <NumberField label="Calories" unit={NUTRIENT_UNITS.calories} name="target_calories" value={form.target_calories} onChange={(value) => update("target_calories", value)} error={fieldErrors.target_calories} />
               <NumberField label="Protein" unit={NUTRIENT_UNITS.protein} name="target_protein" value={form.target_protein} onChange={(value) => update("target_protein", value)} error={fieldErrors.target_protein} />
-              <NumberField label="Carbs" unit={NUTRIENT_UNITS.carbs} name="target_carbs" value={form.target_carbs} onChange={(value) => update("target_carbs", value)} error={fieldErrors.target_carbs} />
+              <NumberField label="Net carbs" unit={NUTRIENT_UNITS.netCarbs} name="target_carbs" value={form.target_carbs} onChange={(value) => update("target_carbs", value)} error={fieldErrors.target_carbs} />
               <NumberField label="Fat" unit={NUTRIENT_UNITS.fats} name="target_fat" value={form.target_fat} onChange={(value) => update("target_fat", value)} error={fieldErrors.target_fat} />
             </div>
           </section>

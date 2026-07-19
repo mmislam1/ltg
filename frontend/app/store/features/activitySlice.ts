@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Food } from "./foodSlice";
-import { countedCalories, nutritionMultiplier } from "../nutritionUnits";
+import { countedCalories, macroCarbGrams, nutritionMultiplier } from "../nutritionUnits";
 import api, { getApiError } from "../api";
 
 export interface ListItems {
@@ -156,21 +156,20 @@ export const macroCount = (state: ActivitiesState): Macros => {
         const factor = item.foodItem
           ? nutritionMultiplier(item.foodItem, item.quantity)
           : 0;
+        const carbGrams = item.foodItem
+          ? macroCarbGrams(item.foodItem.nutrition)
+          : 0;
         total.calories += item.foodItem
           ? countedCalories(item.foodItem.nutrition) * factor
           : 0;
         total.protein += item.foodItem
           ? item.foodItem.nutrition.protein * factor
           : 0;
-        total.carbs += item.foodItem
-          ? item.foodItem.nutrition.carbs * factor
-          : 0;
+        total.carbs += carbGrams * factor;
         total.fiber += item.foodItem
           ? item.foodItem.nutrition.fiber * factor
           : 0;
-        total.netCarbs += item.foodItem
-          ? item.foodItem.nutrition.netCarbs * factor
-          : 0;
+        total.netCarbs += carbGrams * factor;
         total.fats += item.foodItem
           ? item.foodItem.nutrition.fats * factor
           : 0;

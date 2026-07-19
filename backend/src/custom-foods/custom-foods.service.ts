@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateFoodDto } from '../foods/dto/create-food.dto';
 import { foodToResponse } from '../foods/food-response';
-import { countedCalories } from '../foods/nutrition-energy';
+import { countedCalories, macroCarbGrams } from '../foods/nutrition-energy';
 import {
   Food,
   FoodDocument,
@@ -37,10 +37,31 @@ export class CustomFoodsService {
     return foodToResponse(item);
   }
 
-  private withMacroCalories(nutrition: Nutrition): Nutrition {
+  private withMacroCalories(nutrition: Nutrition | CreateFoodDto['nutrition']): Nutrition {
+    const carbGrams = this.round(macroCarbGrams(nutrition));
+    const normalizedNutrition = {
+      ...nutrition,
+      carbs: carbGrams,
+      netCarbs: carbGrams,
+    };
+    return {
+      ...normalizedNutrition,
+      calories: this.round(countedCalories(normalizedNutrition)),
+    } as Nutrition;
+  }
+
+  private nutrientValue(food: FoodDocument, key: (typeof CORE_NUTRIENTS)[number]) {
+    if (key === 'calories') return countedCalories(food.nutrition);
+    if (key === 'carbs' || key === 'netCarbs') return macroCarbGrams(food.nutrition);
+    return food.nutrition[key] ?? 0;
+  }
+
+  private syncCarbs(nutrition: Nutrition) {
+    const carbGrams = this.round(macroCarbGrams(nutrition));
     return {
       ...nutrition,
-      calories: this.round(countedCalories(nutrition)),
+      carbs: carbGrams,
+      netCarbs: carbGrams,
     };
   }
 
@@ -96,16 +117,14 @@ export class CustomFoodsService {
         (food.unit === FoodUnit.GRAM || food.unit === FoodUnit.MILLILITER ? 100 : 1);
       const multiplier = ingredient.quantity / nutritionPer / dto.servings;
       for (const key of CORE_NUTRIENTS) {
-        const nutrientValue = key === 'calories'
-          ? countedCalories(food.nutrition)
-          : food.nutrition[key] ?? 0;
-        result[key] += nutrientValue * multiplier;
+        result[key] += this.nutrientValue(food, key) * multiplier;
       }
       this.addGroup(result.vitamins!, food.nutrition.vitamins, VITAMINS, multiplier);
       this.addGroup(result.minerals!, food.nutrition.minerals, MINERALS, multiplier);
     }
 
     for (const key of CORE_NUTRIENTS) result[key] = this.round(result[key]);
+    Object.assign(result, this.syncCarbs(result));
     result.calories = this.round(countedCalories(result));
     for (const key of VITAMINS) result.vitamins![key] = this.round(result.vitamins![key]);
     for (const key of MINERALS) result.minerals![key] = this.round(result.minerals![key]);

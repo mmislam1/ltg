@@ -98,7 +98,7 @@ db.meal_activities.createIndex({ userId: 1, date: 1 }, { unique: true })
 `unit` is restricted to `g`, `ml`, `pc`, or `slice` (`piece` is normalized to `pc`). `nutritionPer` states how many of that unit the nutrition object describes. For example, `unit: "g"` with `nutritionPer: 100` means every nutrition value is per 100 g; meal quantities are scaled by `quantity / nutritionPer`.
 
 - Calories: kcal
-- Protein, total carbs, fiber, net carbs, and fats: g
+- Protein, net carbs, fiber, and fats: g. The legacy `nutrition.carbs` field is kept as an internal mirror of `nutrition.netCarbs`.
 - Vitamins B1, B2, B3, B5, B6, B8, C, and E: mg
 - Vitamins B7, B9, B12, and K: µg
 - Vitamin A: µg RAE

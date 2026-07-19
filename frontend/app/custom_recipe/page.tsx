@@ -17,7 +17,7 @@ import {
   type Vitamins,
 } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { countedCalories, scaleNutrient } from "../store/nutritionUnits";
+import { countedCalories, macroCarbGrams, scaleNutrient } from "../store/nutritionUnits";
 
 type SelectedIngredient = { food: Food; quantity: number };
 type CoreKey = keyof Omit<Nutrition, "vitamins" | "minerals">;
@@ -71,6 +71,8 @@ export default function CustomRecipePage() {
       for (const key of coreKeys) {
         const nutrientValue = key === "calories"
           ? countedCalories(food.nutrition)
+          : key === "carbs" || key === "netCarbs"
+            ? macroCarbGrams(food.nutrition)
           : food.nutrition[key] ?? 0;
         result[key] += scaleNutrient(food, nutrientValue, quantity) / divisor;
       }

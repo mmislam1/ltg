@@ -108,9 +108,9 @@ Use this app contract:
 - Prefer per 100 g or per 100 ml values when the label shows them.
 - If only one serving is shown, use the serving size. For "1 bar (40 g)", return unit "g" and nutritionPer 40. If no gram or ml amount is visible, return unit "pc" and nutritionPer 1.
 - calories are kcal.
-- protein, carbs, fiber, netCarbs, and fats are grams.
-- carbs means total carbohydrate.
-- netCarbs is total carbohydrate minus fiber and sugar alcohols when visible; otherwise total carbohydrate minus fiber. Never return a negative value.
+- protein, fiber, netCarbs, and fats are grams.
+- netCarbs is the single carbohydrate field this app displays. Use the label's total carbohydrate value when visible; if only net carbs is visible, use that.
+- carbs is a legacy mirror of netCarbs. Return the same number for carbs and netCarbs.
 - fats means total fat.
 - Vitamins B1, B2, B3, B5, B6, B8, C, and E are mg.
 - Vitamins B7, B9, B12, and K are micrograms.
@@ -209,12 +209,17 @@ export class NutritionLabelScannerService {
       unit === FoodUnit.GRAM || unit === FoodUnit.MILLILITER ? 100 : 1,
     );
 
+    const core = this.normalizeGroup(scan.nutrition, CORE_KEYS);
+    const carbGrams = this.roundPositive(scan.nutrition?.carbs ?? scan.nutrition?.netCarbs, 0);
+
     return {
       name: typeof scan.name === 'string' ? scan.name.trim().slice(0, 160) : '',
       unit,
       nutritionPer,
       nutrition: {
-        ...this.normalizeGroup(scan.nutrition, CORE_KEYS),
+        ...core,
+        carbs: carbGrams,
+        netCarbs: carbGrams,
         vitamins: this.normalizeGroup(scan.nutrition?.vitamins, VITAMIN_KEYS),
         minerals: this.normalizeGroup(scan.nutrition?.minerals, MINERAL_KEYS),
       },

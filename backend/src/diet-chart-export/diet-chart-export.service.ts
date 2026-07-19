@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { countedCalories } from '../foods/nutrition-energy';
+import { countedCalories, macroCarbGrams } from '../foods/nutrition-energy';
 import { Food } from '../foods/schemas/food.schema';
 import { MealActivitiesService } from '../meal-activities/meal-activities.service';
 import { HeightUnit } from '../users/schemas/user.schema';
@@ -160,10 +160,11 @@ export class DietChartExportService {
       items: meal.list.map((entry) => {
         const food = foodsById.get(entry.foodId);
         const factor = food ? entry.quantity / food.nutritionPer : 0;
+        const carbGrams = food ? macroCarbGrams(food.nutrition) : 0;
         const macros = {
           calories: food ? countedCalories(food.nutrition) * factor : 0,
           protein: (food?.nutrition.protein ?? 0) * factor,
-          carbs: (food?.nutrition.carbs ?? 0) * factor,
+          carbs: carbGrams * factor,
           fats: (food?.nutrition.fats ?? 0) * factor,
         };
         this.addNutrition(totals, food?.nutrition, factor);
@@ -327,12 +328,13 @@ export class DietChartExportService {
     factor: number,
   ) {
     if (!nutrition) return;
+    const carbGrams = macroCarbGrams(nutrition);
     total.calories += countedCalories(nutrition) * factor;
     total.protein += nutrition.protein * factor;
-    total.carbs += nutrition.carbs * factor;
+    total.carbs += carbGrams * factor;
     total.fats += nutrition.fats * factor;
     total.fiber += (nutrition.fiber ?? 0) * factor;
-    total.netCarbs += (nutrition.netCarbs ?? nutrition.carbs) * factor;
+    total.netCarbs += carbGrams * factor;
     for (const key of Object.keys(total.vitamins) as Array<keyof typeof total.vitamins>) {
       total.vitamins[key] += (nutrition.vitamins?.[key] ?? 0) * factor;
     }

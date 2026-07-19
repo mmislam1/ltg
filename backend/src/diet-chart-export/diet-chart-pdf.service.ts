@@ -390,7 +390,7 @@ export class DietChartPdfService {
   }
 
   private drawTableHeader(document: PDFKit.PDFDocument, y: number) {
-    const labels = ['Food', 'Serving', 'Cal', 'Protein', 'Carbs', 'Fats'];
+    const labels = ['Food', 'Serving', 'Cal', 'Protein', 'Net carbs', 'Fats'];
     const columns = this.columns();
     document.rect(PAGE.margin, y, PAGE.width - PAGE.margin * 2, 22).fill('#ECF2F1');
     labels.forEach((label, index) => {

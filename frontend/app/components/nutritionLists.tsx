@@ -1,5 +1,5 @@
 import type { Minerals, Nutrition, Vitamins } from "../store/features/foodSlice";
-import { NUTRIENT_UNITS } from "../store/nutritionUnits";
+import { macroCarbGrams, NUTRIENT_UNITS } from "../store/nutritionUnits";
 import { IDEAL_NUTRITION } from "../nutritionDashboard/idealNutritionState";
 
 type MacroKey = "calories" | "protein" | "carbs" | "netCarbs" | "fiber" | "fats";
@@ -46,14 +46,6 @@ export const MACRO_NUTRIENTS: MacroNutrientEntry[] = [
     unit: NUTRIENT_UNITS.protein,
     barClassName: "bg-protein",
     labelClassName: "text-protein",
-  },
-  {
-    key: "carbs",
-    label: "Total Carbs",
-    target: IDEAL_NUTRITION.macros.carbs,
-    unit: NUTRIENT_UNITS.carbs,
-    barClassName: "bg-carbs",
-    labelClassName: "text-carbs",
   },
   {
     key: "netCarbs",
@@ -252,6 +244,7 @@ export default function NutritionLists({
   showFooter?: boolean;
   className?: string;
 }) {
+  const carbGrams = macroCarbGrams(nutrition);
   const macroEntries = MACRO_NUTRIENTS.map((entry) => ({
     ...entry,
     target: validTarget(macroTargets?.[entry.key]) ?? entry.target,
@@ -259,8 +252,8 @@ export default function NutritionLists({
   const macroValues: Record<MacroKey | "water", number> = {
     calories: nutrition.calories,
     protein: nutrition.protein,
-    carbs: nutrition.carbs,
-    netCarbs: nutrition.netCarbs,
+    carbs: carbGrams,
+    netCarbs: carbGrams,
     fiber: nutrition.fiber,
     fats: nutrition.fats,
     water: waterGlasses,

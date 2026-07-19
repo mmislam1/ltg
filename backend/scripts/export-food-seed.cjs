@@ -99,6 +99,7 @@ const foods = rawFoods.map((raw, index) => {
   }
 
   const b = raw.vitamins?.b_complex;
+  const carbs = valueOf(raw.macronutrients?.carbohydrates?.total, 'g', field('macronutrients.carbohydrates.total'));
   return {
     name: String(raw.name).trim(),
     addedBy: 'system',
@@ -108,9 +109,9 @@ const foods = rawFoods.map((raw, index) => {
     nutrition: {
       calories: valueOf(raw.macronutrients?.calories, 'kcal', field('macronutrients.calories')),
       protein: valueOf(raw.macronutrients?.protein, 'g', field('macronutrients.protein')),
-      carbs: valueOf(raw.macronutrients?.carbohydrates?.total, 'g', field('macronutrients.carbohydrates.total')),
+      carbs,
       fiber: valueOf(raw.macronutrients?.carbohydrates?.fiber, 'g', field('macronutrients.carbohydrates.fiber')),
-      netCarbs: valueOf(raw.macronutrients?.carbohydrates?.net, 'g', field('macronutrients.carbohydrates.net')),
+      netCarbs: carbs,
       fats: valueOf(raw.macronutrients?.fat, 'g', field('macronutrients.fat')),
       vitamins: {
         b1: valueOf(b?.b1, 'mg', field('vitamins.b1')),

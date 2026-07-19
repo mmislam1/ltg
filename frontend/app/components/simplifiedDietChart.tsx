@@ -11,7 +11,7 @@ import { fetchMealActivity, type ListItems, type Meal } from "../store/features/
 import type { User } from "../store/features/authSlice";
 import type { Minerals, Vitamins } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { countedCalories, scaleNutrient } from "../store/nutritionUnits";
+import { countedCalories, macroCarbGrams, scaleNutrient } from "../store/nutritionUnits";
 import DatePicker from "./calender";
 import NutritionLists, { MINERAL_NUTRIENTS, VITAMIN_NUTRIENTS } from "./nutritionLists";
 import { MacroCalorieRing } from "./ringChart";
@@ -62,7 +62,7 @@ const itemMacros = (item: ListItems): MacroValues => ({
     ? scaleNutrient(item.foodItem, item.foodItem.nutrition.protein, item.quantity)
     : 0,
   carbs: item.foodItem
-    ? scaleNutrient(item.foodItem, item.foodItem.nutrition.carbs, item.quantity)
+    ? scaleNutrient(item.foodItem, macroCarbGrams(item.foodItem.nutrition), item.quantity)
     : 0,
   fats: item.foodItem
     ? scaleNutrient(item.foodItem, item.foodItem.nutrition.fats, item.quantity)
@@ -92,7 +92,7 @@ const chartTotals = (meals: Meal[]) =>
         if (!item.foodItem) return;
         const nutrition = item.foodItem.nutrition;
         totals.fiber += scaleNutrient(item.foodItem, nutrition.fiber ?? 0, item.quantity);
-        totals.netCarbs += scaleNutrient(item.foodItem, nutrition.netCarbs ?? nutrition.carbs, item.quantity);
+        totals.netCarbs += macros.carbs;
         VITAMIN_NUTRIENTS.forEach(({ key }) => {
           totals.vitamins[key] += scaleNutrient(item.foodItem!, nutrition.vitamins?.[key] ?? 0, item.quantity);
         });
@@ -428,7 +428,7 @@ function MealTable({ meal, showEdit = false }: { meal: Meal; showEdit?: boolean 
               <div className="mt-3 grid grid-cols-4 gap-1 text-center">
                 <MobileMacro label="CAL" value={compact(macros.calories)} />
                 <MobileMacro label="PROTEIN" value={`${compact(macros.protein)} g`} />
-                <MobileMacro label="CARBS" value={`${compact(macros.carbs)} g`} />
+                <MobileMacro label="NET CARBS" value={`${compact(macros.carbs)} g`} />
                 <MobileMacro label="FATS" value={`${compact(macros.fats)} g`} />
               </div>
             </div>
@@ -438,7 +438,7 @@ function MealTable({ meal, showEdit = false }: { meal: Meal; showEdit?: boolean 
       <table className="mt-2 hidden w-full table-fixed border-collapse text-[10px] sm:table">
         <colgroup><col className="w-[36%]" /><col className="w-[14%]" /><col className="w-[11%]" /><col className="w-[13%]" /><col className="w-[13%]" /><col className="w-[13%]" /></colgroup>
         <thead className="bg-[#ECF2F1] text-[9px] font-bold text-[#657473]">
-          <tr><th className="px-3 py-2 text-left">FOOD</th><th className="px-3 py-2 text-left">SERVING</th><th className="px-3 py-2 text-right">CAL</th><th className="px-3 py-2 text-right">PROTEIN</th><th className="px-3 py-2 text-right">CARBS</th><th className="px-3 py-2 text-right">FATS</th></tr>
+          <tr><th className="px-3 py-2 text-left">FOOD</th><th className="px-3 py-2 text-left">SERVING</th><th className="px-3 py-2 text-right">CAL</th><th className="px-3 py-2 text-right">PROTEIN</th><th className="px-3 py-2 text-right">NET CARBS</th><th className="px-3 py-2 text-right">FATS</th></tr>
         </thead>
         <tbody>
           {meal.list.map((item, index) => {

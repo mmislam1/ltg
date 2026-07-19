@@ -35,6 +35,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { countedCalories, FOOD_UNITS, NUTRIENT_UNITS, type FoodUnit } from "../store/nutritionUnits";
 
 type NutrientKey = keyof Omit<Nutrition, "vitamins" | "minerals">;
+type CoreInputKey = Exclude<NutrientKey, "carbs">;
 type VitaminKey = keyof Vitamins;
 type MineralKey = keyof Minerals;
 
@@ -44,10 +45,9 @@ interface NutrientField<Key extends string> {
   unit: string;
 }
 
-const coreFields: NutrientField<NutrientKey>[] = [
+const coreFields: NutrientField<CoreInputKey>[] = [
   { key: "calories", label: "Calories", unit: NUTRIENT_UNITS.calories },
   { key: "protein", label: "Protein", unit: NUTRIENT_UNITS.protein },
-  { key: "carbs", label: "Total carbs", unit: NUTRIENT_UNITS.carbs },
   { key: "fiber", label: "Fiber", unit: NUTRIENT_UNITS.fiber },
   { key: "netCarbs", label: "Net carbs", unit: NUTRIENT_UNITS.netCarbs },
   { key: "fats", label: "Total fat", unit: NUTRIENT_UNITS.fats },
@@ -191,8 +191,12 @@ export default function CustomFoodPage() {
     ) as Record<Key, number>;
 
   const nutritionFromForm = (): Nutrition => {
+    const coreValues = setNumericValues(core);
+    const carbGrams = coreValues.netCarbs;
     const nutrition: Nutrition = {
-      ...setNumericValues(core),
+      ...coreValues,
+      carbs: carbGrams,
+      netCarbs: carbGrams,
       vitamins: setNumericValues(vitamins),
       minerals: setNumericValues(minerals),
     };
@@ -219,7 +223,10 @@ export default function CustomFoodPage() {
     if (food.name.trim()) setName(food.name.trim());
     setUnit(food.unit);
     setNutritionPer(formatScannedNumber(food.nutritionPer));
-    setCore(valuesFromScan(coreFields, food.nutrition));
+    setCore(valuesFromScan(coreFields, {
+      ...food.nutrition,
+      netCarbs: food.nutrition.carbs ?? food.nutrition.netCarbs,
+    }));
     setVitamins(valuesFromScan(vitaminFields, food.nutrition.vitamins));
     setMinerals(valuesFromScan(mineralFields, food.nutrition.minerals));
   };
