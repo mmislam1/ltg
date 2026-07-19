@@ -667,7 +667,7 @@ export default function ProfilePage() {
             </section>
           </div>
 
-          <section className="card overflow-hidden bg-brand-soft/35">
+          <section className="card overflow-hidden bg-surface shadow-sm">
             <button
               type="button"
               onClick={toggleGoalCard}
@@ -680,9 +680,6 @@ export default function ProfilePage() {
                 </span>
                 <div className="min-w-0">
                   <h2 className="text-base font-bold text-ink">Set goals</h2>
-                  <p className="mt-1 text-xs text-muted">
-                    Estimated with Mifflin-St Jeor TDEE and your selected macro split.
-                  </p>
                 </div>
               </div>
               <span className="grid size-9 shrink-0 place-items-center rounded-lg border border-line bg-surface text-brand-active">
