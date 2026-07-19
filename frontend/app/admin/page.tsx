@@ -24,8 +24,8 @@ import {
 } from "recharts";
 import { toast } from "sonner";
 import api, { getApiError } from "../store/api";
-import type { Food } from "../store/features/foodSlice";
-import { useAppSelector } from "../store/hooks";
+import { approveFood, type Food } from "../store/features/foodSlice";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 interface Member {
   id: string;
@@ -64,6 +64,7 @@ const formatDate = (value: string | null) =>
 
 export default function AdminPage() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const { user, initialized } = useAppSelector((state) => state.auth);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [submissions, setSubmissions] = useState<Food[]>([]);
@@ -111,7 +112,7 @@ export default function AdminPage() {
   const approveSubmission = async (submission: Food) => {
     setBusy(submission.id, true);
     try {
-      await api.patch(`/foods/${submission.id}/approve`);
+      const approved = await dispatch(approveFood(submission.id)).unwrap();
       setSubmissions((current) => current.filter((item) => item.id !== submission.id));
       setDashboard((current) => current ? {
         ...current,
@@ -121,9 +122,9 @@ export default function AdminPage() {
             Math.max(0, current.summary[submission.kind === "recipe" ? "pendingRecipes" : "pendingFoods"] - 1),
         },
       } : current);
-      toast.success(`${submission.name} has been approved.`);
+      toast.success(`${approved.name} has been approved and is available to all members.`);
     } catch (requestError) {
-      toast.error(getApiError(requestError, "Unable to approve this submission."));
+      toast.error(typeof requestError === "string" ? requestError : getApiError(requestError, "Unable to approve this submission."));
     } finally {
       setBusy(submission.id, false);
     }

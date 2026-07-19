@@ -11,7 +11,7 @@ import {
   saveMealActivity,
   upsertMeal,
 } from "../../store/features/activitySlice";
-import type { Food } from "../../store/features/foodSlice";
+import { fetchFoods, type Food } from "../../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 
 const isMealType = (value: unknown): value is MealType =>
@@ -52,6 +52,10 @@ export default function FoodList() {
   useEffect(() => {
     if (activityError) toast.error(activityError);
   }, [activityError]);
+
+  useEffect(() => {
+    void dispatch(fetchFoods());
+  }, [dispatch]);
 
   const filteredFoods = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();

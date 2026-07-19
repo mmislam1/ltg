@@ -11,6 +11,7 @@ import type { ListItems } from "../store/features/activitySlice";
 import {
   clearFoodError,
   createRecipe,
+  fetchFoods,
   type Food,
   type Minerals,
   type Nutrition,
@@ -49,6 +50,10 @@ export default function CustomRecipePage() {
   useEffect(() => {
     if (initialized && !user) router.replace("/auth/signin");
   }, [initialized, router, user]);
+
+  useEffect(() => {
+    if (initialized && user) void dispatch(fetchFoods());
+  }, [dispatch, initialized, user]);
 
   useEffect(() => () => {
     dispatch(clearFoodError());
