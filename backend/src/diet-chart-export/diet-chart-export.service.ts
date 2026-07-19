@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { countedCalories } from '../foods/nutrition-energy';
 import { Food } from '../foods/schemas/food.schema';
 import { MealActivitiesService } from '../meal-activities/meal-activities.service';
 import { HeightUnit } from '../users/schemas/user.schema';
@@ -160,7 +161,7 @@ export class DietChartExportService {
         const food = foodsById.get(entry.foodId);
         const factor = food ? entry.quantity / food.nutritionPer : 0;
         const macros = {
-          calories: (food?.nutrition.calories ?? 0) * factor,
+          calories: food ? countedCalories(food.nutrition) * factor : 0,
           protein: (food?.nutrition.protein ?? 0) * factor,
           carbs: (food?.nutrition.carbs ?? 0) * factor,
           fats: (food?.nutrition.fats ?? 0) * factor,
@@ -326,7 +327,7 @@ export class DietChartExportService {
     factor: number,
   ) {
     if (!nutrition) return;
-    total.calories += nutrition.calories * factor;
+    total.calories += countedCalories(nutrition) * factor;
     total.protein += nutrition.protein * factor;
     total.carbs += nutrition.carbs * factor;
     total.fats += nutrition.fats * factor;

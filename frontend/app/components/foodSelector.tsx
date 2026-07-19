@@ -6,6 +6,9 @@ import { NUTRITION_COLORS } from "../nutritionColors";
 import type { ListItems } from "../store/features/activitySlice";
 import type { Food } from "../store/features/foodSlice";
 import {
+  countedCalories,
+  MACRO_CALORIES_PER_GRAM,
+  macroCarbGrams,
   NUTRIENT_UNITS,
   quantityStep,
   scaleNutrient,
@@ -90,21 +93,21 @@ export default function FoodSelector({
           const selected = selectedById.has(food.id);
           const quantity = quantityFor(food);
           const step = quantityStep(food.unit);
-          const totalCalories = scaleNutrient(food, food.nutrition.calories, quantity);
+          const totalCalories = scaleNutrient(food, countedCalories(food.nutrition), quantity);
           const macroCalories = [
             {
               label: "Protein",
-              calories: scaleNutrient(food, food.nutrition.protein, quantity) * 4,
+              calories: scaleNutrient(food, food.nutrition.protein, quantity) * MACRO_CALORIES_PER_GRAM.protein,
               color: NUTRITION_COLORS.protein,
             },
             {
-              label: "Carbs",
-              calories: scaleNutrient(food, food.nutrition.carbs, quantity) * 4,
+              label: "Net carbs",
+              calories: scaleNutrient(food, macroCarbGrams(food.nutrition), quantity) * MACRO_CALORIES_PER_GRAM.carbs,
               color: NUTRITION_COLORS.carbs,
             },
             {
               label: "Fat",
-              calories: scaleNutrient(food, food.nutrition.fats, quantity) * 9,
+              calories: scaleNutrient(food, food.nutrition.fats, quantity) * MACRO_CALORIES_PER_GRAM.fats,
               color: NUTRITION_COLORS.fat,
             },
           ];

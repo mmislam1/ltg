@@ -32,7 +32,7 @@ import {
   type Vitamins,
 } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { FOOD_UNITS, NUTRIENT_UNITS, type FoodUnit } from "../store/nutritionUnits";
+import { countedCalories, FOOD_UNITS, NUTRIENT_UNITS, type FoodUnit } from "../store/nutritionUnits";
 
 type NutrientKey = keyof Omit<Nutrition, "vitamins" | "minerals">;
 type VitaminKey = keyof Vitamins;
@@ -190,11 +190,19 @@ export default function CustomFoodPage() {
       Object.entries(values).map(([key, value]) => [key, Number(value)]),
     ) as Record<Key, number>;
 
-  const nutritionPreview: Nutrition = {
-    ...setNumericValues(core),
-    vitamins: setNumericValues(vitamins),
-    minerals: setNumericValues(minerals),
+  const nutritionFromForm = (): Nutrition => {
+    const nutrition: Nutrition = {
+      ...setNumericValues(core),
+      vitamins: setNumericValues(vitamins),
+      minerals: setNumericValues(minerals),
+    };
+    return {
+      ...nutrition,
+      calories: countedCalories(nutrition),
+    };
   };
+
+  const nutritionPreview = nutritionFromForm();
 
   const formatScannedNumber = (value: number | undefined) =>
     Number.isFinite(Number(value)) ? String(Number(value)) : "0";
@@ -253,11 +261,7 @@ export default function CustomFoodPage() {
       name: name.trim(),
       unit,
       nutritionPer: Number(nutritionPer),
-      nutrition: {
-        ...setNumericValues(core),
-        vitamins: setNumericValues(vitamins),
-        minerals: setNumericValues(minerals),
-      },
+      nutrition: nutritionFromForm(),
     };
 
     try {

@@ -2,6 +2,7 @@
 
 import React, { useMemo } from "react";
 import { useAppSelector } from "../store/hooks";
+import { countedCalories, MACRO_CALORIES_PER_GRAM, macroCarbGrams } from "../store/nutritionUnits";
 
 type MacroValues = {
   calories?: number;
@@ -27,19 +28,19 @@ const MACROS: ReadonlyArray<{
   {
     key: "protein",
     label: "Protein",
-    caloriesPerGram: 4,
+    caloriesPerGram: MACRO_CALORIES_PER_GRAM.protein,
     color: "var(--nutrition-protein)",
   },
   {
     key: "carbs",
     label: "Net carbs",
-    caloriesPerGram: 4,
+    caloriesPerGram: MACRO_CALORIES_PER_GRAM.carbs,
     color: "var(--nutrition-carbs)",
   },
   {
     key: "fats",
     label: "Fat",
-    caloriesPerGram: 9,
+    caloriesPerGram: MACRO_CALORIES_PER_GRAM.fats,
     color: "var(--nutrition-fat)",
   },
 ];
@@ -52,7 +53,7 @@ const compact = (value: number, maximumFractionDigits = 1) =>
 export const macroCalorieDistribution = (macros: MacroValues) => {
   const macroGrams = (key: MacroKey) => {
     if (key === "carbs") {
-      return macros.netCarbs ?? Math.max((macros.carbs || 0) - (macros.fiber || 0), 0);
+      return macroCarbGrams(macros);
     }
     return macros[key] || 0;
   };
@@ -94,7 +95,7 @@ export function MacroCalorieRing({
   dense?: boolean;
 }) {
   const distribution = useMemo(() => macroCalorieDistribution(macros), [macros]);
-  const energy = Math.max(0, macros.calories ?? distribution.total);
+  const energy = countedCalories(macros);
   const ringGradient = useMemo(() => {
     if (distribution.total <= 0) return "var(--theme-border) 0deg 360deg";
 

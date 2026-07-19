@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
+import { countedCalories } from '../foods/nutrition-energy';
 import { Food, Nutrition } from '../foods/schemas/food.schema';
 import { DEFAULT_TIMEZONE } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
@@ -67,7 +68,7 @@ export class MealActivitiesService {
         const record = recordsByDate.get(date);
         const totals = record
           ? this.activityTotals(record, foodsById)
-          : { calories: 0, protein: 0, carbs: 0, fats: 0 };
+          : { calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, netCarbs: 0 };
         return {
           date,
           water: record?.water ?? 0,
@@ -78,7 +79,7 @@ export class MealActivitiesService {
           totals,
           distributedCalories: {
             protein: totals.protein * 4,
-            carbs: totals.carbs * 4,
+            carbs: totals.netCarbs * 4,
             fats: totals.fats * 9,
           },
         };
@@ -323,19 +324,28 @@ export class MealActivitiesService {
         });
         return totals;
       },
-      { calories: 0, protein: 0, carbs: 0, fats: 0 },
+      { calories: 0, protein: 0, carbs: 0, fats: 0, fiber: 0, netCarbs: 0 },
     );
   }
 
   private addCoreNutrition(
-    totals: { calories: number; protein: number; carbs: number; fats: number },
+    totals: {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fats: number;
+      fiber: number;
+      netCarbs: number;
+    },
     nutrition: Nutrition,
     factor: number,
   ) {
-    totals.calories += nutrition.calories * factor;
+    totals.calories += countedCalories(nutrition) * factor;
     totals.protein += nutrition.protein * factor;
     totals.carbs += nutrition.carbs * factor;
     totals.fats += nutrition.fats * factor;
+    totals.fiber += (nutrition.fiber ?? 0) * factor;
+    totals.netCarbs += (nutrition.netCarbs ?? nutrition.carbs) * factor;
   }
 
   private toResponse(activity: MealActivityDocument) {

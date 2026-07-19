@@ -17,7 +17,7 @@ import {
   type Vitamins,
 } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { scaleNutrient } from "../store/nutritionUnits";
+import { countedCalories, scaleNutrient } from "../store/nutritionUnits";
 
 type SelectedIngredient = { food: Food; quantity: number };
 type CoreKey = keyof Omit<Nutrition, "vitamins" | "minerals">;
@@ -69,7 +69,10 @@ export default function CustomRecipePage() {
     const divisor = Math.max(1, servings);
     for (const { food, quantity } of ingredients) {
       for (const key of coreKeys) {
-        result[key] += scaleNutrient(food, food.nutrition[key] ?? 0, quantity) / divisor;
+        const nutrientValue = key === "calories"
+          ? countedCalories(food.nutrition)
+          : food.nutrition[key] ?? 0;
+        result[key] += scaleNutrient(food, nutrientValue, quantity) / divisor;
       }
       for (const key of vitaminKeys) {
         result.vitamins[key] += scaleNutrient(food, food.nutrition.vitamins?.[key] ?? 0, quantity) / divisor;
@@ -78,6 +81,7 @@ export default function CustomRecipePage() {
         result.minerals[key] += scaleNutrient(food, food.nutrition.minerals?.[key] ?? 0, quantity) / divisor;
       }
     }
+    result.calories = countedCalories(result);
     return result;
   }, [ingredients, servings]);
 

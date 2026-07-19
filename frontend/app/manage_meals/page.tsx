@@ -11,7 +11,7 @@ import {
     type Meal,
 } from '../store/features/activitySlice';
 import type { Food } from '../store/features/foodSlice';
-import { NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
+import { countedCalories, NUTRIENT_UNITS, scaleNutrient } from '../store/nutritionUnits';
 import FoodSelector from '../components/foodSelector';
 
 export default function MealsPage() {
@@ -44,7 +44,7 @@ export default function MealsPage() {
             if (item.foodItem) {
                 return total + scaleNutrient(
                     item.foodItem,
-                    item.foodItem.nutrition.calories,
+                    countedCalories(item.foodItem.nutrition),
                     item.quantity,
                 );
             }

@@ -11,7 +11,7 @@ import { fetchMealActivity, type ListItems, type Meal } from "../store/features/
 import type { User } from "../store/features/authSlice";
 import type { Minerals, Vitamins } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { NUTRIENT_UNITS, scaleNutrient } from "../store/nutritionUnits";
+import { countedCalories, NUTRIENT_UNITS, scaleNutrient } from "../store/nutritionUnits";
 import DatePicker from "./calender";
 import { MacroCalorieRing } from "./ringChart";
 
@@ -85,7 +85,7 @@ const compact = (value: number) =>
 
 const itemMacros = (item: ListItems): MacroValues => ({
   calories: item.foodItem
-    ? scaleNutrient(item.foodItem, item.foodItem.nutrition.calories, item.quantity)
+    ? scaleNutrient(item.foodItem, countedCalories(item.foodItem.nutrition), item.quantity)
     : 0,
   protein: item.foodItem
     ? scaleNutrient(item.foodItem, item.foodItem.nutrition.protein, item.quantity)

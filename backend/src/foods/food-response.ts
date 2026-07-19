@@ -1,10 +1,11 @@
+import { countedCalories } from './nutrition-energy';
 import { FoodDocument, FoodKind, FoodUnit } from './schemas/food.schema';
 
 export function foodToResponse(item: FoodDocument) {
   const nutritionPer = item.nutritionPer ??
     (item.unit === FoodUnit.GRAM || item.unit === FoodUnit.MILLILITER ? 100 : 1);
   const nutrition = {
-    calories: item.nutrition.calories,
+    calories: countedCalories(item.nutrition),
     protein: item.nutrition.protein,
     carbs: item.nutrition.carbs,
     fiber: item.nutrition.fiber ?? 0,

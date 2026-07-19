@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateFoodDto } from '../foods/dto/create-food.dto';
 import { foodToResponse } from '../foods/food-response';
+import { countedCalories } from '../foods/nutrition-energy';
 import {
   Food,
   FoodDocument,
@@ -27,12 +28,20 @@ export class CustomFoodsService {
   async createFood(userId: string, dto: CreateFoodDto) {
     const item = await this.foods.create({
       ...dto,
+      nutrition: this.withMacroCalories(dto.nutrition),
       kind: FoodKind.FOOD,
       addedBy: userId,
       selectedBy: 0,
       approved: false,
     });
     return foodToResponse(item);
+  }
+
+  private withMacroCalories(nutrition: Nutrition): Nutrition {
+    return {
+      ...nutrition,
+      calories: this.round(countedCalories(nutrition)),
+    };
   }
 
   async createRecipe(userId: string, dto: CreateRecipeDto) {
@@ -87,13 +96,17 @@ export class CustomFoodsService {
         (food.unit === FoodUnit.GRAM || food.unit === FoodUnit.MILLILITER ? 100 : 1);
       const multiplier = ingredient.quantity / nutritionPer / dto.servings;
       for (const key of CORE_NUTRIENTS) {
-        result[key] += (food.nutrition[key] ?? 0) * multiplier;
+        const nutrientValue = key === 'calories'
+          ? countedCalories(food.nutrition)
+          : food.nutrition[key] ?? 0;
+        result[key] += nutrientValue * multiplier;
       }
       this.addGroup(result.vitamins!, food.nutrition.vitamins, VITAMINS, multiplier);
       this.addGroup(result.minerals!, food.nutrition.minerals, MINERALS, multiplier);
     }
 
     for (const key of CORE_NUTRIENTS) result[key] = this.round(result[key]);
+    result.calories = this.round(countedCalories(result));
     for (const key of VITAMINS) result.vitamins![key] = this.round(result.vitamins![key]);
     for (const key of MINERALS) result.minerals![key] = this.round(result.minerals![key]);
     return result;
