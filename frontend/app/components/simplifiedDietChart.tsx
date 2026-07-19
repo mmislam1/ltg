@@ -355,7 +355,18 @@ function MacroOverview({ user, totals, water }: { user: User; totals: NutritionT
         title="Macro calorie split"
         subtitle="Percentage of calories coming from protein, net carbs, and fat."
       />
-      <NutritionLists nutrition={totals} waterGlasses={water} showFooter={false} />
+      <NutritionLists
+        nutrition={totals}
+        macroTargets={{
+          calories: user.dailyGoals.targetCalories,
+          protein: user.dailyGoals.targetProtein,
+          carbs: user.dailyGoals.targetCarb,
+          netCarbs: user.dailyGoals.targetCarb,
+          fats: user.dailyGoals.targetFat,
+        }}
+        waterGlasses={water}
+        showFooter={false}
+      />
     </section>
   );
 }

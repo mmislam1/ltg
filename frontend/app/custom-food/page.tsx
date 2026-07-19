@@ -481,7 +481,16 @@ export default function CustomFoodPage() {
             <h2 className="text-xl font-bold text-ink">Nutrition preview</h2>
             <p className="mt-1 text-sm text-muted">Your entered values use the same display and daily comparisons as the app’s Nutrition screen.</p>
           </div>
-          <NutritionProfile nutrition={nutritionPreview} />
+          <NutritionProfile
+            nutrition={nutritionPreview}
+            macroTargets={{
+              calories: user.dailyGoals.targetCalories,
+              protein: user.dailyGoals.targetProtein,
+              carbs: user.dailyGoals.targetCarb,
+              netCarbs: user.dailyGoals.targetCarb,
+              fats: user.dailyGoals.targetFat,
+            }}
+          />
         </section>
 
         {user.role === "admin" && (

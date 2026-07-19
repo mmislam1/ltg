@@ -168,7 +168,16 @@ export default function CustomRecipePage() {
               <h2 className="text-xl font-bold text-ink">Nutrition per serving</h2>
               <p className="mt-1 text-sm text-muted">Compared with the same daily targets shown in the app’s Nutrition screen.</p>
             </div>
-            <NutritionProfile nutrition={nutrition} />
+            <NutritionProfile
+              nutrition={nutrition}
+              macroTargets={{
+                calories: user.dailyGoals.targetCalories,
+                protein: user.dailyGoals.targetProtein,
+                carbs: user.dailyGoals.targetCarb,
+                netCarbs: user.dailyGoals.targetCarb,
+                fats: user.dailyGoals.targetFat,
+              }}
+            />
           </section>
 
           <button type="submit" disabled={creatingRecipe || ingredients.length === 0} className="btn btn-primary w-full sm:w-auto">

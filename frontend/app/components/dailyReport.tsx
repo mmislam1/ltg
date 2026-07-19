@@ -9,6 +9,7 @@ import WeightUpdater from "./weightUpdater";
 
 export default function DailyReport() {
   const activity = useAppSelector((state) => state.activity.current);
+  const goals = useAppSelector((state) => state.auth.user?.dailyGoals);
   const nutrition = {
     ...activity.macros,
     vitamins: activity.totalMicro.vitamins,
@@ -32,7 +33,17 @@ export default function DailyReport() {
           <RingChart />
         </div>
 
-        <NutritionProfile nutrition={nutrition} waterGlasses={activity.water} />
+        <NutritionProfile
+          nutrition={nutrition}
+          macroTargets={{
+            calories: goals?.targetCalories,
+            protein: goals?.targetProtein,
+            carbs: goals?.targetCarb,
+            netCarbs: goals?.targetCarb,
+            fats: goals?.targetFat,
+          }}
+          waterGlasses={activity.water}
+        />
       </div>
     </div>
   );

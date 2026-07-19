@@ -3,6 +3,8 @@ import { NUTRIENT_UNITS } from "../store/nutritionUnits";
 import { IDEAL_NUTRITION } from "../nutritionDashboard/idealNutritionState";
 
 type MacroKey = "calories" | "protein" | "carbs" | "netCarbs" | "fiber" | "fats";
+type NutrientRangeKind = "macro" | "micro" | "minimum";
+type NutrientStatus = "danger" | "warning" | "good";
 
 interface BaseNutrientEntry<Key extends string> {
   key: Key;
@@ -11,6 +13,7 @@ interface BaseNutrientEntry<Key extends string> {
   target: number;
   barClassName: string;
   labelClassName?: string;
+  rangeKind?: NutrientRangeKind;
 }
 
 export type MacroNutrientEntry = BaseNutrientEntry<MacroKey>;
@@ -24,6 +27,8 @@ export type NutritionValues = Pick<
   vitamins?: Partial<Vitamins>;
   minerals?: Partial<Minerals>;
 };
+
+export type MacroTargets = Partial<Record<MacroKey, number>>;
 
 export const MACRO_NUTRIENTS: MacroNutrientEntry[] = [
   {
@@ -111,24 +116,71 @@ const compact = (value: number) =>
     ? value.toLocaleString("en-US", { maximumFractionDigits: 1 })
     : "0";
 
+const validTarget = (value: number | undefined) =>
+  typeof value === "number" && Number.isFinite(value) && value > 0
+    ? value
+    : undefined;
+
+const statusStyles: Record<NutrientStatus, { bar: string; text: string; track: string }> = {
+  danger: {
+    bar: "bg-red-500",
+    text: "text-red-600",
+    track: "bg-red-50",
+  },
+  warning: {
+    bar: "bg-amber-500",
+    text: "text-amber-600",
+    track: "bg-amber-50",
+  },
+  good: {
+    bar: "bg-emerald-500",
+    text: "text-emerald-600",
+    track: "bg-emerald-50",
+  },
+};
+
+const statusForRange = (
+  percent: number,
+  rangeKind: NutrientRangeKind,
+): NutrientStatus => {
+  if (rangeKind === "minimum") {
+    if (percent < 50) return "danger";
+    if (percent < 100) return "warning";
+    return "good";
+  }
+
+  if (rangeKind === "micro") {
+    if (percent < 50 || percent > 200) return "danger";
+    if (percent < 90 || percent > 150) return "warning";
+    return "good";
+  }
+
+  if (percent < 70 || percent > 130) return "danger";
+  if (percent < 90 || percent > 110) return "warning";
+  return "good";
+};
+
 function NutrientBar({
   label,
   current,
   target,
   unit,
-  barClassName,
   labelClassName = "text-ink",
+  rangeKind,
 }: {
   label: string;
   current: number;
   target: number;
   unit: string;
-  barClassName: string;
   labelClassName?: string;
+  rangeKind: NutrientRangeKind;
 }) {
   const safeCurrent = Number.isFinite(current) ? current : 0;
-  const percentage = target > 0 ? Math.min((safeCurrent / target) * 100, 100) : 0;
-  const percentageText = target > 0 ? Math.round((safeCurrent / target) * 100) : 0;
+  const rawPercentage = target > 0 ? (safeCurrent / target) * 100 : 0;
+  const percentage = Math.min(Math.max(rawPercentage, 0), 100);
+  const percentageText = Math.round(rawPercentage);
+  const status = statusForRange(rawPercentage, rangeKind);
+  const styles = statusStyles[status];
 
   return (
     <div className="mb-5">
@@ -138,13 +190,13 @@ function NutrientBar({
           <span className="text-[13px] text-muted tabular-nums">
             {compact(safeCurrent)} / {compact(target)} {unit}
           </span>
-          <span className={`text-[15px] font-bold ${percentageText >= 90 && percentageText <= 110 ? "text-emerald-600" : percentageText > 110 ? "text-amber-600" : "text-muted"}`}>
+          <span className={`text-[15px] font-bold ${styles.text}`}>
             {percentageText}%
           </span>
         </div>
       </div>
-      <div className="relative h-[12px] overflow-hidden rounded-full bg-brand-soft shadow-inner">
-        <div className={`h-full rounded-full transition-all duration-700 ease-out ${barClassName}`} style={{ width: `${percentage}%` }}>
+      <div className={`relative h-[12px] overflow-hidden rounded-full shadow-inner ${styles.track}`}>
+        <div className={`h-full rounded-full transition-all duration-700 ease-out ${styles.bar}`} style={{ width: `${percentage}%` }}>
           <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent" />
         </div>
       </div>
@@ -156,10 +208,12 @@ function NutrientSection<Key extends string>({
   title,
   entries,
   values,
+  rangeKind,
 }: {
   title: string;
   entries: ReadonlyArray<BaseNutrientEntry<Key>>;
   values: Partial<Record<Key, number | undefined>>;
+  rangeKind: NutrientRangeKind;
 }) {
   return (
     <div className="card p-4">
@@ -174,8 +228,8 @@ function NutrientSection<Key extends string>({
             current={values[entry.key] ?? 0}
             target={entry.target}
             unit={entry.unit}
-            barClassName={entry.barClassName}
             labelClassName={entry.labelClassName}
+            rangeKind={entry.rangeKind ?? rangeKind}
           />
         ))}
       </div>
@@ -185,17 +239,23 @@ function NutrientSection<Key extends string>({
 
 export default function NutritionLists({
   nutrition,
+  macroTargets,
   waterGlasses = 0,
   showWater = true,
   showFooter = true,
   className = "",
 }: {
   nutrition: NutritionValues;
+  macroTargets?: MacroTargets;
   waterGlasses?: number;
   showWater?: boolean;
   showFooter?: boolean;
   className?: string;
 }) {
+  const macroEntries = MACRO_NUTRIENTS.map((entry) => ({
+    ...entry,
+    target: validTarget(macroTargets?.[entry.key]) ?? entry.target,
+  }));
   const macroValues: Record<MacroKey | "water", number> = {
     calories: nutrition.calories,
     protein: nutrition.protein,
@@ -205,9 +265,9 @@ export default function NutritionLists({
     fats: nutrition.fats,
     water: waterGlasses,
   };
-  const macroEntries = showWater
+  const entries = showWater
     ? [
-        ...MACRO_NUTRIENTS,
+        ...macroEntries,
         {
           key: "water" as const,
           label: "Water",
@@ -215,17 +275,18 @@ export default function NutritionLists({
           unit: "glasses",
           barClassName: "bg-sky-500",
           labelClassName: "text-blue-600",
+          rangeKind: "minimum" as const,
         },
       ]
-    : MACRO_NUTRIENTS;
+    : macroEntries;
 
   return (
     <div className={className}>
-      <NutrientSection title="Macronutrients" entries={macroEntries} values={macroValues} />
+      <NutrientSection title="Macronutrients" entries={entries} values={macroValues} rangeKind="macro" />
 
       <div className="mt-8 grid gap-8 md:grid-cols-2">
-        <NutrientSection title="Vitamins" entries={VITAMIN_NUTRIENTS} values={nutrition.vitamins ?? {}} />
-        <NutrientSection title="Minerals" entries={MINERAL_NUTRIENTS} values={nutrition.minerals ?? {}} />
+        <NutrientSection title="Vitamins" entries={VITAMIN_NUTRIENTS} values={nutrition.vitamins ?? {}} rangeKind="micro" />
+        <NutrientSection title="Minerals" entries={MINERAL_NUTRIENTS} values={nutrition.minerals ?? {}} rangeKind="micro" />
       </div>
 
       {showFooter && (
