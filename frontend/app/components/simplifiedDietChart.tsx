@@ -11,8 +11,9 @@ import { fetchMealActivity, type ListItems, type Meal } from "../store/features/
 import type { User } from "../store/features/authSlice";
 import type { Minerals, Vitamins } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
-import { countedCalories, NUTRIENT_UNITS, scaleNutrient } from "../store/nutritionUnits";
+import { countedCalories, scaleNutrient } from "../store/nutritionUnits";
 import DatePicker from "./calender";
+import NutritionLists, { MINERAL_NUTRIENTS, VITAMIN_NUTRIENTS } from "./nutritionLists";
 import { MacroCalorieRing } from "./ringChart";
 
 type MacroValues = { calories: number; protein: number; carbs: number; fats: number };
@@ -22,36 +23,6 @@ type NutritionTotals = MacroValues & {
   vitamins: Vitamins;
   minerals: Minerals;
 };
-
-const VITAMIN_ENTRIES = [
-  { key: "a", label: "Vitamin A", unit: NUTRIENT_UNITS.vitamins.a },
-  { key: "b1", label: "Vitamin B1", unit: NUTRIENT_UNITS.vitamins.b1 },
-  { key: "b2", label: "Vitamin B2", unit: NUTRIENT_UNITS.vitamins.b2 },
-  { key: "b3", label: "Vitamin B3", unit: NUTRIENT_UNITS.vitamins.b3 },
-  { key: "b5", label: "Vitamin B5", unit: NUTRIENT_UNITS.vitamins.b5 },
-  { key: "b6", label: "Vitamin B6", unit: NUTRIENT_UNITS.vitamins.b6 },
-  { key: "b7", label: "Vitamin B7", unit: NUTRIENT_UNITS.vitamins.b7 },
-  { key: "b8", label: "Vitamin B8", unit: NUTRIENT_UNITS.vitamins.b8 },
-  { key: "b9", label: "Vitamin B9", unit: NUTRIENT_UNITS.vitamins.b9 },
-  { key: "b12", label: "Vitamin B12", unit: NUTRIENT_UNITS.vitamins.b12 },
-  { key: "c", label: "Vitamin C", unit: NUTRIENT_UNITS.vitamins.c },
-  { key: "d", label: "Vitamin D", unit: NUTRIENT_UNITS.vitamins.d },
-  { key: "e", label: "Vitamin E", unit: NUTRIENT_UNITS.vitamins.e },
-  { key: "k", label: "Vitamin K", unit: NUTRIENT_UNITS.vitamins.k },
-] as const satisfies ReadonlyArray<{ key: keyof Vitamins; label: string; unit: string }>;
-
-const MINERAL_ENTRIES = [
-  { key: "calcium", label: "Calcium", unit: NUTRIENT_UNITS.minerals.calcium },
-  { key: "copper", label: "Copper", unit: NUTRIENT_UNITS.minerals.copper },
-  { key: "iron", label: "Iron", unit: NUTRIENT_UNITS.minerals.iron },
-  { key: "magnesium", label: "Magnesium", unit: NUTRIENT_UNITS.minerals.magnesium },
-  { key: "manganese", label: "Manganese", unit: NUTRIENT_UNITS.minerals.manganese },
-  { key: "phosphorus", label: "Phosphorus", unit: NUTRIENT_UNITS.minerals.phosphorus },
-  { key: "potassium", label: "Potassium", unit: NUTRIENT_UNITS.minerals.potassium },
-  { key: "selenium", label: "Selenium", unit: NUTRIENT_UNITS.minerals.selenium },
-  { key: "sodium", label: "Sodium", unit: NUTRIENT_UNITS.minerals.sodium },
-  { key: "zinc", label: "Zinc", unit: NUTRIENT_UNITS.minerals.zinc },
-] as const satisfies ReadonlyArray<{ key: keyof Minerals; label: string; unit: string }>;
 
 const dateInTimezone = (date: Date, timezone?: string) => {
   const parts = new Intl.DateTimeFormat("en-US", {
@@ -122,10 +93,10 @@ const chartTotals = (meals: Meal[]) =>
         const nutrition = item.foodItem.nutrition;
         totals.fiber += scaleNutrient(item.foodItem, nutrition.fiber ?? 0, item.quantity);
         totals.netCarbs += scaleNutrient(item.foodItem, nutrition.netCarbs ?? nutrition.carbs, item.quantity);
-        VITAMIN_ENTRIES.forEach(({ key }) => {
+        VITAMIN_NUTRIENTS.forEach(({ key }) => {
           totals.vitamins[key] += scaleNutrient(item.foodItem!, nutrition.vitamins?.[key] ?? 0, item.quantity);
         });
-        MINERAL_ENTRIES.forEach(({ key }) => {
+        MINERAL_NUTRIENTS.forEach(({ key }) => {
           totals.minerals[key] += scaleNutrient(item.foodItem!, nutrition.minerals?.[key] ?? 0, item.quantity);
         });
       });
@@ -341,7 +312,6 @@ export function DiaryPdfPreview({
         </div>
         <ActivitySummary water={water} steps={steps} />
         <MacroOverview user={user} totals={totals} water={water} />
-        <CompleteNutrition totals={totals} />
         <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-xs text-[#657473] sm:text-[10px]">
           <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
         </div>
@@ -376,7 +346,7 @@ function PdfHero({ user, date }: { user: User; date: string }) {
 
 function MacroOverview({ user, totals, water }: { user: User; totals: NutritionTotals; water: number }) {
   return (
-    <section className="mt-6 grid gap-3 lg:grid-cols-[1.08fr_0.92fr]">
+    <section className="mt-6 space-y-4">
       <MacroCalorieRing
         className="rounded-xl border-[#DDE7E5] shadow-none"
         dense
@@ -385,7 +355,7 @@ function MacroOverview({ user, totals, water }: { user: User; totals: NutritionT
         title="Macro calorie split"
         subtitle="Percentage of calories coming from protein, net carbs, and fat."
       />
-      <MacroDetails totals={totals} water={water} />
+      <NutritionLists nutrition={totals} waterGlasses={water} showFooter={false} />
     </section>
   );
 }
@@ -394,38 +364,6 @@ function MealSectionHeader() {
   return (
     <div className="flex items-center justify-between gap-3">
       <h3 className="text-sm font-bold tracking-[0.08em] text-[#172B2A] sm:text-[11px]">MEALS</h3>
-    </div>
-  );
-}
-
-function MacroDetails({ totals, water }: { totals: NutritionTotals; water: number }) {
-  const entries = [
-    { label: "Calories", value: compact(totals.calories), unit: NUTRIENT_UNITS.calories, color: "var(--nutrition-calories)" },
-    { label: "Protein", value: compact(totals.protein), unit: NUTRIENT_UNITS.protein, color: "var(--nutrition-protein)" },
-    { label: "Net carbs", value: compact(totals.netCarbs), unit: NUTRIENT_UNITS.netCarbs, color: "var(--nutrition-carbs)" },
-    { label: "Fiber", value: compact(totals.fiber), unit: NUTRIENT_UNITS.fiber, color: "var(--nutrition-fiber)" },
-    { label: "Fat", value: compact(totals.fats), unit: NUTRIENT_UNITS.fats, color: "var(--nutrition-fat)" },
-    { label: "Water", value: compact(water), unit: "glasses", color: "#0EA5E9" },
-  ];
-
-  return (
-    <div className="rounded-xl border border-[#DDE7E5] bg-[#F5F8F7] p-4">
-      <div className="border-b border-[#DDE7E5] pb-3">
-        <h3 className="text-lg font-bold text-[#172B2A]">Macros</h3>
-      </div>
-      <div className="mt-4 grid gap-2">
-        {entries.map((entry) => (
-          <div key={entry.label} className="flex min-w-0 items-center justify-between gap-3 rounded-lg bg-white px-3 py-2.5">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: entry.color }} aria-hidden="true" />
-              <span className="truncate text-sm font-bold text-[#172B2A]">{entry.label}</span>
-            </div>
-            <span className="shrink-0 text-sm font-semibold tabular-nums text-[#657473]">
-              {entry.value} {entry.unit}
-            </span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -513,40 +451,4 @@ function MealTable({ meal, showEdit = false }: { meal: Meal; showEdit?: boolean 
 
 function MobileMacro({ label, value }: { label: string; value: string }) {
   return <div><p className="text-[11px] font-bold text-[#657473]">{label}</p><p className="mt-1 text-sm font-semibold">{value}</p></div>;
-}
-
-function CompleteNutrition({ totals }: { totals: NutritionTotals }) {
-  return (
-    <section className="mt-7">
-      <h3 className="text-xs font-bold tracking-[0.08em]">OTHER NUTRITION TOTALS</h3>
-      <p className="mt-1 text-sm text-[#657473] sm:text-[10px]">Vitamins and minerals recorded for this day</p>
-
-      <NutrientGroup title="VITAMINS" entries={VITAMIN_ENTRIES} values={totals.vitamins} />
-      <NutrientGroup title="MINERALS" entries={MINERAL_ENTRIES} values={totals.minerals} />
-    </section>
-  );
-}
-
-function NutrientGroup<T extends string>({
-  title,
-  entries,
-  values,
-}: {
-  title: string;
-  entries: ReadonlyArray<{ key: T; label: string; unit: string }>;
-  values: Record<T, number>;
-}) {
-  return (
-    <section className="mt-5">
-      <h4 className="text-sm font-bold tracking-[0.1em] text-[#115E59] sm:text-[10px]">{title}</h4>
-      <div className="mt-2 grid grid-cols-2 gap-1.5 sm:grid-cols-3 sm:gap-2">
-        {entries.map((entry, index) => (
-          <div key={entry.key} className={`flex min-w-0 items-center justify-between gap-2 rounded px-2.5 py-2.5 text-xs sm:py-2 sm:text-[9px] ${Math.floor(index / 2) % 2 === 1 ? "bg-[#FAFCFB]" : "bg-[#F5F8F7]"}`}>
-            <span className="min-w-0 truncate text-[#657473]">{entry.label}</span>
-            <span className="shrink-0 font-bold">{compact(values[entry.key])} {entry.unit}</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
 }
