@@ -257,6 +257,7 @@ export default function SimplifiedDietChart() {
           water={current.water}
           steps={current.steps}
           showMealEdit
+          showActivityEdit
           loading={loading}
         />
       </div>
@@ -282,6 +283,7 @@ export function DiaryPdfPreview({
   water = 0,
   steps = 0,
   showMealEdit = false,
+  showActivityEdit = false,
   loading = false,
 }: {
   user: User;
@@ -290,6 +292,7 @@ export function DiaryPdfPreview({
   water?: number;
   steps?: number;
   showMealEdit?: boolean;
+  showActivityEdit?: boolean;
   loading?: boolean;
 }) {
   const totals = useMemo(() => chartTotals(meals), [meals]);
@@ -310,7 +313,7 @@ export function DiaryPdfPreview({
             <div className="space-y-6">{meals.map((meal) => <MealTable key={meal.id} meal={meal} showEdit={showMealEdit} />)}</div>
           )}
         </div>
-        <ActivitySummary water={water} steps={steps} />
+        <ActivitySummary water={water} steps={steps} showEdit={showActivityEdit} />
         <MacroOverview user={user} totals={totals} water={water} />
         <div className="mt-8 flex items-center justify-between border-t border-[#DDE7E5] pt-3 text-xs text-[#657473] sm:text-[10px]">
           <span>LOSE TO GAIN / DIET CHART</span><span>PDF preview</span>
@@ -379,26 +382,46 @@ function MealSectionHeader() {
   );
 }
 
-function ActivitySummary({ water, steps }: { water: number; steps: number }) {
+function ActivitySummary({
+  water,
+  steps,
+  showEdit = false,
+}: {
+  water: number;
+  steps: number;
+  showEdit?: boolean;
+}) {
   return (
-    <section className="mt-6 grid grid-cols-2 gap-2 sm:gap-3">
+    <section className="mt-6 grid gap-2 sm:grid-cols-2 sm:gap-3">
       <div className="flex items-center gap-3 rounded-lg bg-[#F5F8F7] p-3 sm:p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#DFF4F0] text-[#115E59]">
           <Droplets size={19} aria-hidden="true" />
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-xs font-bold tracking-wide text-[#657473] sm:text-[9px]">WATER</p>
           <p className="mt-1 text-lg font-bold leading-tight">{compact(water)} glasses</p>
         </div>
+        {showEdit && (
+          <Link href="/add_meal#water" className="btn btn-secondary btn-sm ml-auto min-h-8 shrink-0 px-2 py-1 text-xs">
+            <Pencil size={14} aria-hidden="true" />
+            <span>Edit</span>
+          </Link>
+        )}
       </div>
       <div className="flex items-center gap-3 rounded-lg bg-[#F5F8F7] p-3 sm:p-4">
         <span className="grid size-10 shrink-0 place-items-center rounded-full bg-[#DFF4F0] text-[#115E59]">
           <Footprints size={19} aria-hidden="true" />
         </span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-xs font-bold tracking-wide text-[#657473] sm:text-[9px]">STEPS</p>
           <p className="mt-1 text-lg font-bold leading-tight">{steps.toLocaleString("en-US")} steps</p>
         </div>
+        {showEdit && (
+          <Link href="/add_meal#steps" className="btn btn-secondary btn-sm ml-auto min-h-8 shrink-0 px-2 py-1 text-xs">
+            <Pencil size={14} aria-hidden="true" />
+            <span>Edit</span>
+          </Link>
+        )}
       </div>
     </section>
   );

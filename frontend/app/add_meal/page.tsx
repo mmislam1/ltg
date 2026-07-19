@@ -7,8 +7,12 @@ const AddMealPage = () => {
   return (
     <div className='mx-auto my-6 flex w-full max-w-xl flex-col gap-4 px-2 sm:px-4'>
       <Meals/>
-      <Water />
-      <StepCounter />
+      <section id="water" className="scroll-mt-24">
+        <Water />
+      </section>
+      <section id="steps" className="scroll-mt-24">
+        <StepCounter />
+      </section>
     </div>
   )
 }

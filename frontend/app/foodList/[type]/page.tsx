@@ -110,7 +110,7 @@ export default function FoodList() {
     if (!mealType || !selectedDate) return;
     try {
       await dispatch(saveMealActivity({ meal, date: selectedDate })).unwrap();
-      router.replace("/chart");
+      router.replace("/diary");
     } catch {
       // The shared activity error is shown below.
     }
