@@ -135,7 +135,7 @@ export default function FoodSelector({
                       <input
                         type="number"
                         min="0.001"
-                        step={step}
+                        step="any"
                         inputMode="decimal"
                         value={quantity}
                         onChange={(event) => changeQuantity(food, Number(event.target.value))}
