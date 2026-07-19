@@ -133,7 +133,7 @@ export default function DropdownMenu() {
       </button>
 
       {isOpen && (
-        <div ref={menuRef} className="card absolute right-0 top-[calc(100%+0.5rem)] z-50 max-h-[calc(100vh-5rem)] w-72 overflow-y-auto py-1" role="menu">
+        <div ref={menuRef} className="card absolute right-0 top-[calc(100%+0.5rem)] z-[230] max-h-[calc(100vh-5rem)] w-72 overflow-y-auto py-1" role="menu">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-brand">
               {initials || "U"}

@@ -93,7 +93,7 @@ export default function BottomBar() {
   return (
     <nav
       aria-label="Primary navigation"
-      className="bottom-nav safe-area-bottom fixed inset-x-0 bottom-0 z-[100] w-full overflow-visible border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden"
+      className="bottom-nav safe-area-bottom fixed inset-x-0 bottom-0 z-[300] w-full overflow-visible border-t border-line/80 bg-surface/95 shadow-[0_-8px_30px_rgba(15,23,42,0.08)] backdrop-blur-xl md:hidden"
     >
       <div className="mx-auto grid h-[4.5rem] max-w-lg grid-cols-5 items-center px-2">
         <NavigationLink item={navigationItems[0]} />
