@@ -525,7 +525,7 @@ export default function ProfilePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="btn btn-ghost btn-sm mb-5 -ml-2"
+          className="btn btn-ghost btn-sm mb-5 -ml-2 hidden sm:inline-flex"
         >
           <ArrowLeft size={17} /> Back
         </button>
