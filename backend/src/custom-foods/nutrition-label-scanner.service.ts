@@ -73,6 +73,7 @@ const MINERAL_KEYS: MineralKey[] = [
 
 const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
 const SCAN_TIMEOUT_MS = 45_000;
+const FALLBACK_MODELS = ['gemini-3.5-flash', 'gemini-2.5-flash', 'gemini-3.1-flash-lite'];
 
 const numberField = { type: 'number', minimum: 0 };
 const scanResponseSchema = {
@@ -145,6 +146,7 @@ export class NutritionLabelScannerService {
       enabled: this.isEnabled(),
       hasApiKey: Boolean(this.getApiKey()),
       model: this.normalizeModelName(this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-3.5-flash')),
+      fallbackModels: FALLBACK_MODELS,
     };
   }
 
@@ -167,11 +169,11 @@ export class NutritionLabelScannerService {
       throw new ServiceUnavailableException('Gemini API key is missing on the server.');
     }
 
-    const model = this.normalizeModelName(this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-3.5-flash'));
-    const response = await this.requestGemini(model, apiKey, file);
+    const models = this.modelCandidates();
+    const response = await this.requestGeminiWithFallback(models, apiKey, file);
 
     if (!response.ok) {
-      throw await this.geminiFailure(response);
+      throw await this.geminiFailure(response, models);
     }
 
     const body = (await response.json()) as GeminiInteractionResponse;
@@ -213,6 +215,26 @@ export class NutritionLabelScannerService {
     }
   }
 
+  private async requestGeminiWithFallback(models: string[], apiKey: string, file: UploadedNutritionImage) {
+    let lastResponse: Response | undefined;
+
+    for (const model of models) {
+      const response = await this.requestGemini(model, apiKey, file);
+      if (response.ok || response.status !== 404) {
+        return response;
+      }
+      lastResponse = response;
+      this.logger.warn(`Gemini model ${model} was rejected with 404; trying fallback model.`);
+    }
+
+    return lastResponse!;
+  }
+
+  private modelCandidates() {
+    const configuredModel = this.normalizeModelName(this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-3.5-flash'));
+    return Array.from(new Set([configuredModel, ...FALLBACK_MODELS]));
+  }
+
   private normalizeModelName(model: string) {
     const trimmed = model.trim() || 'gemini-3.5-flash';
     return trimmed.replace(/^models\//, '');
@@ -229,7 +251,7 @@ export class NutritionLabelScannerService {
     return ['true', '1', 'yes', 'on'].includes(value.trim().toLowerCase());
   }
 
-  private async geminiFailure(response: Response) {
+  private async geminiFailure(response: Response, triedModels: string[] = []) {
     let geminiMessage = '';
     try {
       const body = (await response.json()) as GeminiErrorResponse;
@@ -244,7 +266,8 @@ export class NutritionLabelScannerService {
       return new ServiceUnavailableException('Gemini access was rejected. Check the backend API key.');
     }
     if (response.status === 404) {
-      return new ServiceUnavailableException('Gemini model was rejected. Check the backend model setting.');
+      const tried = triedModels.length ? ` Tried: ${triedModels.join(', ')}.` : '';
+      return new ServiceUnavailableException(`Gemini model was rejected. Check the backend model setting.${tried}`);
     }
     if (response.status === 429) {
       return new ServiceUnavailableException('Gemini is rate limited. Try again shortly.');
