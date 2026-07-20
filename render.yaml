@@ -42,7 +42,9 @@ services:
       - key: MAIL_FROM
         sync: false
       - key: NUTRITION_LABEL_SCAN_ENABLED
-        value: "false"
+        value: "true"
+      - key: GEMINI_API_KEY
+        sync: false
       - key: GEMINI_NUTRITION_MODEL
         value: gemini-3.5-flash
 
@@ -64,4 +66,4 @@ services:
           name: ltg-api
           envVarKey: RENDER_EXTERNAL_HOSTNAME
       - key: NEXT_PUBLIC_NUTRITION_LABEL_SCAN_ENABLED
-        value: "false"
+        value: "true"

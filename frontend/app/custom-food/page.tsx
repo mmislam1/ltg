@@ -326,16 +326,16 @@ export default function CustomFoodPage() {
   return (
     <div className="w-full px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <Back />
-            <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
-          </div>
-          {SCAN_ENABLED && (
-            <div className="relative shrink-0">
+        <div className="mb-6 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <Back />
+              <h1 className="text-2xl font-bold text-ink sm:text-3xl">Create custom food</h1>
+            </div>
+            {SCAN_ENABLED && (
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="btn btn-secondary shrink-0"
                 disabled={scanningLabel}
                 aria-expanded={scanMenuOpen}
                 aria-controls="custom-food-scan-menu"
@@ -343,31 +343,29 @@ export default function CustomFoodPage() {
               >
                 <ScanLine size={18} /> {scanningLabel ? "Scanning..." : "Scan"}
               </button>
-              {scanMenuOpen && (
-                <div
-                  id="custom-food-scan-menu"
-                  className="card absolute right-0 top-full z-[260] mt-2 w-[min(calc(100vw-2rem),20rem)] p-3 shadow-xl"
+            )}
+          </div>
+
+          {SCAN_ENABLED && scanMenuOpen && (
+            <div id="custom-food-scan-menu" className="card w-full p-3 shadow-xl sm:ml-auto sm:max-w-sm">
+              <div className="grid grid-cols-2 gap-3">
+                <label
+                  htmlFor={CAMERA_INPUT_ID}
+                  aria-disabled={scanningLabel}
+                  className={`btn btn-secondary min-h-20 flex-col ${scanningLabel ? "pointer-events-none opacity-55" : ""}`}
                 >
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label
-                      htmlFor={CAMERA_INPUT_ID}
-                      aria-disabled={scanningLabel}
-                      className={`btn btn-secondary min-h-20 flex-col ${scanningLabel ? "pointer-events-none opacity-55" : ""}`}
-                    >
-                      <Camera size={24} />
-                      Camera
-                    </label>
-                    <label
-                      htmlFor={PHOTO_INPUT_ID}
-                      aria-disabled={scanningLabel}
-                      className={`btn btn-secondary min-h-20 flex-col ${scanningLabel ? "pointer-events-none opacity-55" : ""}`}
-                    >
-                      <ImageUp size={24} />
-                      Photo
-                    </label>
-                  </div>
-                </div>
-              )}
+                  <Camera size={24} />
+                  Camera
+                </label>
+                <label
+                  htmlFor={PHOTO_INPUT_ID}
+                  aria-disabled={scanningLabel}
+                  className={`btn btn-secondary min-h-20 flex-col ${scanningLabel ? "pointer-events-none opacity-55" : ""}`}
+                >
+                  <ImageUp size={24} />
+                  Photo
+                </label>
+              </div>
             </div>
           )}
         </div>
