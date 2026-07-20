@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AuthenticatedUser, CurrentUser } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -30,6 +30,11 @@ export class CustomFoodsController {
   @UseInterceptors(FileInterceptor('image', { limits: { fileSize: 8 * 1024 * 1024 } }))
   scanNutritionLabel(@UploadedFile() image?: UploadedNutritionImage) {
     return this.nutritionLabelScanner.scan(image);
+  }
+
+  @Get('foods/scan-label/status')
+  scanNutritionLabelStatus() {
+    return this.nutritionLabelScanner.getStatus();
   }
 
   @Post('recipes')

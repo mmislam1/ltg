@@ -137,12 +137,20 @@ export class NutritionLabelScannerService {
   constructor(private readonly config: ConfigService) {}
 
   isEnabled() {
-    return this.config.get<boolean>('NUTRITION_LABEL_SCAN_ENABLED', false);
+    return this.booleanConfig('NUTRITION_LABEL_SCAN_ENABLED');
+  }
+
+  getStatus() {
+    return {
+      enabled: this.isEnabled(),
+      hasApiKey: Boolean(this.getApiKey()),
+      model: this.normalizeModelName(this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-3.5-flash')),
+    };
   }
 
   async scan(file?: UploadedNutritionImage): Promise<CreateFoodDto> {
     if (!this.isEnabled()) {
-      throw new ServiceUnavailableException('Scan is unavailable.');
+      throw new ServiceUnavailableException('Scan is disabled on the server.');
     }
     if (!file?.buffer?.length) {
       throw new BadRequestException('Add an image to scan.');
@@ -154,9 +162,9 @@ export class NutritionLabelScannerService {
       throw new BadRequestException('Image must be 8 MB or smaller.');
     }
 
-    const apiKey = this.config.get<string>('GEMINI_API_KEY')?.trim();
+    const apiKey = this.getApiKey();
     if (!apiKey) {
-      throw new ServiceUnavailableException('Scan is unavailable.');
+      throw new ServiceUnavailableException('Gemini API key is missing on the server.');
     }
 
     const model = this.normalizeModelName(this.config.get<string>('GEMINI_NUTRITION_MODEL', 'gemini-3.5-flash'));
@@ -210,6 +218,17 @@ export class NutritionLabelScannerService {
     return trimmed.replace(/^models\//, '');
   }
 
+  private getApiKey() {
+    return this.config.get<string>('GEMINI_API_KEY')?.trim() ?? '';
+  }
+
+  private booleanConfig(key: string) {
+    const value = this.config.get<unknown>(key, false);
+    if (typeof value === 'boolean') return value;
+    if (typeof value !== 'string') return false;
+    return ['true', '1', 'yes', 'on'].includes(value.trim().toLowerCase());
+  }
+
   private async geminiFailure(response: Response) {
     let geminiMessage = '';
     try {
@@ -222,10 +241,10 @@ export class NutritionLabelScannerService {
     this.logger.warn(`Gemini scan failed (${response.status}): ${geminiMessage || 'No error body'}`);
 
     if (response.status === 401 || response.status === 403) {
-      return new ServiceUnavailableException('Scan is unavailable. Ask an admin to check Gemini access.');
+      return new ServiceUnavailableException('Gemini access was rejected. Check the backend API key.');
     }
-    if (response.status === 404 || /model/i.test(geminiMessage)) {
-      return new ServiceUnavailableException('Scan is unavailable. Ask an admin to check the Gemini model setting.');
+    if (response.status === 404) {
+      return new ServiceUnavailableException('Gemini model was rejected. Check the backend model setting.');
     }
     if (response.status === 429) {
       return new ServiceUnavailableException('Gemini is rate limited. Try again shortly.');
@@ -233,7 +252,18 @@ export class NutritionLabelScannerService {
     if (response.status >= 500) {
       return new ServiceUnavailableException('Gemini is temporarily unavailable. Try again shortly.');
     }
+    if (geminiMessage) {
+      return new ServiceUnavailableException(`Gemini rejected the scan request: ${this.sanitizeGeminiMessage(geminiMessage)}`);
+    }
     return new ServiceUnavailableException('Unable to scan image. Try a clearer nutrition label.');
+  }
+
+  private sanitizeGeminiMessage(message: string) {
+    return message
+      .replace(this.getApiKey(), '[redacted]')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, 240);
   }
 
   private parseResponse(body: GeminiInteractionResponse) {
