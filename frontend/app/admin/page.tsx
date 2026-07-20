@@ -3,12 +3,14 @@
 import {
   Check,
   ChefHat,
+  ClipboardList,
   FileClock,
   MailCheck,
   RefreshCw,
   Search,
   ShoppingBag,
   Sparkles,
+  Trash2,
   Users,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,7 +26,7 @@ import {
 } from "recharts";
 import { toast } from "sonner";
 import api, { getApiError } from "../store/api";
-import { approveFood, type Food } from "../store/features/foodSlice";
+import { approveFood, deleteFood, type Food } from "../store/features/foodSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 interface Member {
@@ -147,6 +149,44 @@ export default function AdminPage() {
     }
   };
 
+  const deletePdfRequest = async (request: PendingPdfRequest) => {
+    setBusy(request.id, true);
+    try {
+      await api.delete(`/diet-chart-exports/requests/${request.id}`);
+      setPdfRequests((current) => current.filter((item) => item.id !== request.id));
+      setDashboard((current) => current ? {
+        ...current,
+        summary: { ...current.summary, pendingPdfRequests: Math.max(0, current.summary.pendingPdfRequests - 1) },
+      } : current);
+      toast.success(`PDF request from ${request.user.name} was deleted.`);
+    } catch (requestError) {
+      toast.error(getApiError(requestError, "Unable to delete this PDF request."));
+    } finally {
+      setBusy(request.id, false);
+    }
+  };
+
+  const deleteSubmission = async (submission: Food) => {
+    setBusy(submission.id, true);
+    try {
+      await dispatch(deleteFood(submission.id)).unwrap();
+      setSubmissions((current) => current.filter((item) => item.id !== submission.id));
+      setDashboard((current) => current ? {
+        ...current,
+        summary: {
+          ...current.summary,
+          [submission.kind === "recipe" ? "pendingRecipes" : "pendingFoods"]:
+            Math.max(0, current.summary[submission.kind === "recipe" ? "pendingRecipes" : "pendingFoods"] - 1),
+        },
+      } : current);
+      toast.success(`${submission.name} approval request was deleted.`);
+    } catch (requestError) {
+      toast.error(typeof requestError === "string" ? requestError : getApiError(requestError, "Unable to delete this submission."));
+    } finally {
+      setBusy(submission.id, false);
+    }
+  };
+
   const togglePurchased = async (member: Member) => {
     setBusy(member.id, true);
     try {
@@ -211,6 +251,24 @@ export default function AdminPage() {
               <SummaryCard icon={ChefHat} label="Recipes" value={dashboard.summary.pendingRecipes} attention={dashboard.summary.pendingRecipes > 0} />
             </section>
 
+            <section className="card mt-6 p-4 sm:p-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-start gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand-active">
+                    <ClipboardList size={21} />
+                  </span>
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand">Library</p>
+                    <h2 className="mt-1 text-xl font-bold text-ink">Manage foods</h2>
+                    <p className="mt-1 text-sm text-muted">Edit, delete, approve, or cancel approval for foods and recipes.</p>
+                  </div>
+                </div>
+                <button type="button" className="btn btn-primary self-start sm:self-center" onClick={() => router.push("/foodList/manage")}>
+                  <ChefHat size={17} /> Open food list
+                </button>
+              </div>
+            </section>
+
             <section className="card mt-6 p-4 sm:p-6">
               <div className="mb-5">
                 <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand">Growth</p>
@@ -245,9 +303,14 @@ export default function AdminPage() {
                       <p className="mt-1 truncate text-xs text-muted">{request.user.email}</p>
                       <p className="mt-1 text-xs text-muted">Chart date: {formatDate(request.date)} · Requested {formatDate(request.requestedAt)}</p>
                     </div>
-                    <button type="button" className="btn btn-primary btn-sm self-start" disabled={busyIds.includes(request.id)} onClick={() => void approvePdf(request)}>
-                      <MailCheck size={16} /> {busyIds.includes(request.id) ? "Sending..." : "Approve and email"}
-                    </button>
+                    <div className="flex flex-wrap gap-2">
+                      <button type="button" className="btn btn-primary btn-sm self-start" disabled={busyIds.includes(request.id)} onClick={() => void approvePdf(request)}>
+                        <MailCheck size={16} /> {busyIds.includes(request.id) ? "Sending..." : "Approve and email"}
+                      </button>
+                      <button type="button" className="btn btn-danger btn-sm self-start" disabled={busyIds.includes(request.id)} onClick={() => void deletePdfRequest(request)}>
+                        <Trash2 size={16} /> Delete request
+                      </button>
+                    </div>
                   </div>
                 ))}
                 {pdfRequests.length === 0 && <EmptyState text="No PDF requests are waiting." />}
@@ -266,9 +329,14 @@ export default function AdminPage() {
                         <p className="mt-2 text-xs text-muted">{Math.round(submission.nutrition.calories)} kcal · {submission.nutrition.protein.toFixed(1)} g protein · per {submission.nutritionPer} {submission.unit}</p>
                         <p className="mt-1 truncate text-xs text-muted">Submitted by {submitter ? `${submitter.name} (${submitter.email})` : submission.addedBy}</p>
                       </div>
-                      <button type="button" className="btn btn-primary btn-sm self-start" disabled={busyIds.includes(submission.id)} onClick={() => void approveSubmission(submission)}>
-                        <Check size={16} /> {busyIds.includes(submission.id) ? "Approving..." : "Approve"}
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        <button type="button" className="btn btn-primary btn-sm self-start" disabled={busyIds.includes(submission.id)} onClick={() => void approveSubmission(submission)}>
+                          <Check size={16} /> {busyIds.includes(submission.id) ? "Approving..." : "Approve"}
+                        </button>
+                        <button type="button" className="btn btn-danger btn-sm self-start" disabled={busyIds.includes(submission.id)} onClick={() => void deleteSubmission(submission)}>
+                          <Trash2 size={16} /> Delete request
+                        </button>
+                      </div>
                     </div>
                   );
                 })}

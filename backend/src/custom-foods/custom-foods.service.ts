@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateFoodDto } from '../foods/dto/create-food.dto';
@@ -66,19 +66,7 @@ export class CustomFoodsService {
   }
 
   async createRecipe(userId: string, dto: CreateRecipeDto) {
-    const ids = dto.ingredients.map((ingredient) => new Types.ObjectId(ingredient.foodId));
-    const foods = await this.foods.find({
-      _id: { $in: ids },
-      $or: [{ approved: true }, { addedBy: userId }],
-    }).exec();
-
-    if (foods.length !== dto.ingredients.length) {
-      throw new BadRequestException({
-        message: 'One or more recipe ingredients are unavailable.',
-        errors: { ingredients: ['Use approved foods or foods created by this user.'] },
-      });
-    }
-
+    const foods = await this.findRecipeIngredientFoods(dto, userId);
     const byId = new Map(foods.map((food) => [food.id, food]));
     const nutrition = this.calculateNutrition(dto, byId);
     const item = await this.foods.create({
@@ -97,6 +85,75 @@ export class CustomFoodsService {
       approved: false,
     });
     return foodToResponse(item);
+  }
+
+  async updateFood(id: string, dto: CreateFoodDto) {
+    const item = await this.findById(id);
+    if (item.kind !== FoodKind.FOOD) {
+      throw new BadRequestException('Use the recipe editor for recipe items.');
+    }
+
+    item.name = dto.name;
+    item.unit = dto.unit;
+    item.nutritionPer = dto.nutritionPer;
+    item.nutrition = this.withMacroCalories(dto.nutrition);
+    item.recipeServings = undefined;
+    item.ingredients = undefined;
+    await item.save();
+    return foodToResponse(item);
+  }
+
+  async updateRecipe(id: string, dto: CreateRecipeDto) {
+    if (dto.ingredients.some((ingredient) => ingredient.foodId === id)) {
+      throw new BadRequestException({
+        message: 'A recipe cannot include itself.',
+        errors: { ingredients: ['Remove this recipe from its own ingredients.'] },
+      });
+    }
+
+    const item = await this.findById(id);
+    if (item.kind !== FoodKind.RECIPE) {
+      throw new BadRequestException('Use the food editor for food items.');
+    }
+
+    const foods = await this.findRecipeIngredientFoods(dto);
+    const byId = new Map(foods.map((food) => [food.id, food]));
+    item.name = dto.name;
+    item.unit = FoodUnit.PIECE;
+    item.nutritionPer = 1;
+    item.recipeServings = dto.servings;
+    item.ingredients = dto.ingredients.map((ingredient) => ({
+      foodId: new Types.ObjectId(ingredient.foodId),
+      quantity: ingredient.quantity,
+    }));
+    item.nutrition = this.calculateNutrition(dto, byId);
+    await item.save();
+    return foodToResponse(item);
+  }
+
+  private async findRecipeIngredientFoods(dto: CreateRecipeDto, userId?: string) {
+    const ids = dto.ingredients.map((ingredient) => new Types.ObjectId(ingredient.foodId));
+    const visibility = userId ? { $or: [{ approved: true }, { addedBy: userId }] } : {};
+    const foods = await this.foods.find({
+      _id: { $in: ids },
+      ...visibility,
+    }).exec();
+
+    if (foods.length !== dto.ingredients.length) {
+      throw new BadRequestException({
+        message: 'One or more recipe ingredients are unavailable.',
+        errors: { ingredients: ['Use approved foods or foods created by this user.'] },
+      });
+    }
+
+    return foods;
+  }
+
+  private async findById(id: string) {
+    if (!Types.ObjectId.isValid(id)) throw new NotFoundException('Food item not found.');
+    const item = await this.foods.findById(id).exec();
+    if (!item) throw new NotFoundException('Food item not found.');
+    return item;
   }
 
   private calculateNutrition(dto: CreateRecipeDto, foods: Map<string, FoodDocument>) {

@@ -141,6 +141,24 @@ export class DietChartExportService {
     }
   }
 
+  async deletePendingRequest(requestId: string) {
+    if (!Types.ObjectId.isValid(requestId)) {
+      throw new NotFoundException('PDF request was not found.');
+    }
+
+    const request = await this.requests
+      .findOneAndDelete({
+        _id: new Types.ObjectId(requestId),
+        status: DietChartExportRequestStatus.PENDING,
+      })
+      .exec();
+    if (request) return;
+
+    const existing = await this.requests.findById(requestId).lean().exec();
+    if (!existing) throw new NotFoundException('PDF request was not found.');
+    throw new ConflictException('This PDF request has already been processed.');
+  }
+
   private async emailChart(userId: string, requestedDate: string) {
     const user = await this.users.findById(userId);
     if (!user?.isActive) throw new UnauthorizedException('User account is unavailable.');

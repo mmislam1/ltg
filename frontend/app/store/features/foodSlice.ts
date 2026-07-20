@@ -75,6 +75,16 @@ export interface CreateRecipeInput {
   ingredients: RecipeIngredient[];
 }
 
+export interface UpdateFoodInput {
+  id: string;
+  food: CreateFoodInput;
+}
+
+export interface UpdateRecipeInput {
+  id: string;
+  recipe: CreateRecipeInput;
+}
+
 export interface FoodsState {
   list: Food[];
   pending: Food[];
@@ -85,6 +95,7 @@ export interface FoodsState {
   scanningLabel: boolean;
   deletingIds: string[];
   approvingIds: string[];
+  updatingIds: string[];
   error: string | null;
   pendingError: string | null;
 }
@@ -99,6 +110,7 @@ const initialState: FoodsState = {
   scanningLabel: false,
   deletingIds: [],
   approvingIds: [],
+  updatingIds: [],
   error: null,
   pendingError: null,
 };
@@ -182,6 +194,42 @@ export const approveFood = createAsyncThunk<Food, string, { rejectValue: string 
   },
 );
 
+export const cancelFoodApproval = createAsyncThunk<Food, string, { rejectValue: string }>(
+  "foods/cancelApproval",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await api.patch<Food>(`/foods/${id}/cancel-approval`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(reject(error, "Unable to cancel approval for the food item."));
+    }
+  },
+);
+
+export const updateFood = createAsyncThunk<Food, UpdateFoodInput, { rejectValue: string }>(
+  "foods/updateFood",
+  async ({ id, food }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.patch<Food>(`/foods/${id}/food`, food);
+      return data;
+    } catch (error) {
+      return rejectWithValue(reject(error, "Unable to update the food item."));
+    }
+  },
+);
+
+export const updateRecipe = createAsyncThunk<Food, UpdateRecipeInput, { rejectValue: string }>(
+  "foods/updateRecipe",
+  async ({ id, recipe }, { rejectWithValue }) => {
+    try {
+      const { data } = await api.patch<Food>(`/foods/${id}/recipe`, recipe);
+      return data;
+    } catch (error) {
+      return rejectWithValue(reject(error, "Unable to update the recipe."));
+    }
+  },
+);
+
 export const deleteFood = createAsyncThunk<string, string, { rejectValue: string }>(
   "foods/delete",
   async (id, { rejectWithValue }) => {
@@ -198,6 +246,13 @@ const upsert = (items: Food[], food: Food) => {
   const index = items.findIndex((item) => item.id === food.id);
   if (index === -1) items.push(food);
   else items[index] = food;
+};
+
+const syncPending = (items: Food[], food: Food) => {
+  if (food.approved) return items.filter((item) => item.id !== food.id);
+  const next = [...items];
+  upsert(next, food);
+  return next;
 };
 
 export const foodSlice = createSlice({
@@ -283,6 +338,45 @@ export const foodSlice = createSlice({
       .addCase(approveFood.rejected, (state, action) => {
         state.approvingIds = state.approvingIds.filter((id) => id !== action.meta.arg);
         state.pendingError = action.payload || "Unable to approve the food item.";
+      })
+      .addCase(cancelFoodApproval.pending, (state, action) => {
+        state.approvingIds.push(action.meta.arg);
+        state.pendingError = null;
+      })
+      .addCase(cancelFoodApproval.fulfilled, (state, action) => {
+        state.approvingIds = state.approvingIds.filter((id) => id !== action.payload.id);
+        upsert(state.list, action.payload);
+        state.pending = syncPending(state.pending, action.payload);
+      })
+      .addCase(cancelFoodApproval.rejected, (state, action) => {
+        state.approvingIds = state.approvingIds.filter((id) => id !== action.meta.arg);
+        state.pendingError = action.payload || "Unable to cancel approval for the food item.";
+      })
+      .addCase(updateFood.pending, (state, action) => {
+        state.updatingIds.push(action.meta.arg.id);
+        state.error = null;
+      })
+      .addCase(updateFood.fulfilled, (state, action) => {
+        state.updatingIds = state.updatingIds.filter((id) => id !== action.payload.id);
+        upsert(state.list, action.payload);
+        state.pending = syncPending(state.pending, action.payload);
+      })
+      .addCase(updateFood.rejected, (state, action) => {
+        state.updatingIds = state.updatingIds.filter((id) => id !== action.meta.arg.id);
+        state.error = action.payload || "Unable to update the food item.";
+      })
+      .addCase(updateRecipe.pending, (state, action) => {
+        state.updatingIds.push(action.meta.arg.id);
+        state.error = null;
+      })
+      .addCase(updateRecipe.fulfilled, (state, action) => {
+        state.updatingIds = state.updatingIds.filter((id) => id !== action.payload.id);
+        upsert(state.list, action.payload);
+        state.pending = syncPending(state.pending, action.payload);
+      })
+      .addCase(updateRecipe.rejected, (state, action) => {
+        state.updatingIds = state.updatingIds.filter((id) => id !== action.meta.arg.id);
+        state.error = action.payload || "Unable to update the recipe.";
       })
       .addCase(deleteFood.pending, (state, action) => {
         state.deletingIds.push(action.meta.arg);

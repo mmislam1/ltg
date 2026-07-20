@@ -27,8 +27,16 @@ export class FoodsService {
   }
 
   async approve(id: string) {
+    return this.setApproval(id, true);
+  }
+
+  async cancelApproval(id: string) {
+    return this.setApproval(id, false);
+  }
+
+  private async setApproval(id: string, approved: boolean) {
     const item = await this.findById(id);
-    item.approved = true;
+    item.approved = approved;
     await item.save();
     return foodToResponse(item);
   }

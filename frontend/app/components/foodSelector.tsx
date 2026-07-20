@@ -1,7 +1,7 @@
 "use client";
 
 import { Minus, Plus, SearchIcon } from "lucide-react";
-import { useId, useMemo, useState } from "react";
+import { type ReactNode, useId, useMemo, useState } from "react";
 import { NUTRITION_COLORS } from "../nutritionColors";
 import type { ListItems } from "../store/features/activitySlice";
 import type { Food } from "../store/features/foodSlice";
@@ -16,12 +16,13 @@ import {
 
 interface FoodSelectorProps {
   foods: Food[];
-  selectedItems: ListItems[];
-  onToggle: (food: Food, quantity: number) => void;
-  onQuantityChange: (foodId: string, quantity: number) => void;
+  selectedItems?: ListItems[];
+  onToggle?: (food: Food, quantity: number) => void;
+  onQuantityChange?: (foodId: string, quantity: number) => void;
   className?: string;
   maxHeight?: string;
   showSearch?: boolean;
+  renderActions?: (food: Food) => ReactNode;
 }
 
 const validQuantity = (value: number, fallback: number) =>
@@ -29,16 +30,19 @@ const validQuantity = (value: number, fallback: number) =>
 
 export default function FoodSelector({
   foods,
-  selectedItems,
+  selectedItems = [],
   onToggle,
   onQuantityChange,
   className = "",
   maxHeight,
   showSearch = true,
+  renderActions,
 }: FoodSelectorProps) {
   const [query, setQuery] = useState("");
   const [draftQuantities, setDraftQuantities] = useState<Record<string, number>>({});
   const searchId = useId();
+
+  const canSelect = Boolean(onToggle);
 
   const selectedById = useMemo(
     () => new Map(
@@ -61,7 +65,7 @@ export default function FoodSelector({
   const changeQuantity = (food: Food, nextValue: number) => {
     const quantity = validQuantity(nextValue, quantityFor(food));
     setDraftQuantities((current) => ({ ...current, [food.id]: quantity }));
-    if (selectedById.has(food.id)) onQuantityChange(food.id, quantity);
+    if (selectedById.has(food.id)) onQuantityChange?.(food.id, quantity);
   };
 
   return (
@@ -115,78 +119,84 @@ export default function FoodSelector({
           return (
             <article
               key={food.id}
-              className={`relative px-3 py-3 pr-16 transition-colors sm:px-4 sm:pr-16 ${selected ? "bg-brand-soft/60" : "hover:bg-canvas"}`}
+              className={`px-3 py-3 transition-colors sm:px-4 ${selected ? "bg-brand-soft/60" : "hover:bg-canvas"}`}
             >
-              <div className="min-w-0">
-                <h3 className="truncate font-semibold text-ink">{food.name}</h3>
+              <div className={`relative ${canSelect ? "pr-14" : ""}`}>
+                <div className="min-w-0">
+                  <h3 className="truncate font-semibold text-ink">{food.name}</h3>
 
-                <div className="mt-2 flex min-w-0 items-center justify-between gap-2">
-                  <div className="flex shrink-0 items-center gap-1">
-                    <button
-                      type="button"
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-brand-soft"
-                      onClick={() => changeQuantity(food, Math.max(1, quantity - step))}
-                      aria-label={`Decrease ${food.name} portion`}
-                    >
-                      <Minus size={13} />
-                    </button>
-                    <label className="relative flex items-center">
-                      <span className="sr-only">{food.name} portion in {food.unit}</span>
-                      <input
-                        type="number"
-                        min="0.001"
-                        step="any"
-                        inputMode="decimal"
-                        value={quantity}
-                        onChange={(event) => changeQuantity(food, Number(event.target.value))}
-                        className="h-7 w-20 rounded-md border border-line bg-surface px-1.5 pr-7 text-center text-xs text-ink tabular-nums outline-none focus:border-brand"
-                        aria-label={`${food.name} portion`}
-                      />
-                      <span className="pointer-events-none absolute right-1.5 text-[10px] font-bold text-muted">
-                        {food.unit}
-                      </span>
-                    </label>
-                    <button
-                      type="button"
-                      className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-brand-soft"
-                      onClick={() => changeQuantity(food, quantity + step)}
-                      aria-label={`Increase ${food.name} portion`}
-                    >
-                      <Plus size={13} />
-                    </button>
+                  <div className="mt-2 flex min-w-0 items-center justify-between gap-2">
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button
+                        type="button"
+                        className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-brand-soft"
+                        onClick={() => changeQuantity(food, Math.max(1, quantity - step))}
+                        aria-label={`Decrease ${food.name} portion`}
+                      >
+                        <Minus size={13} />
+                      </button>
+                      <label className="relative flex items-center">
+                        <span className="sr-only">{food.name} portion in {food.unit}</span>
+                        <input
+                          type="number"
+                          min="0.001"
+                          step="any"
+                          inputMode="decimal"
+                          value={quantity}
+                          onChange={(event) => changeQuantity(food, Number(event.target.value))}
+                          className="h-7 w-20 rounded-md border border-line bg-surface px-1.5 pr-7 text-center text-xs text-ink tabular-nums outline-none focus:border-brand"
+                          aria-label={`${food.name} portion`}
+                        />
+                        <span className="pointer-events-none absolute right-1.5 text-[10px] font-bold text-muted">
+                          {food.unit}
+                        </span>
+                      </label>
+                      <button
+                        type="button"
+                        className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-surface text-ink transition-colors hover:bg-brand-soft"
+                        onClick={() => changeQuantity(food, quantity + step)}
+                        aria-label={`Increase ${food.name} portion`}
+                      >
+                        <Plus size={13} />
+                      </button>
+                    </div>
+
+                    <span className="truncate text-right text-base font-bold text-ink tabular-nums">
+                      {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
+                    </span>
                   </div>
 
-                  <span className="truncate text-right text-base font-bold text-ink tabular-nums">
-                    {totalCalories.toFixed(1)} {NUTRIENT_UNITS.calories}
-                  </span>
+                  <div className="mt-2 grid grid-cols-3 gap-2 border-t border-line/70 pt-2 text-xs tabular-nums">
+                    {macroCalories.map((macro) => (
+                      <div key={macro.label} className="min-w-0 border-l-2 pl-2" style={{ borderColor: macro.color }}>
+                        <div className="truncate font-semibold" style={{ color: macro.color }}>
+                          {macro.label}
+                        </div>
+                        <div className="truncate font-bold text-ink">
+                          {macro.calories.toFixed(1)} {NUTRIENT_UNITS.calories}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-                <div className="mt-2 grid grid-cols-3 gap-2 border-t border-line/70 pt-2 text-xs tabular-nums">
-                  {macroCalories.map((macro) => (
-                    <div key={macro.label} className="min-w-0 border-l-2 pl-2" style={{ borderColor: macro.color }}>
-                      <div className="truncate font-semibold" style={{ color: macro.color }}>
-                        {macro.label}
-                      </div>
-                      <div className="truncate font-bold text-ink">
-                        {macro.calories.toFixed(1)} {NUTRIENT_UNITS.calories}
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {onToggle && (
+                  <button
+                    type="button"
+                    onClick={() => onToggle(food, quantity)}
+                    className={`btn btn-icon absolute right-0 top-1/2 -translate-y-1/2 ${selected ? "btn-danger" : "btn-primary"}`}
+                    aria-label={selected ? `Remove ${food.name}` : `Add ${food.name}`}
+                    aria-pressed={selected}
+                  >
+                    <Plus
+                      size={21}
+                      className={`transition-transform ${selected ? "rotate-45" : ""}`}
+                    />
+                  </button>
+                )}
               </div>
 
-              <button
-                type="button"
-                onClick={() => onToggle(food, quantity)}
-                className={`btn btn-icon absolute right-3 top-1/2 -translate-y-1/2 ${selected ? "btn-danger" : "btn-primary"}`}
-                aria-label={selected ? `Remove ${food.name}` : `Add ${food.name}`}
-                aria-pressed={selected}
-              >
-                <Plus
-                  size={21}
-                  className={`transition-transform ${selected ? "rotate-45" : ""}`}
-                />
-              </button>
+              {renderActions?.(food)}
             </article>
           );
         })}

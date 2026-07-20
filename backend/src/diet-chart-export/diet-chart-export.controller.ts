@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -48,5 +49,13 @@ export class DietChartExportController {
     @Param('requestId') requestId: string,
   ) {
     return this.exports.approveRequest(requestId, admin.id);
+  }
+
+  @Delete('requests/:requestId')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteRequest(@Param('requestId') requestId: string) {
+    await this.exports.deletePendingRequest(requestId);
   }
 }

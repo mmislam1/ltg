@@ -17,6 +17,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { UserRole } from '../users/schemas/user.schema';
 import { CustomFoodsService } from '../custom-foods/custom-foods.service';
+import { CreateRecipeDto } from '../custom-foods/dto/create-recipe.dto';
 import { CreateFoodDto } from './dto/create-food.dto';
 import { FoodsService } from './foods.service';
 
@@ -51,6 +52,27 @@ export class FoodsController {
   @Roles(UserRole.ADMIN)
   approve(@Param('id') id: string) {
     return this.foodsService.approve(id);
+  }
+
+  @Patch(':id/cancel-approval')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  cancelApproval(@Param('id') id: string) {
+    return this.foodsService.cancelApproval(id);
+  }
+
+  @Patch(':id/food')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  updateFood(@Param('id') id: string, @Body() dto: CreateFoodDto) {
+    return this.customFoodsService.updateFood(id, dto);
+  }
+
+  @Patch(':id/recipe')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  updateRecipe(@Param('id') id: string, @Body() dto: CreateRecipeDto) {
+    return this.customFoodsService.updateRecipe(id, dto);
   }
 
   @Delete(':id')
