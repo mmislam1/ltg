@@ -1,12 +1,28 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
+import type { CSSProperties } from "react";
 
 type LogoLoaderProps = {
+  alt?: string;
+  height?: number;
+  src?: string | StaticImageData;
   visible?: boolean;
+  width?: number;
 };
 
-export default function LogoLoader({ visible = true }: LogoLoaderProps) {
+export default function LogoLoader({
+  alt = "Loading",
+  height = 78,
+  src = "/logo.png",
+  visible = true,
+  width = 180,
+}: LogoLoaderProps) {
+  const logoStyle = {
+    "--logo-loader-aspect": `${width} / ${height}`,
+    "--logo-loader-width": `${width}px`,
+  } as CSSProperties;
+
   return (
     <div
       className="logo-loader logo-loader--fixed"
@@ -17,17 +33,16 @@ export default function LogoLoader({ visible = true }: LogoLoaderProps) {
       aria-hidden={visible ? undefined : true}
     >
       <div className="logo-loader__panel">
-        <div className="logo-loader__mark">
+        <div className="logo-loader__mark" style={logoStyle}>
           <Image
-            src="/logo.png"
-            alt="Lose To Gain"
-            width={180}
-            height={78}
+            src={src}
+            alt={alt}
+            width={width}
+            height={height}
             priority
             className="logo-loader__image"
           />
         </div>
-        <div className="logo-loader__track" aria-hidden="true" />
       </div>
       <span className="sr-only">Loading</span>
     </div>
