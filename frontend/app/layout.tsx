@@ -1,12 +1,14 @@
 
 import type { Metadata, Viewport } from "next";
 import { Comfortaa } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import ReduxProvider from "./providers/ReduxProvider";
 import { themeStyle } from "./theme";
 import SiteShell from "./components/siteShell";
 import AppToaster from "./components/appToaster";
 import RouteTransition from "./components/routeTransition";
+import { PageSuspenseFallback } from "./components/suspenseFallback";
 
 const comfortaa = Comfortaa({
   subsets: ["latin"],
@@ -37,12 +39,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={comfortaa.variable} style={themeStyle}>
       <body className="flex min-h-screen w-full max-w-full flex-col items-center antialiased">
-        <ReduxProvider>
-          <RouteTransition>
-            <SiteShell>{children}</SiteShell>
-          </RouteTransition>
-          <AppToaster />
-        </ReduxProvider>
+        <Suspense fallback={<PageSuspenseFallback label="Loading app" />}>
+          <ReduxProvider>
+            <RouteTransition>
+              <SiteShell>{children}</SiteShell>
+            </RouteTransition>
+            <AppToaster />
+          </ReduxProvider>
+        </Suspense>
       </body>
     </html>
   );

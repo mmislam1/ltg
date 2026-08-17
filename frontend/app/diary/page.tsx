@@ -1,5 +1,10 @@
 import SimplifiedDietChart from "../components/simplifiedDietChart";
+import PageSuspense from "../components/pageSuspense";
 
 export default function DiaryPage() {
-  return <SimplifiedDietChart />;
+  return (
+    <PageSuspense>
+      <SimplifiedDietChart />
+    </PageSuspense>
+  );
 }
